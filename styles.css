@@ -665,3 +665,35 @@ button,input,textarea,select{font:inherit}.app-shell{width:100%;max-width:480px;
 .create-bottom-actions .bottom-action-arrow{margin-left:5px}
 @media(max-width:390px){.create-team-screen{padding-left:17px;padding-right:17px}.create-team-header h1{font-size:33px}.create-team-card{min-height:530px;padding:24px 18px 175px;border-radius:27px}.create-input{height:58px!important}.create-alia{width:165px;max-height:174px}.create-alia-zone{height:174px}.create-alia-bubble{left:5px;bottom:58px;width:139px;font-size:11.5px}.create-bottom-actions .primary-action{font-size:14px}}
 @media(max-height:760px){.create-team-screen{padding-top:30px}.create-team-header{margin-bottom:14px}.create-team-header h1{font-size:31px;margin-top:6px}.create-team-card{min-height:485px;padding-top:22px;padding-bottom:150px}.create-field{margin-bottom:16px}.create-input{height:54px!important}.create-alia-zone{height:150px}.create-alia{width:145px;max-height:150px}.create-alia-bubble{bottom:45px;width:128px;padding:13px 11px;font-size:10.5px}}
+
+/* v0.23 — join-team screen aligned to the approved visual reference */
+.join-team-screen{position:relative;overflow:hidden;padding:46px 22px calc(124px + env(safe-area-inset-bottom));background:radial-gradient(circle at 20% 16%,rgba(238,111,150,.10),transparent 28%),radial-gradient(circle at 86% 31%,rgba(238,111,150,.08),transparent 22%),linear-gradient(180deg,#0d1722 0%,#101b27 100%)}
+.join-team-header{position:relative;z-index:2;width:100%;text-align:center;margin-bottom:22px}
+.join-team-header h1{font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI",sans-serif;font-size:36px;line-height:1.18;letter-spacing:.01em;margin:14px 0 9px;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,.22)}
+.join-team-header h1 span{background:linear-gradient(180deg,#ffa5bf 0%,#ee7298 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.join-team-screen .form-lead{font-size:14px;color:#cbd3dc!important;letter-spacing:.02em;margin-bottom:0!important}
+.join-team-card{position:relative;z-index:2;width:min(100%,436px);min-height:748px;padding:28px 24px 205px;border:1.5px solid rgba(242,132,164,.72);border-radius:30px;background:linear-gradient(180deg,rgba(12,20,30,.88),rgba(10,18,28,.96));box-shadow:0 20px 52px rgba(0,0,0,.34),inset 0 0 0 1px rgba(255,255,255,.025)}
+.join-field{margin-bottom:18px;text-align:left}
+.join-field:last-of-type{margin-bottom:0}
+.join-label{display:flex;align-items:center;gap:10px;color:#f6f7fb;font-weight:850;font-size:16px;margin:0 0 9px;letter-spacing:.01em}
+.join-label::before{content:"";width:4px;height:22px;border-radius:999px;background:linear-gradient(180deg,#ffa6c0,#ec6f97);box-shadow:0 0 12px rgba(238,111,151,.42)}
+.join-label-icon{width:23px;height:23px;display:grid;place-items:center;color:#f58baa;font-size:19px;line-height:1}
+.code-mark{font-size:16px;transform:rotate(45deg)}
+.team-icon{font-size:21px;transform:rotate(180deg)}
+.join-input{height:58px!important;background:linear-gradient(180deg,rgba(34,41,58,.92),rgba(27,34,49,.96))!important;color:#fff!important;border:1px solid rgba(255,178,201,.30)!important;border-radius:18px!important;padding:0 18px!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.035),0 8px 18px rgba(0,0,0,.16)}
+.join-input::placeholder{color:rgba(222,226,236,.62)}
+.join-input:focus{outline:none;border-color:#f58baa!important;box-shadow:0 0 0 3px rgba(245,139,170,.16),0 8px 18px rgba(0,0,0,.18)}
+.join-code-wrap{position:relative}.join-code-input{padding-right:58px!important;text-transform:uppercase;letter-spacing:5px;font-weight:900;color:#f5a0ba!important}
+.join-scan-mark{position:absolute;right:20px;top:50%;width:23px;height:23px;transform:translateY(-50%);border:3px solid #f58baa;border-radius:7px;opacity:.95}
+.join-scan-mark::before,.join-scan-mark::after{content:"";position:absolute;background:#20283a}
+.join-scan-mark::before{left:5px;right:5px;top:-4px;height:31px}.join-scan-mark::after{top:5px;bottom:5px;left:-4px;width:31px}
+.join-help{display:block;margin:8px 0 0 1px;color:#bfc6d1;font-size:11px;line-height:1.45}
+.join-select{appearance:auto;color:#fff!important}.join-select option{color:#17202a;background:#fff}
+.join-alia-zone{position:absolute;left:18px;right:10px;bottom:7px;height:205px;display:flex;align-items:flex-end;justify-content:flex-end;pointer-events:none}
+.join-alia{width:190px;max-height:202px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 12px 20px rgba(0,0,0,.30))}
+.join-alia-bubble{position:absolute;left:11px;bottom:48px;width:152px;padding:17px 14px;text-align:center;color:#ffd5e1;background:rgba(16,25,38,.96);border:2px solid #ef86a5;border-radius:48% 52% 46% 54%/54% 46% 54% 46%;font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI",sans-serif;font-size:12px;font-weight:800;line-height:1.55;box-shadow:0 9px 20px rgba(0,0,0,.20)}
+.join-alia-bubble::before,.join-alia-bubble::after{content:"";position:absolute;border-radius:50%;background:#111c29;border:2px solid #ef86a5}.join-alia-bubble::before{width:18px;height:18px;right:-20px;bottom:18px}.join-alia-bubble::after{width:10px;height:10px;right:-34px;bottom:7px}
+.join-decor{position:absolute;z-index:1;color:#f58baa;opacity:.9;animation:aliaFloat 3.2s ease-in-out infinite}.join-heart{left:8%;top:13%;font-size:25px}.join-sparkle{right:8%;top:18%;font-size:23px;animation-delay:.7s}.join-wing{right:4%;top:9%;font-size:29px;transform:scaleX(-1) rotate(-18deg);animation-delay:1.2s}
+.join-bottom-actions{grid-template-columns:.76fr 1.5fr}.join-bottom-actions .join-action{color:#fff;background:linear-gradient(135deg,#f58baa,#e96f95);border-color:rgba(255,184,205,.62);font-size:16px}.join-bottom-actions .bottom-action-arrow{margin-left:5px}
+@media(max-width:390px){.join-team-screen{padding-left:17px;padding-right:17px}.join-team-header h1{font-size:33px}.join-team-card{min-height:710px;padding:24px 18px 192px;border-radius:27px}.join-input{height:56px!important}.join-alia{width:171px;max-height:184px}.join-alia-zone{height:188px}.join-alia-bubble{left:3px;bottom:45px;width:142px;font-size:11.5px}.join-bottom-actions .join-action{font-size:15px}}
+@media(max-height:760px){.join-team-screen{padding-top:30px}.join-team-header{margin-bottom:14px}.join-team-header h1{font-size:31px;margin-top:6px}.join-team-card{min-height:640px;padding-top:21px;padding-bottom:162px}.join-field{margin-bottom:13px}.join-input{height:51px!important}.join-help{font-size:10px;margin-top:5px}.join-alia-zone{height:158px}.join-alia{width:150px;max-height:158px}.join-alia-bubble{bottom:38px;width:132px;padding:13px 11px;font-size:10.5px}}
