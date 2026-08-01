@@ -76,3 +76,14 @@ button,input,textarea,select{font:inherit}.app-shell{width:100%;max-width:480px;
 .alia-support{width:min(100%,440px);margin-top:20px;padding:12px 14px;border-radius:999px;border:1px dashed rgba(244,153,180,.55);color:#f3a1b8;background:rgba(16,23,32,.58);font-size:13px;font-weight:700;position:relative;z-index:1}
 .alia-home .welcome-version{position:absolute;right:18px;bottom:18px;margin:0;color:#f0a0b6;font-size:11px;letter-spacing:.09em;z-index:2}
 @media(max-width:390px){.alia-header{gap:8px}.alia-mascot{width:112px;height:112px}.alia-bubble{max-width:190px;padding:13px 15px}.alia-bubble strong{font-size:19px}.alia-bubble span{font-size:12px}.alia-home h1{font-size:36px}.welcome-action{grid-template-columns:48px 1fr 30px;padding:16px 14px}.action-icon{width:46px;height:46px}.welcome-action b{font-size:18px}}
+
+
+/* v0.9 welcome hierarchy: title → Alia → tagline → actions */
+.alia-title-block{width:min(100%,440px);position:relative;z-index:2;margin:0 auto 12px;text-align:center}
+.alia-title-block h1{margin:0!important;font-size:42px!important;line-height:1.08;letter-spacing:.1px}
+.alia-header{margin:0 auto 10px}
+.alia-tagline{font-size:17px!important;color:#f2d7c5!important;margin:0 0 24px!important;position:relative;z-index:1}
+@media(max-width:390px){
+  .alia-title-block h1{font-size:36px!important}
+  .alia-title-block{margin-bottom:10px}
+}

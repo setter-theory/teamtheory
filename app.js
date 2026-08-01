@@ -50,18 +50,20 @@ function render(){
 
 function welcomeView(){
  return `<main class="onboarding alia-home">
+   <div class="alia-title-block">
+     <h1><span>TEAM</span> Theory</h1>
+   </div>
    <div class="alia-header">
      <div class="alia-bubble"><strong>Alia</strong><span>今日も最高のチームにしようね！</span></div>
-     <img class="welcome-app-icon alia-mascot" src="./icons/icon-512.png?v=0.8" alt="Alia">
+     <img class="welcome-app-icon alia-mascot" src="./icons/icon-512.png?v=0.9" alt="Alia">
    </div>
-   <h1><span>TEAM</span> Theory</h1>
-   <p>教わるから、考えるへ。</p>
+   <p class="alia-tagline">教わるから、考えるへ。</p>
    <div class="welcome-actions">
      <button class="welcome-action create" onclick="go('createTeam')"><span class="action-icon">👥</span><span><b>チームで始める</b><small>代表者はチームを作成。選手は招待コードで参加します。</small></span><span class="action-arrow">›</span></button>
      <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.8</div>
+   <div class="welcome-version">Version 0.9</div>
  </main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}

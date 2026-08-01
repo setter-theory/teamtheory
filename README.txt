@@ -1,7 +1,6 @@
-TEAM Theory Prototype 0.8
+TEAM Theory Prototype 0.9
 
-正式アプリアイコン実装版。
-- PWA 192/512
-- Apple Touch Icon 180
-- favicon 32/64
-- 初回画面とアプリ上部へ正式アイコン採用
+・ホーム画面の視線順を「タイトル → Alia → キャッチコピー → メニュー」に調整
+・Aliaの吹き出しをキャラクター横に維持
+・Version 0.9を右下に表示
+・既存機能と正式アイコンを維持
