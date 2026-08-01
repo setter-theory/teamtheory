@@ -430,8 +430,15 @@ function render(){
   else if(state.view==='growth') app.innerHTML=shell(growthView(),'growth');
   else if(state.view==='members') app.innerHTML=shell(membersView(),'members');
   else if(state.view==='menu') app.innerHTML=shell(menuView(),'menu');
+  else if(state.view==='teamInfo') app.innerHTML=shell(teamInfoView(),'menu');
+  else if(state.view==='myProfile') app.innerHTML=shell(myProfileView(),'menu');
   else if(state.view==='inviteCode') app.innerHTML=shell(inviteCodeView(),'menu');
-  else app.innerHTML=shell(profileView(),'menu');
+  else if(state.view==='dataManagement') app.innerHTML=shell(dataManagementView(),'menu');
+  else if(state.view==='aliaSettings') app.innerHTML=shell(aliaSettingsView(),'menu');
+  else if(state.view==='displaySettings') app.innerHTML=shell(displaySettingsView(),'menu');
+  else if(state.view==='help') app.innerHTML=shell(helpView(),'menu');
+  else if(state.view==='appInfo') app.innerHTML=shell(appInfoView(),'menu');
+  else app.innerHTML=shell(menuView(),'menu');
 }
 
 function welcomeView(){
@@ -457,7 +464,7 @@ function welcomeView(){
          <p class="alia-tagline">教わるから、考えるへ。</p>
        </div>
      </div>
-     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.48.0" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.49.0" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
@@ -466,7 +473,7 @@ function welcomeView(){
    </div>
    <button class="welcome-utility" onclick="showTopSettingsNotice()"><span class="welcome-utility-icon">⚙</span><span>設定・その他</span><span class="welcome-utility-arrow">›</span></button>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.48.0</div>
+   <div class="welcome-version">Version 0.49.0</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -490,7 +497,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon">🏐</span><span>ポジション</span></label><select id="position" class="input create-input create-select">${positionOptions()}</select></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon">🎓</span><span>学年</span></label><select id="grade" class="input create-input create-select">${gradeOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.48.0" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.49.0" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -506,7 +513,7 @@ function joinTeamView(){
      <div class="join-field"><label class="join-label"><span class="join-label-icon shield-icon">★</span><span>役割</span></label><select id="joinRole" class="input join-input join-select">${roleOptions()}</select><small class="join-help">チーム内でのあなたの役割を選択してください。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon">🏐</span><span>ポジション</span></label><select id="joinPosition" class="input join-input join-select">${positionOptions()}</select></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon">🎓</span><span>学年</span></label><select id="joinGrade" class="input join-input join-select">${gradeOptions()}</select></div>
-     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.48.0" class="join-alia" alt="Alia"></div>
+     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.49.0" class="join-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions join-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon">⌂</span><span>トップ</span></button><button class="bottom-action join-action" onclick="joinTeamAccount()"><span>参加する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -798,33 +805,141 @@ function saveMemberEditor(id=''){
 function deleteMember(id){if(!confirm('このメンバーを削除しますか？'))return;saveMembers(loadMembers().filter(m=>m.id!==id));closeMemberEditor();render();toast('メンバーを削除しました')}
 
 function menuView(){
-  const a=loadAccount();
-  return `<section class="menu-page">
-    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.48.0" alt="Alia"></div>
-    <div class="menu-list">
-      ${menuItem('⇄','チームを切り替える','保存したチームを選択','goTop()')}
-      ${menuItem('⌂','トップ画面へ戻る','チーム作成・参加・切り替え','goTop()')}
-      ${menuItem('👥','メンバー管理','メンバー・役割を編集',"go('members')")}
-      ${menuItem('🔑','招待コード','コードの確認・コピー',"go('inviteCode')")}
-      ${menuItem('🔔','通知','新着情報を確認')}
-      ${menuItem('⚙','チーム設定','学校名・カテゴリー・レベル',"go('profile')")}
-      ${menuItem('●','プロフィール','表示名・役割を変更',"go('profile')")}
-      ${menuItem('⇧','データ出力','記録の共有・保存')}
-      ${menuItem('?','ヘルプ','使い方を確認')}
-      ${menuItem('ⓘ','アプリ情報','バージョン・利用情報')}
-    </div>
-  </section>`;
+ const a=loadAccount();
+ return `<section class="menu-page menu-hub-page">
+   <div class="menu-page-head menu-hub-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の情報・設定を選びます。</p></div><img src="./icons/alia-standalone.png?v=0.49.0" alt="Alia"></div>
+   <div class="menu-hub-grid">
+     ${menuHubItem('👥','チーム情報','チーム名・学校名・カテゴリー・レベル',"go('teamInfo')",'pink')}
+     ${menuHubItem('👤','マイプロフィール','名前・役割・ポジション・学年',"go('myProfile')",'pink')}
+     ${menuHubItem('▦','招待コード','コードの確認・コピー・共有',"go('inviteCode')",'gold')}
+     ${menuHubItem('⇅','データ管理','バックアップ・書き出し・削除',"go('dataManagement')",'blue')}
+     ${menuHubItem('✦','Alia設定','提案レベル・詳しさ・通知',"go('aliaSettings')",'pink')}
+     ${menuHubItem('Aa','表示設定','文字サイズ・アニメーション',"go('displaySettings')",'blue')}
+     ${menuHubItem('?','使い方','基本操作・よくある質問',"go('help')",'gold')}
+     ${menuHubItem('ⓘ','アプリ情報','バージョン・更新情報',"go('appInfo')",'blue')}
+   </div>
+   <div class="menu-hub-secondary">
+     <button onclick="goTop()"><span>⇄</span><div><b>チームを切り替える</b><small>トップ画面の保存チームへ戻る</small></div><em>›</em></button>
+   </div>
+ </section>`;
 }
-function menuItem(icon,title,desc,action="toast('この機能は準備中です')"){
-  return `<button class="menu-list-item" onclick="${action}"><span class="menu-list-icon">${icon}</span><span><b>${title}</b><small>${desc}</small></span><span class="menu-list-chevron">›</span></button>`;
+function menuHubItem(icon,title,desc,action,tone='pink'){
+ return `<button class="menu-hub-card ${tone}" onclick="${action}"><span class="menu-hub-icon">${icon}</span><span class="menu-hub-copy"><b>${title}</b><small>${desc}</small></span><span class="menu-hub-chevron">›</span></button>`;
 }
-function profileView(){ const a=loadAccount(); return `<h2 class="page-title">設定</h2><div class="form-card"><label class="label">チーム名</label><input id="profileTeamName" class="input" value="${esc(a.teamName)}"><label class="label">学校名・団体名</label><input id="profileSchoolName" class="input" value="${esc(a.schoolName||'')}"><label class="label">カテゴリー</label><select id="profileCategory" class="input">${optionList(CATEGORIES,a.category||'未設定')}</select><label class="label">チームレベル</label><select id="profileTeamLevel" class="input">${optionList(TEAM_LEVELS,a.teamLevel||'未設定')}</select><label class="label">招待コード</label><div class="code-row"><input class="input code-input" value="${esc(a.teamCode)}" disabled><button class="mini-btn" onclick="copyCode()">コピー</button></div><label class="label">名前</label><input id="profileName" class="input" value="${esc(a.displayName)}"><label class="label">役割</label><select id="profileRole" class="input">${roleOptions(a.role)}</select><label class="label">ポジション</label><select id="profilePosition" class="input">${positionOptions(a.position||'未設定')}</select><label class="label">学年</label><select id="profileGrade" class="input">${gradeOptions(a.grade||'未設定')}</select><div class="actions"><button class="btn primary" onclick="saveProfile()">保存</button></div></div><div class="form-card"><b>オンライン共有</b><p class="subtitle" style="margin-top:8px">チームコードと権限の土台を追加しました。次の段階でオンラインデータベースへ接続し、複数スマホへ同時反映します。</p></div><div class="actions"><button class="btn danger" onclick="resetAll()">この端末の登録を削除</button></div>`; }
+function menuBack(title,eyebrow='SETTINGS'){
+ return `<div class="settings-page-head"><button class="settings-back" onclick="go('menu')">‹</button><div><small>${eyebrow}</small><h2>${title}</h2></div></div>`;
+}
+function settingsCard(title,subtitle,body){
+ return `<section class="settings-section-card"><div class="settings-section-title"><h3>${title}</h3>${subtitle?`<p>${subtitle}</p>`:''}</div>${body}</section>`;
+}
+function teamInfoView(){
+ const a=loadAccount();
+ return `<section class="settings-detail-page">${menuBack('チーム情報','TEAM SETTINGS')}
+ ${settingsCard('基本情報','チーム全体に反映される情報です。',`
+   <label class="settings-field"><span>チーム名</span><input id="teamInfoName" class="input" value="${esc(a.teamName)}"></label>
+   <label class="settings-field"><span>学校名・団体名</span><input id="teamInfoSchool" class="input" value="${esc(a.schoolName||'')}" placeholder="例：Alia高校"></label>
+   <label class="settings-field"><span>カテゴリー</span><select id="teamInfoCategory" class="input">${optionList(CATEGORIES,a.category||'未設定')}</select></label>
+   <label class="settings-field"><span>チームレベル</span><select id="teamInfoLevel" class="input">${optionList(TEAM_LEVELS,a.teamLevel||'未設定')}</select></label>
+ `)}
+ <div class="settings-actions"><button class="btn primary" onclick="saveTeamInfo()">変更を保存</button></div>
+ ${settingsCard('チーム管理','削除すると、この端末のチーム情報と履歴が削除されます。',`<button class="settings-danger-row" onclick="confirmTeamReset()"><span>このチームを削除</span><em>›</em></button>`)}
+ </section>`;
+}
+function myProfileView(){
+ const a=loadAccount();
+ return `<section class="settings-detail-page">${menuBack('マイプロフィール','MY PROFILE')}
+ ${settingsCard('あなたの情報','Aliaの提案やメンバー表示に使います。',`
+   <label class="settings-field"><span>名前</span><input id="myProfileName" class="input" value="${esc(a.displayName)}"></label>
+   <label class="settings-field"><span>役割</span><select id="myProfileRole" class="input">${roleOptions(a.role)}</select></label>
+   <label class="settings-field"><span>ポジション</span><select id="myProfilePosition" class="input">${positionOptions(a.position||'未設定')}</select></label>
+   <label class="settings-field"><span>学年</span><select id="myProfileGrade" class="input">${gradeOptions(a.grade||'未設定')}</select></label>
+ `)}
+ <div class="settings-actions"><button class="btn primary" onclick="saveMyProfile()">変更を保存</button></div>
+ </section>`;
+}
+function dataManagementView(){
+ return `<section class="settings-detail-page">${menuBack('データ管理','DATA MANAGEMENT')}
+ ${settingsCard('バックアップ','この端末に保存されたTEAM Theoryのデータを管理します。',`
+   <button class="settings-menu-row" onclick="exportTeamData()"><span><b>データを書き出す</b><small>JSON形式でバックアップします</small></span><em>›</em></button>
+   <label class="settings-menu-row file-row"><span><b>データを読み込む</b><small>書き出したバックアップを復元します</small></span><input type="file" accept="application/json" onchange="importTeamData(event)"><em>›</em></label>
+ `)}
+ ${settingsCard('端末データ','削除操作は元に戻せません。',`<button class="settings-danger-row" onclick="confirmAllReset()"><span>この端末の全データを削除</span><em>›</em></button>`)}
+ </section>`;
+}
+function getUiPrefs(){ try{return JSON.parse(localStorage.getItem('teamTheoryUiPrefs')||'{}')}catch(e){return{}} }
+function saveUiPrefs(p){ localStorage.setItem('teamTheoryUiPrefs',JSON.stringify({...getUiPrefs(),...p})); applyUiPrefs(); }
+function applyUiPrefs(){ const p=getUiPrefs(); document.documentElement.dataset.fontSize=p.fontSize||'normal'; document.documentElement.dataset.motion=p.motion===false?'off':'on'; }
+function aliaSettingsView(){
+ const p=getUiPrefs();
+ return `<section class="settings-detail-page">${menuBack('Alia設定','ALIA SETTINGS')}
+ ${settingsCard('提案スタイル','Alia Adviceの表示方法を調整します。',`
+   <label class="settings-field"><span>提案レベル</span><select id="aliaLevel" class="input"><option ${p.aliaLevel==='やさしい'?'selected':''}>やさしい</option><option ${!p.aliaLevel||p.aliaLevel==='標準'?'selected':''}>標準</option><option ${p.aliaLevel==='専門的'?'selected':''}>専門的</option></select></label>
+   <label class="settings-field"><span>提案の詳しさ</span><select id="aliaDetail" class="input"><option ${p.aliaDetail==='簡潔'?'selected':''}>簡潔</option><option ${!p.aliaDetail||p.aliaDetail==='標準'?'selected':''}>標準</option><option ${p.aliaDetail==='詳しく'?'selected':''}>詳しく</option></select></label>
+   <label class="settings-toggle-row"><span><b>通知</b><small>Aliaからの振り返り通知</small></span><input id="aliaNotify" type="checkbox" ${p.aliaNotify?'checked':''}></label>
+ `)}
+ <div class="settings-actions"><button class="btn primary" onclick="saveAliaSettings()">設定を保存</button></div>
+ </section>`;
+}
+function displaySettingsView(){
+ const p=getUiPrefs();
+ return `<section class="settings-detail-page">${menuBack('表示設定','DISPLAY')}
+ ${settingsCard('見やすさ','画面表示を端末に合わせて調整します。',`
+   <label class="settings-field"><span>文字サイズ</span><select id="displayFont" class="input"><option value="small" ${p.fontSize==='small'?'selected':''}>小さめ</option><option value="normal" ${!p.fontSize||p.fontSize==='normal'?'selected':''}>標準</option><option value="large" ${p.fontSize==='large'?'selected':''}>大きめ</option></select></label>
+   <label class="settings-toggle-row"><span><b>アニメーション</b><small>画面内の動きを表示します</small></span><input id="displayMotion" type="checkbox" ${p.motion!==false?'checked':''}></label>
+ `)}
+ <div class="settings-actions"><button class="btn primary" onclick="saveDisplaySettings()">設定を保存</button></div>
+ </section>`;
+}
+function helpView(){
+ return `<section class="settings-detail-page">${menuBack('使い方','HELP')}
+ ${settingsCard('基本の流れ','TEAM Theoryは次の順番で使います。',`<ol class="help-steps"><li><b>チームを選ぶ</b><span>トップ画面から保存したチームを開きます。</span></li><li><b>ミーティングを始める</b><span>ポジション別・学年別・全体から選びます。</span></li><li><b>意見を集める</b><span>メンバーの意見をそのまま記録します。</span></li><li><b>Alia Adviceを見る</b><span>選手の意見をもとに次の一歩を確認します。</span></li></ol>`)}
+ ${settingsCard('よくある質問','',`<details><summary>履歴はチームごとに分かれますか？</summary><p>はい。現在選択中のチームの履歴だけを表示します。</p></details><details><summary>招待コードはどこにありますか？</summary><p>メニューの「招待コード」から確認できます。</p></details>`)}
+ </section>`;
+}
+function appInfoView(){
+ return `<section class="settings-detail-page">${menuBack('アプリ情報','ABOUT')}
+ ${settingsCard('TEAM Theory','教わるから、考えるへ。',`<div class="app-info-version"><small>VERSION</small><b>0.49.0</b></div><p class="app-info-copy">選手の意見を主役に、チームの話し合いと成長を支えるアプリです。</p>`)}
+ ${settingsCard('情報','',`<button class="settings-menu-row" onclick="toast('更新履歴は準備中です')"><span><b>更新履歴</b></span><em>›</em></button><button class="settings-menu-row" onclick="toast('利用規約は準備中です')"><span><b>利用規約</b></span><em>›</em></button><button class="settings-menu-row" onclick="toast('プライバシーポリシーは準備中です')"><span><b>プライバシーポリシー</b></span><em>›</em></button>`)}
+ </section>`;
+}
+function saveTeamInfo(){
+ const a=loadAccount();
+ a.teamName=document.getElementById('teamInfoName')?.value.trim()||a.teamName;
+ a.schoolName=document.getElementById('teamInfoSchool')?.value.trim()||'';
+ a.category=document.getElementById('teamInfoCategory')?.value||'未設定';
+ a.teamLevel=document.getElementById('teamInfoLevel')?.value||'未設定';
+ saveAccount(a); toast('チーム情報を保存しました'); render();
+}
+function saveMyProfile(){
+ const a=loadAccount();
+ a.displayName=document.getElementById('myProfileName')?.value.trim()||a.displayName;
+ a.role=document.getElementById('myProfileRole')?.value||a.role;
+ a.position=document.getElementById('myProfilePosition')?.value||'未設定';
+ a.grade=document.getElementById('myProfileGrade')?.value||'未設定';
+ saveAccount(a);
+ const members=loadMembers(); const me=members.find(m=>m.teamId===a.teamId&&m.isCurrent);
+ if(me){Object.assign(me,{displayName:a.displayName,role:a.role,position:a.position,grade:a.grade});saveMembers(members)}
+ toast('プロフィールを保存しました'); render();
+}
+function saveAliaSettings(){
+ saveUiPrefs({aliaLevel:document.getElementById('aliaLevel')?.value||'標準',aliaDetail:document.getElementById('aliaDetail')?.value||'標準',aliaNotify:!!document.getElementById('aliaNotify')?.checked});
+ toast('Alia設定を保存しました');
+}
+function saveDisplaySettings(){
+ saveUiPrefs({fontSize:document.getElementById('displayFont')?.value||'normal',motion:!!document.getElementById('displayMotion')?.checked});
+ toast('表示設定を保存しました');
+}
+function exportTeamData(){
+ const data={version:'0.49.0',exportedAt:new Date().toISOString(),localStorage:{}};
+ for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i); if(k&&k.startsWith('teamTheory')) data.localStorage[k]=localStorage.getItem(k)}
+ const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`TEAM_Theory_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url); toast('バックアップを書き出しました');
+}
+function importTeamData(event){
+ const file=event.target.files?.[0]; if(!file)return; const reader=new FileReader(); reader.onload=()=>{try{const data=JSON.parse(reader.result); Object.entries(data.localStorage||{}).forEach(([k,v])=>localStorage.setItem(k,v)); toast('バックアップを読み込みました'); setTimeout(()=>location.reload(),400)}catch(e){alert('バックアップを読み込めませんでした。')}}; reader.readAsText(file);
+}
+function confirmTeamReset(){ if(confirm('現在のチームを削除しますか？\n履歴と設定も削除されます。')) resetAll(); }
+function confirmAllReset(){ if(confirm('この端末のTEAM Theoryデータをすべて削除しますか？')){localStorage.clear();location.reload();} }
 
-function createTeamAccount(){ const teamName=document.getElementById('teamName').value.trim(); const displayName=document.getElementById('displayName').value.trim(); const role=document.getElementById('role').value; const schoolName=document.getElementById('schoolName').value.trim(); const category=document.getElementById('category').value; const teamLevel=document.getElementById('teamLevel').value; const position=document.getElementById('position').value; const grade=document.getElementById('grade').value; if(!teamName||!displayName){toast('チーム名と名前を入力してください');return} saveAccount({teamId:uid('t'),teamName,schoolName,category,teamLevel,teamCode:teamCode(),displayName,role,position,grade,createdAt:Date.now(),mode:'owner'}); go('home'); }
-function joinTeamAccount(){ const code=document.getElementById('joinCode').value.trim().toUpperCase(); const teamName=document.getElementById('joinTeamName').value.trim(); const displayName=document.getElementById('joinName').value.trim(); const role=document.getElementById('joinRole').value; const position=document.getElementById('joinPosition').value; const grade=document.getElementById('joinGrade').value; if(code.length!==6||!teamName||!displayName){toast('6文字のコード・チーム名・名前を入力してください');return} saveAccount({teamId:'remote_'+code,teamName,teamCode:code,displayName,role,position,grade,createdAt:Date.now(),mode:'member'}); go('home'); }
-function copyCode(){ const code=loadAccount()?.teamCode||''; navigator.clipboard?.writeText(code).then(()=>toast('招待コードをコピーしました')).catch(()=>toast(`招待コード：${code}`)); }
-function saveProfile(){ const a=loadAccount(); a.teamName=document.getElementById('profileTeamName')?.value.trim()||a.teamName; a.schoolName=document.getElementById('profileSchoolName')?.value.trim()||''; a.category=document.getElementById('profileCategory')?.value||'未設定'; a.teamLevel=document.getElementById('profileTeamLevel')?.value||'未設定'; a.displayName=document.getElementById('profileName').value.trim()||a.displayName; a.role=document.getElementById('profileRole').value; a.position=document.getElementById('profilePosition').value; a.grade=document.getElementById('profileGrade').value; saveAccount(a); const members=loadMembers(); const me=members.find(m=>m.teamId===a.teamId&&m.isCurrent); if(me){Object.assign(me,{displayName:a.displayName,role:a.role,position:a.position,grade:a.grade});saveMembers(members)} render(); toast('チーム・プロフィール情報を保存しました'); }
-function startType(type){state.selectedType=type;state.view='select';render()}
 function createMeeting(group){ const a=loadAccount(); const meetings=loadMeetings(); const m={id:uid(),teamId:a.teamId,type:state.selectedType,group,themeCategory:'',theme:'',aliaContext:null,entries:[],summary:'',status:'open',createdAt:Date.now(),ownerName:a.displayName,ownerPosition:a.position||'未設定',ownerGrade:a.grade||'未設定'}; meetings.push(m);saveMeetings(meetings);state.currentMeetingId=m.id;state.view='room';render(); }
 function getCurrent(){return loadMeetings().find(m=>m.id===state.currentMeetingId)}
 function mutate(fn){const ms=loadMeetings();const i=ms.findIndex(m=>m.id===state.currentMeetingId);if(i<0)return;fn(ms[i]);saveMeetings(ms);}
@@ -1062,6 +1177,8 @@ function resetAll(){
 }
 function toast(msg){const el=document.createElement('div');el.className='toast';el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),1800)}
 
+applyUiPrefs();
+
 if ('serviceWorker' in navigator) {
   let refreshing = false;
   navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -1069,7 +1186,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.48.0', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.49.0', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
