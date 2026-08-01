@@ -248,9 +248,39 @@ function classifyAliaContext(m){
   const gradeText=m?.type==='grade'?(m.group||'未設定'):(m?.ownerGrade||account.grade||'未設定');
   const positionText=m?.type==='position'?(m.group||'未設定'):(m?.ownerPosition||account.position||'未設定');
   const audience=m?.type==='all'?'対象：チーム全体':`対象：${positionText}・${gradeText}`;
-  return {domainId:domain.id, domainLabel:domain.label, confidence, audience, source:selected&&selected!=='other'?'選択テーマ':'内容判定'};
+  const level=aliaTeamLevel(account);
+  return {domainId:domain.id, domainLabel:domain.label, confidence, audience, source:selected&&selected!=='other'?'選択テーマ':'内容判定', levelId:level.id, levelLabel:level.label, meetingType:m?.type||'all'};
 }
 
+
+
+function aliaTeamLevel(account){
+  const raw=String(account?.teamLevel||account?.level||'').toLowerCase();
+  if(/全国|elite|advanced|強豪/.test(raw)) return {id:'advanced',label:'競技志向'};
+  if(/県|intermediate|中級/.test(raw)) return {id:'intermediate',label:'中級'};
+  if(/初心|beginner|初級/.test(raw)) return {id:'beginner',label:'初心者'};
+  return {id:'standard',label:'標準'};
+}
+function aliaEvidence(m,ctx){
+  const domain=ctx?.domainId||'goal';
+  const common={
+    volleyball_skill:['反復は回数だけでなく、成功条件と判断基準を決めて行う。','試合に近い状況で練習し、実行結果を記録して次の練習へつなげる。'],
+    strategy:['相手・自分たちの条件を観察し、使う場面を事前に共有する。','実行回数と結果を記録し、次の判断基準を更新する。'],
+    mental:['緊張を消すのではなく、呼吸やルーティンで注意を自分が操作できる行動へ戻す。','本番に近い状況を段階的に経験し、振り返りで再現できた行動を確認する。'],
+    lifestyle:['一度に多く変えず、記録できる小さな行動を1つ決めて継続日数を確認する。','睡眠・食事・時間管理は、普段の状態を記録してから無理のない改善を行う。'],
+    teamwork:['役割・合図・確認するタイミングを具体的に決め、全員が同じ言葉で実行する。','発言者だけでなく、聞き手の復唱や確認も行動として決める。'],
+    conditioning:['安全性を優先し、普段から試していない補給法や成分を本番だけで使わない。','体調や摂取内容を記録し、必要に応じて保護者・指導者・専門職へ相談する。'],
+    goal:['目標を行動へ分解し、期限・回数・確認方法を決める。','短い周期で振り返り、続けるか方法を変えるかをチームで判断する。']
+  };
+  return common[domain]||common.goal;
+}
+function toggleAliaEvidence(){
+  const el=document.getElementById('alia-evidence');
+  const btn=document.getElementById('alia-evidence-btn');
+  if(!el) return;
+  el.hidden=!el.hidden;
+  if(btn) btn.textContent=el.hidden?'根拠を見る':'根拠を閉じる';
+}
 
 function read(key, fallback){ try{return JSON.parse(localStorage.getItem(key)) ?? fallback}catch{return fallback} }
 function write(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
@@ -406,7 +436,7 @@ function welcomeView(){
          <p class="alia-tagline">教わるから、考えるへ。</p>
        </div>
      </div>
-     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.46.0" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.47.0" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
@@ -415,7 +445,7 @@ function welcomeView(){
    </div>
    <button class="welcome-utility" onclick="showTopSettingsNotice()"><span class="welcome-utility-icon">⚙</span><span>設定・その他</span><span class="welcome-utility-arrow">›</span></button>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.46.0</div>
+   <div class="welcome-version">Version 0.47.0</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -439,7 +469,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon">🏐</span><span>ポジション</span></label><select id="position" class="input create-input create-select">${positionOptions()}</select></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon">🎓</span><span>学年</span></label><select id="grade" class="input create-input create-select">${gradeOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.46.0" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.47.0" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -455,7 +485,7 @@ function joinTeamView(){
      <div class="join-field"><label class="join-label"><span class="join-label-icon shield-icon">★</span><span>役割</span></label><select id="joinRole" class="input join-input join-select">${roleOptions()}</select><small class="join-help">チーム内でのあなたの役割を選択してください。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon">🏐</span><span>ポジション</span></label><select id="joinPosition" class="input join-input join-select">${positionOptions()}</select></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon">🎓</span><span>学年</span></label><select id="joinGrade" class="input join-input join-select">${gradeOptions()}</select></div>
-     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.46.0" class="join-alia" alt="Alia"></div>
+     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.47.0" class="join-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions join-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon">⌂</span><span>トップ</span></button><button class="bottom-action join-action" onclick="joinTeamAccount()"><span>参加する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -517,8 +547,9 @@ function summaryView(){
  const aliaContext=classifyAliaContext(m);
  const adviceSections=gradeAwareSections(m,buildAdaptiveAdviceSections(m,plan));
  const methodSections=adviceSections.map(section=>`<div class="method-block adaptive-method-block"><strong>${esc(section.icon)} ${esc(section.label)}</strong><div>${esc(section.text)}</div></div>`).join('');
+ const evidenceItems=aliaEvidence(m,aliaContext).map(x=>`<li>${esc(x)}</li>`).join('');
  const sourceOpinions = m.entries.length ? m.entries.map((e,i)=>`<article class="summary-source-card"><div class="summary-source-number">${i+1}</div><div class="summary-source-body"><div class="summary-source-meta"><strong>${esc(e.name)}</strong><small>${new Date(e.createdAt||Date.now()).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}</small></div><p>${esc(e.text)}</p></div></article>`).join('') : '<div class="meeting-empty dark-empty"><span>♡</span><b>意見はまだありません</b><small>意見を入力すると、発言者と内容がここに残ります。</small></div>';
- return `<section class="summary-page"><h2 class="page-title">ミーティングまとめ</h2><div class="summary-source-section player-opinions-main"><div class="summary-panel-head player-voices-head"><div><small>PLAYER VOICES</small><h3>選手から出た意見</h3></div><span>${m.entries.length}件</span></div><div class="summary-source-list">${sourceOpinions}</div></div><div class="alia-plan-card"><div class="summary-panel-head alia-plan-head"><div><small>ALIA ADVICE</small></div><span class="alia-context-chip">${esc(aliaContext.domainLabel)}・${esc(aliaContext.audience)}</span></div><div class="action-plan-list"><div class="action-plan-card issue"><span class="action-plan-label">課題</span><div class="action-plan-answer">${esc(plan.issue)}</div></div><div class="action-plan-card action"><span class="action-plan-label">行動</span><div class="action-plan-answer">${esc(plan.action)}</div></div><div class="action-plan-card method"><span class="action-plan-label">方法</span><div class="action-plan-answer method-answer">${methodSections}</div></div></div></div><div class="summary-bottom-actions two-actions"><button class="btn back-action" onclick="state.view='room';render()">‹ 入力へ戻る</button><button class="btn gold" onclick="finalize()">確定して保存</button></div></section>`;
+ return `<section class="summary-page"><h2 class="page-title">ミーティングまとめ</h2><div class="summary-source-section player-opinions-main"><div class="summary-panel-head player-voices-head"><div><small>PLAYER VOICES</small><h3>選手から出た意見</h3></div><span>${m.entries.length}件</span></div><div class="summary-source-list">${sourceOpinions}</div></div><div class="alia-plan-card"><div class="summary-panel-head alia-plan-head"><div><small>ALIA ADVICE</small></div><span class="alia-context-chip">${esc(aliaContext.domainLabel)}・${esc(aliaContext.audience)}・${esc(aliaContext.levelLabel)}</span></div><div class="action-plan-list"><div class="action-plan-card issue"><span class="action-plan-label">課題</span><div class="action-plan-answer">${esc(plan.issue)}</div></div><div class="action-plan-card action"><span class="action-plan-label">行動</span><div class="action-plan-answer">${esc(plan.action)}</div></div><div class="action-plan-card method"><span class="action-plan-label">方法</span><div class="action-plan-answer method-answer">${methodSections}</div></div></div><button id="alia-evidence-btn" class="alia-evidence-toggle" onclick="toggleAliaEvidence()">根拠を見る</button><div id="alia-evidence" class="alia-evidence-panel" hidden><strong>提案の考え方</strong><ul>${evidenceItems}</ul><small>安全性と実行しやすさを優先した一般的な知見です。医療・栄養上の個別判断が必要な場合は専門家へ相談してください。</small></div></div><div class="summary-bottom-actions two-actions"><button class="btn back-action" onclick="state.view='room';render()">‹ 入力へ戻る</button><button class="btn gold" onclick="finalize()">確定して保存</button></div></section>`;
 }
 function historyView(){
  const ms=currentTeamMeetings().sort((a,b)=>b.createdAt-a.createdAt);
@@ -733,7 +764,7 @@ function membersView(){
 function menuView(){
   const a=loadAccount();
   return `<section class="menu-page">
-    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.46.0" alt="Alia"></div>
+    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.47.0" alt="Alia"></div>
     <div class="menu-list">
       ${menuItem('⇄','チームを切り替える','保存したチームを選択','goTop()')}
       ${menuItem('⌂','トップ画面へ戻る','チーム作成・参加・切り替え','goTop()')}
@@ -1002,7 +1033,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.46.0', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.47.0', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
