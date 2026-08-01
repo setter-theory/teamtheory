@@ -53,6 +53,48 @@ function themeCategoryLabel(type, value){
 }
 
 
+const ALIA_THEME_DOMAINS = [
+  {id:'volleyball_skill', label:'技術', keywords:/トス|セッター|ミドル|クイック|速攻|レセプション|サーブレシーブ|返球|サーブ|スパイク|アタック|ブロック|ディグ|レシーブ|フォーム|助走|打点/},
+  {id:'volleyball_tactics', label:'戦術・判断', keywords:/戦術|配球|判断|ローテーション|相手ブロック|攻撃|守備|コンビ|コース|ゲームプラン/},
+  {id:'mental', label:'メンタル', keywords:/緊張|不安|プレッシャー|自信|集中|気持ち|失敗が怖い|切り替え/},
+  {id:'teamwork', label:'チームワーク', keywords:/声|連携|コミュニケーション|雰囲気|仲間|協力|役割|信頼|伝え方|聞き方/},
+  {id:'leadership', label:'リーダーシップ', keywords:/キャプテン|副キャプテン|リーダー|引っ張る|まとめる|率先|指示/},
+  {id:'life', label:'学校生活・私生活', keywords:/私生活|生活習慣|生活態度|遅刻|夜更かし|スマホ|整理整頓|身だしなみ|挨拶/},
+  {id:'study', label:'勉強・両立', keywords:/勉強|学習|宿題|テスト|進路|両立|授業|提出物/},
+  {id:'conditioning', label:'コンディショニング', keywords:/睡眠|疲れ|疲労|休養|回復|体調|食事|栄養|水分|痛み|ケガ|怪我/},
+  {id:'goal', label:'目標・振り返り', keywords:/目標|大会|振り返り|反省|成長|達成|計画|次回/}
+];
+
+function classifyAliaContext(m){
+  const theme=(m?.theme||'').trim();
+  const voices=(m?.entries||[]).map(e=>e?.text||'').join(' ');
+  const text=`${theme} ${voices}`;
+  const selected=m?.themeCategory||'';
+  const categoryMap={
+    technique:'volleyball_skill', tactics:'volleyball_tactics', coordination:'teamwork', mental:'mental', conditioning:'conditioning',
+    role:'leadership', life:'life', time:'study', relationship:'teamwork', goal:'goal',
+    team_issue:'teamwork', teamwork:'teamwork', rule:'teamwork'
+  };
+  let domainId=categoryMap[selected]||'';
+  let confidence=selected && selected!=='other' ? 0.85 : 0.45;
+  if(!domainId || selected==='other'){
+    let best=null; let bestScore=0;
+    for(const domain of ALIA_THEME_DOMAINS){
+      const hits=(text.match(new RegExp(domain.keywords.source,'g'))||[]).length;
+      if(hits>bestScore){ bestScore=hits; best=domain; }
+    }
+    if(best){ domainId=best.id; confidence=Math.min(0.95,0.55+bestScore*0.12); }
+  }
+  if(!domainId){
+    domainId=m?.type==='position'?'volleyball_skill':m?.type==='grade'?'teamwork':'goal';
+    confidence=0.4;
+  }
+  const domain=ALIA_THEME_DOMAINS.find(d=>d.id===domainId)||ALIA_THEME_DOMAINS[0];
+  const audience=m?.type==='position'?`ポジション：${m.group||'未設定'}`:m?.type==='grade'?`学年：${m.group||'未設定'}`:'対象：チーム全体';
+  return {domainId:domain.id, domainLabel:domain.label, confidence, audience, source:selected&&selected!=='other'?'選択テーマ':'内容判定'};
+}
+
+
 function read(key, fallback){ try{return JSON.parse(localStorage.getItem(key)) ?? fallback}catch{return fallback} }
 function write(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
 function looksLikeMeeting(item){
@@ -214,7 +256,7 @@ function welcomeView(){
          <p class="alia-tagline">教わるから、考えるへ。</p>
        </div>
      </div>
-     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.43" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.44" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
@@ -243,7 +285,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon">♟</span><span>チーム名</span></label><input id="teamName" class="input create-input" placeholder="例：Alia高校"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon person-icon">●</span><span>あなたの名前</span></label><input id="displayName" class="input create-input" placeholder="例：Alia"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.43" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.44" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -316,10 +358,11 @@ function roomView(){
 function summaryView(){
  const m=getCurrent(); if(!m) return '<div class="empty">ミーティングが見つかりません。</div>';
  const plan=parseActionPlan(m.summary || makeSummary(m),m);
+ const aliaContext=classifyAliaContext(m);
  const adviceSections=buildAdaptiveAdviceSections(m,plan);
  const methodSections=adviceSections.map(section=>`<div class="method-block adaptive-method-block"><strong>${esc(section.icon)} ${esc(section.label)}</strong><div>${esc(section.text)}</div></div>`).join('');
  const sourceOpinions = m.entries.length ? m.entries.map((e,i)=>`<article class="summary-source-card"><div class="summary-source-number">${i+1}</div><div class="summary-source-body"><div class="summary-source-meta"><strong>${esc(e.name)}</strong><small>${new Date(e.createdAt||Date.now()).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}</small></div><p>${esc(e.text)}</p></div></article>`).join('') : '<div class="meeting-empty dark-empty"><span>♡</span><b>意見はまだありません</b><small>意見を入力すると、発言者と内容がここに残ります。</small></div>';
- return `<section class="summary-page"><h2 class="page-title">ミーティングまとめ</h2><div class="summary-source-section player-opinions-main"><div class="summary-panel-head player-voices-head"><div><small>PLAYER VOICES</small><h3>選手から出た意見</h3></div><span>${m.entries.length}件</span></div><div class="summary-source-list">${sourceOpinions}</div></div><div class="alia-plan-card"><div class="summary-panel-head alia-plan-head"><div><small>ALIA ADVICE</small></div></div><div class="action-plan-list"><div class="action-plan-card issue"><span class="action-plan-label">課題</span><div class="action-plan-answer">${esc(plan.issue)}</div></div><div class="action-plan-card action"><span class="action-plan-label">行動</span><div class="action-plan-answer">${esc(plan.action)}</div></div><div class="action-plan-card method"><span class="action-plan-label">方法</span><div class="action-plan-answer method-answer">${methodSections}</div></div></div></div><div class="summary-bottom-actions two-actions"><button class="btn back-action" onclick="state.view='room';render()">‹ 入力へ戻る</button><button class="btn gold" onclick="finalize()">確定して保存</button></div></section>`;
+ return `<section class="summary-page"><h2 class="page-title">ミーティングまとめ</h2><div class="summary-source-section player-opinions-main"><div class="summary-panel-head player-voices-head"><div><small>PLAYER VOICES</small><h3>選手から出た意見</h3></div><span>${m.entries.length}件</span></div><div class="summary-source-list">${sourceOpinions}</div></div><div class="alia-plan-card"><div class="summary-panel-head alia-plan-head"><div><small>ALIA ADVICE</small></div><span class="alia-context-chip">${esc(aliaContext.domainLabel)}・${esc(aliaContext.audience)}</span></div><div class="action-plan-list"><div class="action-plan-card issue"><span class="action-plan-label">課題</span><div class="action-plan-answer">${esc(plan.issue)}</div></div><div class="action-plan-card action"><span class="action-plan-label">行動</span><div class="action-plan-answer">${esc(plan.action)}</div></div><div class="action-plan-card method"><span class="action-plan-label">方法</span><div class="action-plan-answer method-answer">${methodSections}</div></div></div></div><div class="summary-bottom-actions two-actions"><button class="btn back-action" onclick="state.view='room';render()">‹ 入力へ戻る</button><button class="btn gold" onclick="finalize()">確定して保存</button></div></section>`;
 }
 function historyView(){
  const ms=currentTeamMeetings().sort((a,b)=>b.createdAt-a.createdAt);
@@ -514,12 +557,12 @@ function joinTeamAccount(){ const code=document.getElementById('joinCode').value
 function copyCode(){ const code=loadAccount()?.teamCode||''; navigator.clipboard?.writeText(code).then(()=>toast('招待コードをコピーしました')).catch(()=>toast(`招待コード：${code}`)); }
 function saveProfile(){ const a=loadAccount(); a.displayName=document.getElementById('profileName').value.trim()||a.displayName; a.role=document.getElementById('profileRole').value; saveAccount(a); render(); toast('プロフィールを保存しました'); }
 function startType(type){state.selectedType=type;state.view='select';render()}
-function createMeeting(group){ const a=loadAccount(); const meetings=loadMeetings(); const m={id:uid(),teamId:a.teamId,type:state.selectedType,group,themeCategory:'',theme:'',entries:[],summary:'',status:'open',createdAt:Date.now(),ownerName:a.displayName}; meetings.push(m);saveMeetings(meetings);state.currentMeetingId=m.id;state.view='room';render(); }
+function createMeeting(group){ const a=loadAccount(); const meetings=loadMeetings(); const m={id:uid(),teamId:a.teamId,type:state.selectedType,group,themeCategory:'',theme:'',aliaContext:null,entries:[],summary:'',status:'open',createdAt:Date.now(),ownerName:a.displayName}; meetings.push(m);saveMeetings(meetings);state.currentMeetingId=m.id;state.view='room';render(); }
 function getCurrent(){return loadMeetings().find(m=>m.id===state.currentMeetingId)}
 function mutate(fn){const ms=loadMeetings();const i=ms.findIndex(m=>m.id===state.currentMeetingId);if(i<0)return;fn(ms[i]);saveMeetings(ms);}
-function updateThemeCategory(v){mutate(m=>m.themeCategory=v);render()}
-function updateTheme(v){mutate(m=>m.theme=v)}
-function addEntry(){const m=getCurrent();const category=document.getElementById('themeCategory')?.value||m?.themeCategory||'';const theme=document.getElementById('theme')?.value.trim()||m?.theme||'';const name=document.getElementById('name').value.trim();const text=document.getElementById('text').value.trim();if(!category){toast('今日のテーマを選択してください');return}if(!theme){toast('具体的なテーマを入力してください');return}if(!name||!text){toast('名前と意見を入力してください');return}mutate(item=>{item.themeCategory=category;item.theme=theme;item.entries.push({name,text,createdAt:Date.now()})});render();toast('意見を追加しました')}
+function updateThemeCategory(v){mutate(m=>{m.themeCategory=v;m.aliaContext=classifyAliaContext(m)});render()}
+function updateTheme(v){mutate(m=>{m.theme=v;m.aliaContext=classifyAliaContext(m)})}
+function addEntry(){const m=getCurrent();const category=document.getElementById('themeCategory')?.value||m?.themeCategory||'';const theme=document.getElementById('theme')?.value.trim()||m?.theme||'';const name=document.getElementById('name').value.trim();const text=document.getElementById('text').value.trim();if(!category){toast('今日のテーマを選択してください');return}if(!theme){toast('具体的なテーマを入力してください');return}if(!name||!text){toast('名前と意見を入力してください');return}mutate(item=>{item.themeCategory=category;item.theme=theme;item.entries.push({name,text,createdAt:Date.now()});item.aliaContext=classifyAliaContext(item)});render();toast('意見を追加しました')}
 function buildAdaptiveAdviceSections(m,plan){
  const theme=(m.theme||'').trim();
  const voices=(m.entries||[]).map(e=>e.text||'').join(' ');
@@ -697,7 +740,8 @@ function makeSummary(m){
  const plan=buildActionPlan(m);
  const points=(m.entries||[]).length ? m.entries.slice(0,20).map((e,i)=>`${i+1}. ${e.text}（${e.name}）`).join('\n') : 'まだ意見はありません。';
  const categoryLabel=themeCategoryLabel(m.type,m.themeCategory||'');
- return `分類：${categoryLabel||'未選択'}\nテーマ：${theme}\n\n【課題】\n${plan.issue}\n\n【行動】\n${plan.action}\n\n【方法】\n${plan.method}\n\n【元の発言】\n${points}`;
+ const ctx=classifyAliaContext(m);
+ return `分類：${categoryLabel||'未選択'}\nAI分類：${ctx.domainLabel}（${ctx.audience}）\nテーマ：${theme}\n\n【課題】\n${plan.issue}\n\n【行動】\n${plan.action}\n\n【方法】\n${plan.method}\n\n【元の発言】\n${points}`;
 }
 function composeSummary(){
  const m=getCurrent();
@@ -705,7 +749,8 @@ function composeSummary(){
  const plan=parseActionPlan(m.summary || makeSummary(m),m);
  const points=(m.entries||[]).length ? m.entries.map((e,i)=>`${i+1}. ${e.text}（${e.name}）`).join('\n') : 'まだ意見はありません。';
  const categoryLabel=themeCategoryLabel(m.type,m.themeCategory||'');
- return `分類：${categoryLabel||'未選択'}\nテーマ：${m.theme||'今回のテーマ'}\n\n【課題】\n${plan.issue}\n\n【行動】\n${plan.action}\n\n【方法】\n${plan.method}\n\n【元の発言】\n${points}`;
+ const ctx=classifyAliaContext(m);
+ return `分類：${categoryLabel||'未選択'}\nAI分類：${ctx.domainLabel}（${ctx.audience}）\nテーマ：${m.theme||'今回のテーマ'}\n\n【課題】\n${plan.issue}\n\n【行動】\n${plan.action}\n\n【方法】\n${plan.method}\n\n【元の発言】\n${points}`;
 }
 function openSummary(){state.view='summary';render()}
 function finalize(){const m=getCurrent();if(!m){toast('ミーティングが見つかりません');return}const s=composeSummary();mutate(item=>{item.summary=s;item.status='closed';item.closedAt=Date.now()});state.view='meetings';render();toast('ミーティングを保存しました')}
@@ -741,7 +786,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.43', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.44', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);

@@ -1287,3 +1287,7 @@ body:has(.alia-home .saved-teams-panel){overflow:hidden!important}
 @media(max-width:390px){
  .growth-header h2{font-size:28px}.growth-level-card,.growth-panel{border-radius:23px}.growth-panel{padding:17px}.growth-stat{min-height:94px;padding:13px}.growth-stat strong{font-size:29px}.growth-range button{padding:6px;font-size:9px}
 }
+
+
+.alia-context-chip{display:inline-flex;align-items:center;max-width:58%;padding:6px 10px;border:1px solid rgba(255,110,190,.45);border-radius:999px;background:rgba(255,86,175,.10);color:#ffd5ec;font-size:11px;font-weight:800;line-height:1.2;text-align:right}
+@media (max-width:390px){.alia-context-chip{max-width:52%;font-size:10px;padding:5px 8px}}
