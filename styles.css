@@ -87,3 +87,45 @@ button,input,textarea,select{font:inherit}.app-shell{width:100%;max-width:480px;
   .alia-title-block h1{font-size:36px!important}
   .alia-title-block{margin-bottom:10px}
 }
+
+
+/* v0.10 Alia standalone character on welcome */
+.alia-title-block{margin-bottom:2px}
+.alia-title-block .alia-tagline{margin:8px 0 0!important}
+.alia-character-stage{
+  width:min(100%,440px);
+  min-height:220px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:4px;
+  margin:0 auto 8px;
+  position:relative;
+  z-index:1;
+}
+.alia-character{
+  width:210px;
+  max-height:230px;
+  object-fit:contain;
+  object-position:center bottom;
+  border-radius:0;
+  box-shadow:none;
+  margin:0 -10px -4px 0;
+  filter:drop-shadow(0 14px 24px rgba(0,0,0,.32));
+}
+.alia-character-stage .alia-bubble{
+  align-self:center;
+  width:190px;
+  max-width:48%;
+  margin:0 -2px 30px 0;
+  flex:0 0 auto;
+}
+.alia-character-stage .alia-bubble::after{right:-12px;bottom:28px}
+@media(max-width:390px){
+  .alia-home{padding-top:46px}
+  .alia-character-stage{min-height:190px;gap:0}
+  .alia-character{width:176px;max-height:200px;margin-right:-8px}
+  .alia-character-stage .alia-bubble{width:168px;max-width:50%;padding:12px 13px;margin-bottom:24px}
+  .alia-character-stage .alia-bubble strong{font-size:18px}
+  .alia-character-stage .alia-bubble span{font-size:11px}
+}

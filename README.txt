@@ -1,6 +1,6 @@
-TEAM Theory Prototype 0.9
+TEAM Theory Prototype 0.10
 
 ・ホーム画面の視線順を「タイトル → Alia → キャッチコピー → メニュー」に調整
 ・Aliaの吹き出しをキャラクター横に維持
-・Version 0.9を右下に表示
+・Version 0.10を右下に表示
 ・既存機能と正式アイコンを維持
