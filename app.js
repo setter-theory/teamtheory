@@ -275,38 +275,31 @@ function migrateLegacyMeetingOwnership(){
   const meetings=loadMeetings();
   if(!meetings.length) return;
   const validIds=new Set(accounts.map(a=>a.teamId));
-  const active=loadAccount();
-  if(!active) return;
+  const legacyOwnerId=localStorage.getItem('tt_legacy_history_owner') || accounts[0].teamId;
+  const legacyOwner=accounts.find(a=>a.teamId===legacyOwnerId) || accounts[0];
+  localStorage.setItem('tt_legacy_history_owner', legacyOwner.teamId);
   let changed=false;
-  let migrated=meetings.map(m=>{
-    // v0.38以前の履歴・旧ID・IDなし履歴を現在の保存チームへ引き継ぐ。
+  const migrated=meetings.map(m=>{
+    // teamIdを持たない旧履歴だけを、一度だけ最初の保存チームへ移行する。
+    // チーム切替のたびに現在チームへ付け替えない。
     if(!m.teamId || !validIds.has(m.teamId)){
       changed=true;
-      return {...m,teamId:active.teamId,teamName:m.teamName||active.teamName};
+      return {...m,teamId:legacyOwner.teamId,teamName:m.teamName||legacyOwner.teamName};
     }
-    if(!m.teamName){ changed=true; return {...m,teamName:(accounts.find(a=>a.teamId===m.teamId)||active).teamName}; }
+    if(!m.teamName){
+      const owner=accounts.find(a=>a.teamId===m.teamId);
+      if(owner){ changed=true; return {...m,teamName:owner.teamName}; }
+    }
     return m;
   });
-  // 保存チームが1つだけなら、過去履歴はすべてそのチームのものとして復旧する。
-  if(accounts.length===1 && migrated.some(m=>m.teamId!==active.teamId)){
-    migrated=migrated.map(m=>({...m,teamId:active.teamId,teamName:active.teamName||m.teamName}));
-    changed=true;
-  }
   if(changed) saveMeetings(migrated);
 }
 function currentTeamMeetings(){
-  const a=loadAccount();
-  if(!a) return loadMeetings();
+  const active=loadAccount();
+  if(!active) return [];
   migrateLegacyMeetingOwnership();
-  const all=loadMeetings();
-  const own=all.filter(m=>m.teamId===a.teamId);
-  const accounts=loadAccounts();
-  // v0.38以前はチーム情報を持たない履歴が多いため、最初に保存したチームでは
-  // 旧履歴をまとめて確認できるようにする。新規作成分はteamIdで分離される。
-  if(accounts[0] && accounts[0].teamId===a.teamId && own.length<all.length){
-    return all;
-  }
-  return own;
+  // 履歴は必ず現在選択中のteamIdだけを表示する。
+  return loadMeetings().filter(m=>m.teamId===active.teamId);
 }
 function uid(prefix='m'){ return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
 function teamCode(){ return Math.random().toString(36).replace(/[^a-z0-9]/g,'').slice(0,6).toUpperCase(); }
@@ -361,7 +354,7 @@ function welcomeView(){
          <p class="alia-tagline">教わるから、考えるへ。</p>
        </div>
      </div>
-     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.44.2" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.44.3" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
@@ -370,7 +363,7 @@ function welcomeView(){
    </div>
    <button class="welcome-utility" onclick="showTopSettingsNotice()"><span class="welcome-utility-icon">⚙</span><span>設定・その他</span><span class="welcome-utility-arrow">›</span></button>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.44.2</div>
+   <div class="welcome-version">Version 0.44.3</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -390,7 +383,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon">♟</span><span>チーム名</span></label><input id="teamName" class="input create-input" placeholder="例：Alia高校"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon person-icon">●</span><span>あなたの名前</span></label><input id="displayName" class="input create-input" placeholder="例：Alia"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.44.2" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.44.3" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -906,7 +899,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.44.2', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.44.3', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
