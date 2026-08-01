@@ -25,7 +25,7 @@ function esc(s=''){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&l
 function shell(content, active='home'){
   const a=loadAccount();
   const team=a?.teamName || 'TEAM Theory';
-  return `<div class="topbar"><div class="brand"><img class="brand-icon" src="./icons/icon-192.png?v=0.12" alt=""><div><h1>TEAM Theory</h1><div class="team-name">${esc(team)}</div></div><div class="version">Prototype 0.13</div></div></div>
+  return `<div class="topbar"><div class="brand"><img class="brand-icon" src="./icons/icon-192.png?v=0.12" alt=""><div><h1>TEAM Theory</h1><div class="team-name">${esc(team)}</div></div><div class="version">Prototype 0.15</div></div></div>
   <main class="content">${content}</main>
   <nav class="bottom-nav">
     ${nav('home','⌂','ホーム',active)}${nav('meetings','▣','履歴',active)}${nav('growth','↗','成長',active)}${nav('profile','●','設定',active)}
@@ -61,18 +61,20 @@ function welcomeView(){
      <div class="alia-feather alia-feather-1">❧</div>
      <div class="alia-feather alia-feather-2">❧</div>
      <div class="alia-thought">
-       <i class="cloud-lobe l1"></i><i class="cloud-lobe l2"></i><i class="cloud-lobe l3"></i><i class="cloud-lobe l4"></i><i class="cloud-lobe l5"></i><i class="cloud-lobe l6"></i>
+       <svg class="thought-cloud" viewBox="0 0 320 220" aria-hidden="true">
+         <path d="M74 196C34 196 10 171 15 139C-3 116 8 78 40 66C41 31 76 12 105 28C129 1 178 5 196 34C226 15 268 34 270 69C309 76 323 112 304 139C311 173 280 199 244 194C225 221 181 224 157 202C132 223 91 220 74 196Z"/>
+       </svg>
        <span class="thought-dot thought-dot-1"></span><span class="thought-dot thought-dot-2"></span><span class="thought-dot thought-dot-3"></span>
-       <strong>Alia</strong><span>今日も最高のチームにしようね！</span>
+       <div class="thought-copy"><strong>Alia</strong><span>今日も最高のチームに<br>しようね！</span></div>
      </div>
-     <img class="alia-character" src="./icons/alia-standalone.png?v=0.14" alt="Alia">
+     <img class="alia-character" src="./icons/alia-standalone.png?v=0.15" alt="Alia">
    </div>
    <div class="welcome-actions">
      <button class="welcome-action create" onclick="go('createTeam')"><span class="action-icon">👥</span><span><b>チームで始める</b><small>代表者はチームを作成。選手は招待コードで参加します。</small></span><span class="action-arrow">›</span></button>
      <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.14</div>
+   <div class="welcome-version">Version 0.15</div>
  </main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
