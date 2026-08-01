@@ -4,6 +4,8 @@ const state = {
   selectedGroup: null,
   currentMeetingId: null,
   growthRange: 30,
+  growthMetric: 'score',
+  growthCompare: 'all',
 };
 
 const TYPES = {
@@ -404,7 +406,7 @@ function welcomeView(){
          <p class="alia-tagline">教わるから、考えるへ。</p>
        </div>
      </div>
-     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.45.0" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.46.0" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
@@ -413,7 +415,7 @@ function welcomeView(){
    </div>
    <button class="welcome-utility" onclick="showTopSettingsNotice()"><span class="welcome-utility-icon">⚙</span><span>設定・その他</span><span class="welcome-utility-arrow">›</span></button>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.45.0</div>
+   <div class="welcome-version">Version 0.46.0</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -437,7 +439,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon">🏐</span><span>ポジション</span></label><select id="position" class="input create-input create-select">${positionOptions()}</select></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon">🎓</span><span>学年</span></label><select id="grade" class="input create-input create-select">${gradeOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.45.0" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.46.0" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -453,7 +455,7 @@ function joinTeamView(){
      <div class="join-field"><label class="join-label"><span class="join-label-icon shield-icon">★</span><span>役割</span></label><select id="joinRole" class="input join-input join-select">${roleOptions()}</select><small class="join-help">チーム内でのあなたの役割を選択してください。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon">🏐</span><span>ポジション</span></label><select id="joinPosition" class="input join-input join-select">${positionOptions()}</select></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon">🎓</span><span>学年</span></label><select id="joinGrade" class="input join-input join-select">${gradeOptions()}</select></div>
-     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.45.0" class="join-alia" alt="Alia"></div>
+     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.46.0" class="join-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions join-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon">⌂</span><span>トップ</span></button><button class="bottom-action join-action" onclick="joinTeamAccount()"><span>参加する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -604,18 +606,23 @@ function teamScoreMetrics(meetings){
 function scoreForMeetingsUntil(meetings,until){
  return teamScoreMetrics(meetings.filter(m=>(m.closedAt||m.createdAt||0)<=until)).score;
 }
-function teamScoreTrendData(meetings,days){
+function metricValueForMeetings(meetings,metric){
+ const m=teamScoreMetrics(meetings);
+ return metric==='participation'?m.participation:metric==='speaking'?m.speaking:metric==='action'?m.action:metric==='continuity'?m.continuity:m.score;
+}
+function growthTrendData(meetings,days,metric='score'){
  const now=Date.now();
  const start=now-days*86400000;
- const count=days<=7?7:days<=30?10:12;
+ const count=days<=7?7:days<=30?10:days<=180?12:12;
  const span=(now-start)/count;
  return Array.from({length:count},(_,i)=>{
   const to=start+(i+1)*span;
+  const subset=meetings.filter(m=>(m.closedAt||m.createdAt||0)<=to);
   const d=new Date(to);
-  return {value:scoreForMeetingsUntil(meetings,to),label:days<=7?`${d.getMonth()+1}/${d.getDate()}`:days<=30?`${d.getDate()}日`:`${d.getMonth()+1}月`};
+  return {value:metricValueForMeetings(subset,metric),label:days<=7?`${d.getMonth()+1}/${d.getDate()}`:days<=30?`${d.getDate()}日`:`${d.getMonth()+1}月`};
  });
 }
-function growthTrendSvg(data){
+function growthTrendSvg(data,label='TEAM SCORE'){
  const w=620,h=190,padX=28,padY=24,max=100;
  const points=data.map((d,i)=>{
   const x=padX+(data.length===1?0:i*(w-padX*2)/(data.length-1));
@@ -624,7 +631,7 @@ function growthTrendSvg(data){
  });
  const line=points.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
  const area=`${padX},${h-padY} ${line} ${w-padX},${h-padY}`;
- return `<div class="growth-chart-wrap"><svg class="growth-chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="TEAM SCORE推移"><defs><linearGradient id="growthArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f4759d" stop-opacity=".38"/><stop offset="100%" stop-color="#f4759d" stop-opacity="0"/></linearGradient></defs><line x1="${padX}" y1="${h-padY}" x2="${w-padX}" y2="${h-padY}" class="growth-axis"/><polygon points="${area}" fill="url(#growthArea)"/><polyline points="${line}" class="growth-line"/>${points.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="5" class="growth-dot"><title>${p.label}: ${p.value}</title></circle>`).join('')}</svg><div class="growth-chart-labels">${data.map(d=>`<span>${esc(d.label)}</span>`).join('')}</div></div>`;
+ return `<div class="growth-chart-wrap"><svg class="growth-chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label)}推移"><defs><linearGradient id="growthArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f4759d" stop-opacity=".38"/><stop offset="100%" stop-color="#f4759d" stop-opacity="0"/></linearGradient></defs><line x1="${padX}" y1="${h-padY}" x2="${w-padX}" y2="${h-padY}" class="growth-axis"/><polygon points="${area}" fill="url(#growthArea)"/><polyline points="${line}" class="growth-line"/>${points.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="5" class="growth-dot"><title>${p.label}: ${p.value}</title></circle>`).join('')}</svg><div class="growth-chart-labels">${data.map(d=>`<span>${esc(d.label)}</span>`).join('')}</div></div>`;
 }
 function teamScoreReport(metrics,previous){
  if(!metrics.closedCount) return 'ミーティングを完了すると、TEAM SCOREの測定が始まります。';
@@ -632,10 +639,35 @@ function teamScoreReport(metrics,previous){
  const strongest=[...items].sort((a,b)=>b[1]-a[1])[0];
  const weakest=[...items].sort((a,b)=>a[1]-b[1])[0];
  const delta=metrics.score-previous;
- return `${delta>0?`前回より${delta}ポイント上がりました。`:delta<0?`前回より${Math.abs(delta)}ポイント下がっています。`:'前回と同じスコアです。'} 強みは「${strongest[0]}」、次に伸ばしたいのは「${weakest[0]}」です。次のミーティングで一つだけ行動を決め、履歴から実行確認を付けましょう。`;
+ return `${delta>0?`前回より${delta}ポイント上がりました。`:delta<0?`前回より${Math.abs(delta)}ポイント下がっています。`:'前回と同じスコアです。'} 強みは「${strongest[0]}」、次に伸ばしたいのは「${weakest[0]}」です。次回は「${weakest[0]}」を意識したテーマを1つ選びましょう。`;
 }
 function scoreMetricCard(label,value,note,cls=''){
  return `<div class="team-score-metric ${cls}"><div><span>${label}</span><small>${note}</small></div><strong>${value}<i>%</i></strong><div class="team-score-mini"><b style="width:${value}%"></b></div></div>`;
+}
+function meetingGroupLabel(m){ return m.type==='position'?(m.group||'未設定'):m.type==='grade'?(m.group||'未設定'):'チーム全体'; }
+function comparisonRows(meetings,mode){
+ const groups=mode==='position'?TYPES.position.groups:mode==='grade'?TYPES.grade.groups:['チーム全体'];
+ return groups.map(group=>{
+  const subset=mode==='all'?meetings:meetings.filter(m=>m.type===mode&&m.group===group);
+  const metrics=teamScoreMetrics(subset);
+  return {group,count:subset.filter(m=>m.status==='closed').length,score:metrics.score,participation:metrics.participation,speaking:metrics.speaking,action:metrics.action};
+ });
+}
+function growthComparisonView(meetings,mode){
+ const rows=comparisonRows(meetings,mode);
+ return `<div class="growth-comparison-list">${rows.map(row=>`<article class="growth-comparison-row"><div><b>${esc(row.group)}</b><small>${row.count?`${row.count}回の履歴`:'データなし'}</small></div><div class="growth-comparison-score"><strong>${row.count?row.score:'--'}</strong><span>${row.count?'pt':''}</span></div><div class="growth-comparison-bars"><i style="--v:${row.participation}%" title="参加率 ${row.participation}%"></i><i style="--v:${row.speaking}%" title="発言率 ${row.speaking}%"></i><i style="--v:${row.action}%" title="実行率 ${row.action}%"></i></div></article>`).join('')}</div><div class="growth-comparison-legend"><span>参加率</span><span>発言率</span><span>実行率</span></div>`;
+}
+function growthAchievements(meetings,metrics){
+ const closed=meetings.filter(m=>m.status==='closed');
+ const unlocked=[
+  ['✦','初ミーティング',closed.length>=1],
+  ['10','10回達成',closed.length>=10],
+  ['90','参加率90%',metrics.participation>=90&&closed.length>=2],
+  ['100','発言率100%',metrics.speaking>=100&&closed.length>=2],
+  ['80','継続率80%',metrics.continuity>=80&&closed.length>=2],
+  ['✓','実行率80%',metrics.action>=80&&closed.length>=2],
+ ];
+ return `<div class="achievement-grid">${unlocked.map(([icon,label,on])=>`<article class="achievement-card ${on?'unlocked':'locked'}"><span>${icon}</span><b>${label}</b><small>${on?'達成済み':'未達成'}</small></article>`).join('')}</div>`;
 }
 function growthView(){
  const all=currentTeamMeetings();
@@ -643,10 +675,12 @@ function growthView(){
  const metrics=teamScoreMetrics(all);
  const previous=scoreForMeetingsUntil(all,Date.now()-7*86400000);
  const delta=metrics.score-previous;
- const trend=teamScoreTrendData(closed,state.growthRange||30);
+ const metric=state.growthMetric||'score';
+ const metricLabels={score:'TEAM SCORE',participation:'参加率',speaking:'発言率',action:'実行率',continuity:'継続率'};
+ const trend=growthTrendData(closed,state.growthRange||30,metric);
  const measuring=metrics.closedCount<2;
  return `<section class="growth-page team-score-page">
-   <header class="growth-header"><div><p class="growth-eyebrow">TEAM SCORE</p><h2>チームの成長</h2><p>話し合い・参加・実行・継続を、チームごとに確認します。</p></div><div class="growth-level-badge">${measuring?'測定中':metrics.score>=80?'S':metrics.score>=65?'A':metrics.score>=50?'B':'C'}</div></header>
+   <header class="growth-header"><div><p class="growth-eyebrow">GROWTH TIMELINE</p><h2>チームの成長</h2><p>記録・分析・行動の変化を、チームごとに確認します。</p></div><div class="growth-level-badge">${measuring?'測定中':metrics.score>=80?'S':metrics.score>=65?'A':metrics.score>=50?'B':'C'}</div></header>
    <section class="team-score-hero"><div class="team-score-ring" style="--score:${metrics.score}"><div><strong>${metrics.score}</strong><span>/ 100</span></div></div><div class="team-score-copy"><small>CURRENT TEAM SCORE</small><h3>${measuring?'データを集めています':delta>0?'成長しています':delta<0?'見直しポイントあり':'安定しています'}</h3><p>${measuring?'完了したミーティングが2件以上になると、変化を比較できます。':`7日前から ${delta>=0?'+':''}${delta} pt`}</p></div></section>
    <section class="growth-panel"><div class="growth-panel-title"><div><small>SCORE BREAKDOWN</small><h3>スコアの内訳</h3></div></div><div class="team-score-metrics">
     ${scoreMetricCard('活動量',metrics.activity,`${metrics.closedCount}回完了`,'activity')}
@@ -655,11 +689,15 @@ function growthView(){
     ${scoreMetricCard('実行率',metrics.action,'履歴で実行確認','action')}
     ${scoreMetricCard('継続率',metrics.continuity,'直近4週間','continuity')}
    </div></section>
-   <section class="growth-panel"><div class="growth-panel-title growth-trend-title"><div><small>TEAM SCORE TREND</small><h3>スコア推移</h3></div><div class="growth-range">${[[7,'1週間'],[30,'1か月'],[180,'半年']].map(([v,l])=>`<button class="${state.growthRange===v?'active':''}" onclick="setGrowthRange(${v})">${l}</button>`).join('')}</div></div>${growthTrendSvg(trend)}<p class="growth-chart-note">0〜100点で表示。選択中のチーム履歴だけを集計しています。</p></section>
-   <section class="growth-panel growth-report"><div class="growth-panel-title"><div><small>ALIA GROWTH REPORT</small><h3>Aliaから見た変化</h3></div><span class="growth-report-icon">✦</span></div><p>${esc(teamScoreReport(metrics,previous))}</p><div class="growth-report-foot"><span>実行確認 ${closed.filter(m=>m.actionCompleted).length}/${closed.length}件</span><span>更新：${new Date().toLocaleDateString('ja-JP')}</span></div></section>
+   <section class="growth-panel"><div class="growth-panel-title growth-trend-title"><div><small>GROWTH TIMELINE</small><h3>${metricLabels[metric]}推移</h3></div><div class="growth-range">${[[7,'1週間'],[30,'1か月'],[180,'半年'],[365,'1年']].map(([v,l])=>`<button class="${state.growthRange===v?'active':''}" onclick="setGrowthRange(${v})">${l}</button>`).join('')}</div></div><div class="growth-metric-switch">${Object.entries(metricLabels).map(([k,l])=>`<button class="${metric===k?'active':''}" onclick="setGrowthMetric('${k}')">${l}</button>`).join('')}</div>${growthTrendSvg(trend,metricLabels[metric])}<p class="growth-chart-note">0〜100で表示。選択中のチーム履歴だけを集計しています。</p></section>
+   <section class="growth-panel"><div class="growth-panel-title growth-trend-title"><div><small>GROUP COMPARISON</small><h3>比較分析</h3></div><div class="growth-range growth-compare-tabs">${[['all','全体'],['position','ポジション'],['grade','学年']].map(([v,l])=>`<button class="${state.growthCompare===v?'active':''}" onclick="setGrowthCompare('${v}')">${l}</button>`).join('')}</div></div>${growthComparisonView(all,state.growthCompare||'all')}</section>
+   <section class="growth-panel growth-report"><div class="growth-panel-title"><div><small>ALIA GROWTH INSIGHT</small><h3>今月の変化</h3></div><span class="growth-report-icon">✦</span></div><p>${esc(teamScoreReport(metrics,previous))}</p><div class="growth-report-foot"><span>実行確認 ${closed.filter(m=>m.actionCompleted).length}/${closed.length}件</span><span>更新：${new Date().toLocaleDateString('ja-JP')}</span></div></section>
+   <section class="growth-panel"><div class="growth-panel-title"><div><small>ACHIEVEMENT</small><h3>チーム実績</h3></div></div>${growthAchievements(all,metrics)}</section>
  </section>`;
 }
 function setGrowthRange(days){ state.growthRange=days; render(); }
+function setGrowthMetric(metric){ state.growthMetric=metric; render(); }
+function setGrowthCompare(mode){ state.growthCompare=mode; render(); }
 
 
 function inviteCodeView(){
@@ -695,7 +733,7 @@ function membersView(){
 function menuView(){
   const a=loadAccount();
   return `<section class="menu-page">
-    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.45.0" alt="Alia"></div>
+    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.46.0" alt="Alia"></div>
     <div class="menu-list">
       ${menuItem('⇄','チームを切り替える','保存したチームを選択','goTop()')}
       ${menuItem('⌂','トップ画面へ戻る','チーム作成・参加・切り替え','goTop()')}
@@ -964,7 +1002,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.45.0', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.46.0', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
