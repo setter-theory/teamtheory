@@ -411,3 +411,46 @@ button,input,textarea,select{font:inherit}.app-shell{width:100%;max-width:480px;
   .alia-thought .thought-copy strong{font-size:20px}
   .alia-thought .thought-copy span{font-size:11.5px}
 }
+
+/* v0.16 — reference balance refinement */
+.alia-character-stage{
+  min-height:294px;
+  gap:16px;
+  margin:12px auto 18px;
+}
+.alia-character{
+  width:262px;
+  max-height:296px;
+  margin:0 -34px -14px 0;
+  filter:drop-shadow(0 18px 28px rgba(0,0,0,.38)) brightness(1.05) saturate(1.05);
+}
+.alia-thought{
+  width:204px;
+  height:146px;
+  max-width:46%;
+  flex-basis:204px;
+  margin:0 4px 74px -12px;
+}
+.thought-cloud{inset:-15px;width:calc(100% + 30px);height:calc(100% + 30px)}
+.thought-copy{padding:11px 21px 9px}
+.alia-thought .thought-copy strong{font-size:25px;margin-bottom:10px}
+.alia-thought .thought-copy span{font-size:13.5px;line-height:1.6}
+.thought-dot-1{right:-25px;bottom:32px;width:18px;height:18px}
+.thought-dot-2{right:-40px;bottom:17px;width:12px;height:12px}
+.thought-dot-3{right:-50px;bottom:6px;width:7px;height:7px}
+.alia-sparkle-1{left:2%;top:19%}.alia-sparkle-2{right:2%;top:4%}.alia-sparkle-3{right:2%;bottom:7%}
+.alia-feather-1{left:-1%;bottom:7%}.alia-feather-2{right:-1%;top:39%}
+@media(max-width:390px){
+  .alia-character-stage{min-height:255px;gap:10px;margin-bottom:15px}
+  .alia-character{width:228px;max-height:260px;margin-right:-25px;margin-bottom:-11px}
+  .alia-thought{width:174px;height:126px;max-width:45%;flex-basis:174px;margin:0 2px 62px -8px}
+  .thought-cloud{inset:-12px;width:calc(100% + 24px);height:calc(100% + 24px)}
+  .thought-copy{padding:9px 16px 7px}
+  .alia-thought .thought-copy strong{font-size:21px;margin-bottom:8px}
+  .alia-thought .thought-copy span{font-size:12px;line-height:1.55}
+}
+@media(max-height:760px){
+  .alia-character-stage{min-height:224px;margin-bottom:9px}
+  .alia-character{width:198px;max-height:226px;margin-bottom:-9px}
+  .alia-thought{width:158px;height:114px;margin-bottom:52px}
+}
