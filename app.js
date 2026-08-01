@@ -80,7 +80,32 @@ function saveAccount(v){
   write('tt_account',v);
   localStorage.setItem('tt_active_team',v.teamId);
 }
-function currentTeamMeetings(){ const a=loadAccount(); return loadMeetings().filter(m=>!a || m.teamId===a.teamId); }
+function migrateLegacyMeetingOwnership(){
+  const accounts=loadAccounts();
+  if(!accounts.length) return;
+  const meetings=loadMeetings();
+  if(!meetings.length) return;
+  const validIds=new Set(accounts.map(a=>a.teamId));
+  const active=loadAccount();
+  if(!active) return;
+  let changed=false;
+  const migrated=meetings.map(m=>{
+    // v0.38以前の履歴や、旧チームIDの履歴を現在の保存チームへ引き継ぐ。
+    if(!m.teamId || !validIds.has(m.teamId)){
+      changed=true;
+      return {...m,teamId:active.teamId,teamName:m.teamName||active.teamName};
+    }
+    if(!m.teamName){ changed=true; return {...m,teamName:(accounts.find(a=>a.teamId===m.teamId)||active).teamName}; }
+    return m;
+  });
+  if(changed) saveMeetings(migrated);
+}
+function currentTeamMeetings(){
+  const a=loadAccount();
+  if(!a) return loadMeetings();
+  migrateLegacyMeetingOwnership();
+  return loadMeetings().filter(m=>m.teamId===a.teamId);
+}
 function uid(prefix='m'){ return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
 function teamCode(){ return Math.random().toString(36).replace(/[^a-z0-9]/g,'').slice(0,6).toUpperCase(); }
 function esc(s=''){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
@@ -138,7 +163,7 @@ function welcomeView(){
    </div>
    ${savedTeamsView()}
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.39</div>
+   <div class="welcome-version">Version 0.39.1</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -422,7 +447,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.39', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.39.1', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
