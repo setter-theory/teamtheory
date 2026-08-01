@@ -167,7 +167,7 @@ function esc(s=''){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&l
 function shell(content, active='home'){
   return `<main class="content content-no-header">${content}</main>
   <nav class="bottom-nav">
-    ${nav('home','⌂','ホーム',active)}${nav('meetings','▤','ミーティング',active)}${nav('growth','↗','成長',active)}${nav('menu','☰','メニュー',active)}
+    ${nav('home','⌂','ホーム',active)}${nav('growth','↗','成長',active)}${nav('members','♟','メンバー',active)}${nav('menu','☰','メニュー',active)}
   </nav>`;
 }
 function nav(view,icon,label,active){return `<button class="nav-btn ${active===view?'active':''}" onclick="go('${view}')"><span>${icon}</span>${label}</button>`}
@@ -184,6 +184,7 @@ function render(){
   else if(state.view==='summary') app.innerHTML=shell(summaryView(),'home');
   else if(state.view==='meetings') app.innerHTML=shell(historyView(),'meetings');
   else if(state.view==='growth') app.innerHTML=shell(growthView(),'growth');
+  else if(state.view==='members') app.innerHTML=shell(membersView(),'members');
   else if(state.view==='menu') app.innerHTML=shell(menuView(),'menu');
   else if(state.view==='inviteCode') app.innerHTML=shell(inviteCodeView(),'menu');
   else app.innerHTML=shell(profileView(),'menu');
@@ -212,7 +213,7 @@ function welcomeView(){
          <p class="alia-tagline">教わるから、考えるへ。</p>
        </div>
      </div>
-     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.39.9" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.40" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
@@ -221,7 +222,7 @@ function welcomeView(){
    </div>
    <button class="welcome-utility" onclick="showTopSettingsNotice()"><span class="welcome-utility-icon">⚙</span><span>設定・その他</span><span class="welcome-utility-arrow">›</span></button>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.39.8</div>
+   <div class="welcome-version">Version 0.40</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -241,7 +242,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon">♟</span><span>チーム名</span></label><input id="teamName" class="input create-input" placeholder="例：Alia高校"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon person-icon">●</span><span>あなたの名前</span></label><input id="displayName" class="input create-input" placeholder="例：Alia"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.39.9" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.40" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -262,11 +263,21 @@ function joinTeamView(){
 }
 
 function homeView(){
-  const a=loadAccount(); const active=currentTeamMeetings().find(m=>m.status==='open');
-  return `<section class="hero home-hero"><div class="hero-copy"><div class="home-team-name"><span>♟</span>${esc(a.teamName)}</div><div class="eyebrow"><span class="eyebrow-icon">♙</span>${esc(a.displayName)}さん・${esc(a.role)}</div><h2>今日は何を話し合いますか？</h2><p>それぞれの意見を集め、最後にチームの一つの結論へまとめます。</p></div><img class="home-alia" src="./icons/alia-standalone.png?v=0.37" alt="Alia"></section>
-  ${active?`<div class="section-title"><h3>進行中</h3><span>${active.entries.length}件の意見</span></div><div class="progress-card progress-card-modern"><div class="progress-card-top"><span class="pill">進行中</span><span>${esc(active.group)}</span></div><h3>${esc(active.theme||'テーマ未設定')}</h3><div class="progress-stats"><span>意見 <b>${active.entries.length}</b>件</span><span>作成者 <b>${esc(active.ownerName)}</b></span></div><div class="actions"><button class="btn primary" onclick="resume('${active.id}')">続きから</button></div></div>`:''}
-  <div class="section-title"><h3>ミーティングを始める</h3><span>3種類</span></div>
-  <div class="card-grid">${meetingCard('position','ポジション別','同じ役割だから見える課題を共有')}${meetingCard('grade','学年別','学年ごとの役割と行動を整理')}${meetingCard('all','全体','各グループの結論をチームの方針へ')}</div>`;
+  const a=loadAccount();
+  const meetings=currentTeamMeetings().slice().sort((x,y)=>(y.createdAt||0)-(x.createdAt||0));
+  const active=meetings.find(m=>m.status==='open');
+  const recent=meetings.filter(m=>m.status==='closed').slice(0,3);
+  const localMembers=loadAccounts().filter(x=>x.teamId===a.teamId);
+  const memberCount=Math.max(1,new Set(localMembers.map(x=>x.displayName)).size);
+  const today=new Date().toLocaleDateString('ja-JP',{month:'long',day:'numeric',weekday:'short'});
+  const activeBlock=active?`<section class="team-home-active"><div class="team-home-section-head"><div><small>IN PROGRESS</small><h3>進行中のミーティング</h3></div><span class="pill">進行中</span></div><div class="team-home-progress"><div class="team-home-progress-meta"><span>${esc(TYPES[active.type]?.label||'ミーティング')}</span><span>${active.entries.length}件の意見</span></div><h3>${esc(active.theme||'テーマ未設定')}</h3><div class="team-home-progress-stats"><span>グループ <b>${esc(active.group)}</b></span><span>作成者 <b>${esc(active.ownerName||a.displayName)}</b></span></div><button class="btn primary team-home-continue" onclick="resume('${active.id}')">続きから <span>›</span></button></div></section>`:`<section class="team-home-active"><div class="team-home-section-head"><div><small>IN PROGRESS</small><h3>進行中のミーティング</h3></div></div><div class="team-home-empty"><span>✓</span><div><b>現在進行中のミーティングはありません</b><small>下のカードから新しい話し合いを始められます。</small></div></div></section>`;
+  const recentBlock=recent.length?`<section class="team-home-recent"><div class="team-home-section-head"><div><small>RECENT</small><h3>最近のミーティング</h3></div><button class="team-home-link" onclick="go('meetings')">すべて見る ›</button></div><div class="team-home-recent-list">${recent.map(m=>`<button class="team-home-recent-card" onclick="resume('${m.id}')"><span class="team-home-recent-mark">✓</span><span><b>${esc(m.group)}ミーティング</b><small>${esc(m.theme||'テーマ未設定')}・${new Date(m.createdAt).toLocaleDateString('ja-JP')}</small></span><span>›</span></button>`).join('')}</div></section>`:'';
+  return `<section class="team-home-dashboard">
+    <header class="team-home-header"><div><small>TEAM HOME</small><h2>${esc(a.teamName)}</h2><p>${today}・メンバー ${memberCount}人</p></div><button class="team-home-menu" onclick="go('menu')" aria-label="メニュー">⋯</button></header>
+    ${activeBlock}
+    <section class="team-home-start"><div class="team-home-section-head"><div><small>START MEETING</small><h3>ミーティングを始める</h3></div><span>3種類</span></div><div class="team-home-meeting-grid">${meetingCard('position','ポジション別','同じ役割だから見える課題を共有')}${meetingCard('grade','学年別','学年ごとの役割と行動を整理')}${meetingCard('all','全体','各グループの結論をチームの方針へ')}</div></section>
+    ${recentBlock}
+  </section>`;
 }
 function meetingCard(type,title,desc){return `<button class="meeting-card" onclick="startType('${type}')"><div class="icon">${TYPES[type].icon}</div><div><b>${title}ミーティング</b><small>${desc}</small></div><div class="chev">›</div></button>`}
 function selectView(){ const t=TYPES[state.selectedType]; return `<button class="back" onclick="go('home')">‹ 戻る</button><h2 class="page-title">${t.icon} ${t.label}</h2><p class="subtitle">参加するグループを選択してください。</p><div class="choice-list">${t.groups.map(g=>`<button class="meeting-card" onclick="createMeeting('${esc(g)}')"><div><b>${esc(g)}</b><small>ミーティングを開始</small></div><div class="chev">›</div></button>`).join('')}</div>`; }
@@ -376,6 +387,13 @@ function shareInviteCode(){
   const text=`TEAM Theory「${a.teamName}」の招待コード：${a.teamCode}`;
   if(navigator.share){ navigator.share({title:'TEAM Theory 招待コード',text}).catch(()=>{}); }
   else { navigator.clipboard?.writeText(text).then(()=>toast('招待内容をコピーしました')).catch(()=>toast(text)); }
+}
+
+function membersView(){
+  const a=loadAccount();
+  const localMembers=loadAccounts().filter(x=>x.teamId===a.teamId);
+  const members=localMembers.length?localMembers:[a];
+  return `<section class="members-page"><div class="members-head"><small>TEAM MEMBERS</small><h2>メンバー</h2><p>${esc(a.teamName)}の端末内メンバー情報</p></div><div class="members-list">${members.map((m,i)=>`<article class="member-card"><span class="member-avatar">${esc((m.displayName||'?').slice(0,1))}</span><div><b>${esc(m.displayName)}</b><small>${esc(m.role)}${i===0?'・現在のユーザー':''}</small></div></article>`).join('')}</div><div class="members-note">オンライン共有に接続すると、チーム全員の一覧をここに表示できます。</div></section>`;
 }
 
 function menuView(){
@@ -576,7 +594,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.39.9', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.40', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
