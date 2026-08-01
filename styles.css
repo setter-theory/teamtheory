@@ -768,3 +768,20 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
 .summary-page,.history-page{padding-top:8px}.alia-summary-card{margin-top:18px;padding:20px;border:1.5px solid #f16f99;border-radius:24px;background:linear-gradient(145deg,#0f1b2c,#091421);box-shadow:0 18px 38px rgba(0,0,0,.24)}.summary-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:13px;border-bottom:1px solid rgba(255,255,255,.08)}.summary-card-head span{color:#f16f99;font-weight:900}.summary-card-head b{color:#fff}.summary-textarea{min-height:330px!important;background:#0a1524!important;color:#eef2f7!important;border-color:rgba(241,111,153,.35)!important}.alia-tip{margin-top:14px;padding:13px 14px;border-radius:15px;background:rgba(241,111,153,.10);color:#f3dce5;font-size:12px;line-height:1.65}
 .history-list{display:grid;gap:14px;margin-top:18px}.history-card-modern{padding:19px;border:1px solid rgba(241,111,153,.24);border-radius:22px;background:linear-gradient(145deg,#101c2d,#0a1422);color:#fff}.history-head{color:#8f9bae;font-size:11px}.history-card-modern h3{margin:16px 0 7px}.history-theme{color:#dfe5ed}.history-stats{margin-top:14px;color:#aeb9c7;font-size:12px}.history-stats b{color:#fff}.summary-preview{margin-top:14px;padding:14px;border-radius:15px;background:#09131f;color:#cfd7e2;font-size:12px;line-height:1.65;max-height:150px;overflow:auto}.history-bottom-actions{margin-top:18px}.history-bottom-actions .btn{width:100%}
 @media(max-width:390px){.meeting-bottom-actions,.summary-bottom-actions{grid-template-columns:1fr 1fr}.alia-summary-action,.summary-bottom-actions .gold{grid-column:1/-1}.meeting-bottom-actions .btn,.summary-bottom-actions .btn{padding-left:8px;padding-right:8px;font-size:13px}}
+
+/* v0.28 compact meeting history cards: show 3-4 records per phone screen */
+.history-list{gap:10px;margin-top:14px}
+.history-card-modern{padding:13px 14px 12px;border-radius:17px}
+.history-card-modern .history-head{gap:8px;font-size:10px}
+.history-card-modern .pill{padding:4px 9px;font-size:10px;line-height:1}
+.history-card-modern h3{margin:9px 0 3px;font-size:15px;line-height:1.25}
+.history-card-modern .history-theme{margin:0;color:#dfe5ed;font-size:12px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.history-card-modern .history-stats{margin-top:8px;gap:10px;font-size:10px}
+.history-card-modern .summary-preview{margin-top:8px;padding:8px 10px;border-radius:11px;font-size:10px;line-height:1.45;max-height:39px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.history-card-modern .actions{margin-top:9px;display:flex;justify-content:flex-end}
+.history-card-modern .actions .btn{width:auto;min-width:92px;min-height:34px;padding:7px 13px;border-radius:12px;font-size:11px}
+@media(max-width:430px){
+  .history-card-modern{padding:12px 13px 11px}
+  .history-card-modern h3{font-size:14px}
+  .history-card-modern .summary-preview{max-height:36px}
+}
