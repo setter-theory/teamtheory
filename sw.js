@@ -1,10 +1,10 @@
-const CACHE = 'teamtheory-v0.17';
+const CACHE = 'teamtheory-v0.18';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css?v=0.17',
-  './app.js?v=0.17',
-  './manifest.webmanifest?v=0.17',
+  './styles.css?v=0.18',
+  './app.js?v=0.18',
+  './manifest.webmanifest?v=0.18',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png',
