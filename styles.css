@@ -551,3 +551,56 @@ button,input,textarea,select{font:inherit}.app-shell{width:100%;max-width:480px;
   .alia-character{width:217px;max-height:245px}
   .alia-thought{width:132px;height:96px;margin-bottom:48px}
 }
+
+
+/* v0.19 — final comparison polish */
+.alia-character-stage{
+  min-height:314px;
+  gap:25px;
+  margin:23px auto 20px;
+  transform:translateY(21px);
+}
+.alia-character{
+  width:303px;
+  max-height:338px;
+  margin:0 -46px -20px 0;
+  filter:drop-shadow(0 20px 31px rgba(0,0,0,.4)) brightness(1.09) contrast(1.04) saturate(1.07);
+}
+.alia-thought{
+  width:155px;
+  height:112px;
+  max-width:38%;
+  flex-basis:155px;
+  margin:0 30px 70px -27px;
+}
+.thought-cloud{inset:-8px;width:calc(100% + 16px);height:calc(100% + 16px)}
+.thought-copy{padding:7px 13px 5px}
+.alia-thought .thought-copy strong{font-size:20px;margin-bottom:6px}
+.alia-thought .thought-copy span{font-size:10.8px;line-height:1.5}
+.thought-dot-1{right:-16px;bottom:24px;width:11px;height:11px}
+.thought-dot-2{right:-25px;bottom:13px;width:7px;height:7px}
+.thought-dot-3{right:-31px;bottom:5px;width:4px;height:4px}
+.alia-sparkle-1{left:2%;top:18%;font-size:24px}
+.alia-sparkle-2{right:2%;top:2%;font-size:22px}
+.alia-sparkle-3{right:5%;bottom:8%;font-size:27px}
+.alia-sparkle-4{left:57%;top:5%;font-size:17px}
+.alia-feather-1{left:1%;bottom:9%;font-size:24px}
+.alia-feather-2{right:0;top:42%;font-size:25px}
+.alia-feather-3{right:7%;bottom:22%;font-size:23px}
+@media(max-width:390px){
+  .alia-character-stage{min-height:276px;gap:16px;margin:19px auto 16px;transform:translateY(17px)}
+  .alia-character{width:263px;max-height:297px;margin-right:-34px;margin-bottom:-17px}
+  .alia-thought{width:134px;height:97px;max-width:37%;flex-basis:134px;margin:0 21px 58px -15px}
+  .thought-cloud{inset:-7px;width:calc(100% + 14px);height:calc(100% + 14px)}
+  .thought-copy{padding:6px 11px 4px}
+  .alia-thought .thought-copy strong{font-size:17px;margin-bottom:5px}
+  .alia-thought .thought-copy span{font-size:9.5px;line-height:1.46}
+  .thought-dot-1{right:-14px;bottom:21px;width:10px;height:10px}
+  .thought-dot-2{right:-22px;bottom:11px;width:6px;height:6px}
+  .thought-dot-3{right:-27px;bottom:4px;width:4px;height:4px}
+}
+@media(max-height:760px){
+  .alia-character-stage{min-height:238px;transform:translateY(11px)}
+  .alia-character{width:228px;max-height:257px}
+  .alia-thought{width:122px;height:88px;margin-bottom:46px}
+}
