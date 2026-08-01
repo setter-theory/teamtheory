@@ -6,7 +6,7 @@ const state = {
 };
 
 const TYPES = {
-  position: {label:'ポジション別ミーティング', icon:'🏐', groups:['セッター','アウトサイド','ミドル','オポジット','リベロ','マネージャー']},
+  position: {label:'ポジション別ミーティング', icon:'🏐', groups:['セッター','アウトサイドヒッター','オポジット','ミドルブロッカー','リベロ']},
   grade: {label:'学年別ミーティング', icon:'🎓', groups:['1年','2年','3年']},
   all: {label:'全体ミーティング', icon:'🤝', groups:['チーム全員']},
 };
@@ -74,7 +74,7 @@ function welcomeView(){
      <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.25</div>
+   <div class="welcome-version">Version 0.26</div>
  </main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
@@ -118,9 +118,21 @@ function meetingCard(type,title,desc){return `<button class="meeting-card" oncli
 function selectView(){ const t=TYPES[state.selectedType]; return `<button class="back" onclick="go('home')">‹ 戻る</button><h2 class="page-title">${t.icon} ${t.label}</h2><p class="subtitle">参加するグループを選択してください。</p><div class="choice-list">${t.groups.map(g=>`<button class="meeting-card" onclick="createMeeting('${esc(g)}')"><div><b>${esc(g)}</b><small>ミーティングを開始</small></div><div class="chev">›</div></button>`).join('')}</div>`; }
 function roomView(){
  const m=getCurrent(); const a=loadAccount(); if(!m) return '<div class="empty">ミーティングが見つかりません。</div>';
- return `<button class="back" onclick="go('home')">‹ ホーム</button><h2 class="page-title">${esc(m.group)}ミーティング</h2><p class="subtitle">${TYPES[m.type].label}</p><div class="room-meta"><span>作成者：${esc(m.ownerName)}</span><span>コード：${esc(a.teamCode)}</span></div>
- <div class="form-card"><label class="label">今日のテーマ</label><input id="theme" class="input" value="${esc(m.theme||'')}" placeholder="例：レセプションの連携" onchange="updateTheme(this.value)"><label class="label">名前</label><input id="name" class="input" value="${esc(a.displayName)}"><label class="label">意見・気付き・提案</label><textarea id="text" class="textarea" placeholder="短くても大丈夫です。"></textarea><div class="actions"><button class="btn gold" onclick="addEntry()">意見を送る</button></div></div>
- <div class="section-title"><h3>集まった意見</h3><span>${m.entries.length}件</span></div><div class="form-card">${m.entries.length?m.entries.map(e=>`<div class="entry"><strong>${esc(e.name)}</strong><p>${esc(e.text)}</p></div>`).join(''):'<div class="empty">まだ意見はありません。</div>'}</div><div class="actions"><button class="btn secondary" onclick="go('home')">一時保存</button><button class="btn primary" onclick="openSummary()">まとめへ</button></div>`;
+ const typeLabel = m.type==='position' ? 'ポジション別ミーティング' : TYPES[m.type].label;
+ const themePlaceholder = m.type==='grade' ? '例：学年として意識したいこと' : m.type==='all' ? '例：次の大会へ向けて' : '例：レセプションの連携';
+ return `<section class="meeting-room">
+   <header class="meeting-room-head"><div><small>${esc(typeLabel)}</small><h2>${esc(m.group)}ミーティング</h2></div><span class="meeting-room-mark">✦</span></header>
+   <div class="room-meta room-meta-modern"><span><b>作成者</b>${esc(m.ownerName)}</span><span><b>ミーティングコード</b>${esc(a.teamCode)}</span></div>
+   <div class="form-card meeting-form-card"><div class="meeting-form-title"><span>✎</span><div><b>意見を送る</b><small>短くても大丈夫。今感じていることを言葉にしよう。</small></div></div>
+     <label class="label">今日のテーマ</label><input id="theme" class="input" value="${esc(m.theme||'')}" placeholder="${themePlaceholder}" onchange="updateTheme(this.value)">
+     <label class="label">名前</label><input id="name" class="input" value="${esc(a.displayName)}">
+     <label class="label">意見・気付き・提案</label><textarea id="text" class="textarea" placeholder="短くても大丈夫です。"></textarea>
+     <div class="actions meeting-send-actions"><button class="btn gold meeting-send" onclick="addEntry()">意見を送る <span>➤</span></button></div>
+   </div>
+   <div class="section-title meeting-opinion-title"><h3>集まった意見</h3><span>${m.entries.length}件</span></div>
+   <div class="form-card opinion-list-card">${m.entries.length?m.entries.map(e=>`<div class="entry"><strong>${esc(e.name)}</strong><p>${esc(e.text)}</p></div>`).join(''):'<div class="empty meeting-empty"><span>♡</span><b>まだ意見はありません</b><small>あなたの一言が、チームの成長につながります。</small></div>'}</div>
+   <div class="actions meeting-room-actions"><button class="btn secondary" onclick="go('home')">一時保存</button><button class="btn primary" onclick="openSummary()">まとめへ</button></div>
+ </section>`;
 }
 function summaryView(){ const m=getCurrent(); if(!m) return '<div class="empty">ミーティングが見つかりません。</div>'; const draft=m.summary || makeSummary(m); return `<button class="back" onclick="state.view='room';render()">‹ 入力へ戻る</button><h2 class="page-title">Aliaまとめ</h2><p class="subtitle">集まった意見を一つの情報に整理します。</p><div class="form-card"><label class="label">まとめ案</label><textarea id="summaryText" class="textarea" style="min-height:240px">${esc(draft)}</textarea></div><div class="actions"><button class="btn secondary" onclick="regenerate()">作り直す</button><button class="btn primary" onclick="finalize()">確定して保存</button></div>`; }
 function historyView(){ const ms=loadMeetings().sort((a,b)=>b.createdAt-a.createdAt); return `<h2 class="page-title">ミーティング履歴</h2><p class="subtitle">過去の話し合いと結論を見返せます。</p>${ms.length?ms.map(m=>`<div class="history-card"><span class="pill ${m.status==='closed'?'closed':''}">${m.status==='closed'?'完了':'進行中'}</span><h3>${esc(m.group)}ミーティング</h3><p class="subtitle">${new Date(m.createdAt).toLocaleString('ja-JP')}・意見${m.entries.length}件</p>${m.summary?`<div class="summary-box">${esc(m.summary)}</div>`:''}${m.status==='open'?`<div class="actions"><button class="btn primary" onclick="resume('${m.id}')">開く</button></div>`:''}</div>`).join(''):'<div class="empty">履歴はまだありません。</div>'}`; }
@@ -173,7 +185,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.23', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.26', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
