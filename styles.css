@@ -889,3 +889,17 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
 .alia-plan-card .action-plan-card small,.alia-plan-lead,.summary-source-lead{display:none!important}
 .alia-plan-card .action-plan-answer{margin-top:6px;user-select:text}
 .alia-plan-card textarea,.alia-plan-card input,[contenteditable="true"].action-plan-answer{pointer-events:none!important}
+
+/* v0.35: soften all four corners of the large summary frames */
+.player-opinions-main,
+.alia-plan-card,
+.team-decision-card{
+  border-radius:26px !important;
+  overflow:hidden;
+  background-clip:padding-box;
+}
+@media(max-width:390px){
+  .player-opinions-main,
+  .alia-plan-card,
+  .team-decision-card{border-radius:23px !important;}
+}

@@ -20,6 +20,8 @@ Version 0.32: Aliaまとめを選手主体へ再構成。選手の発言を最�
 
 Version 0.32: ミーティングまとめの課題・行動・方法を編集不可にし、回答を各項目カード内へ直接表示。チーム決定カードをコンパクト化し、選手意見エリア全体もカード化。
 
-Version 0.34: 「選手から出た意見」をPLAYER VOICES親カードとして明示し、課題・行動・方法をTEAM DECISIONではなく読み取り専用のALIA ADVICEとして再整理。重複していた小型Alia Advice欄を廃止。
+Version 0.35: 「選手から出た意見」をPLAYER VOICES親カードとして明示し、課題・行動・方法をTEAM DECISIONではなく読み取り専用のALIA ADVICEとして再整理。重複していた小型Alia Advice欄を廃止。
 
-Version 0.34: PLAYER VOICESを大外枠で統一。ALIA ADVICEは説明文なし・課題/行動/方法のみの読み取り専用表示にし、方法を具体的な実践案へ改善。
+Version 0.35: PLAYER VOICESを大外枠で統一。ALIA ADVICEは説明文なし・課題/行動/方法のみの読み取り専用表示にし、方法を具体的な実践案へ改善。
+
+Version 0.35: PLAYER VOICES・ALIA ADVICEなどの大外枠の四隅を26pxの角丸に統一し、角から背景や内側要素がはみ出さないよう調整。
