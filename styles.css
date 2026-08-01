@@ -905,3 +905,8 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
 }
 
 .summary-source-section,.alia-plan-card{border-radius:26px;overflow:hidden}.method-block{margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08)}.method-block strong{display:block;color:#f3c76b;margin-bottom:4px}
+/* v0.37: theme-adaptive Alia Advice */
+.adaptive-method-block{border-radius:12px;padding:10px 11px;background:rgba(255,255,255,.025)}
+.adaptive-method-block:first-child{margin-top:4px}
+.adaptive-method-block strong{font-size:13px;letter-spacing:.02em}
+.adaptive-method-block div{white-space:pre-line;line-height:1.65;color:#e8edf5}

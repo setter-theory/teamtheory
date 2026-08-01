@@ -74,7 +74,7 @@ function welcomeView(){
      <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.35</div>
+   <div class="welcome-version">Version 0.37</div>
  </main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
@@ -100,7 +100,7 @@ function joinTeamView(){
      <div class="join-field"><label class="join-label"><span class="join-label-icon team-icon">♟</span><span>チーム名</span></label><input id="joinTeamName" class="input join-input" placeholder="例：Alia高校"><small class="join-help">参加先のチーム名を入力してください。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon person-icon"></span><span>あなたの名前</span></label><input id="joinName" class="input join-input" placeholder="例：Alia"><small class="join-help">チーム内で表示されるあなたの名前です。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon shield-icon">★</span><span>役割</span></label><select id="joinRole" class="input join-input join-select">${roleOptions()}</select><small class="join-help">チーム内でのあなたの役割を選択してください。</small></div>
-     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.35" class="join-alia" alt="Alia"></div>
+     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.37" class="join-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions join-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon">⌂</span><span>ホーム</span></button><button class="bottom-action join-action" onclick="joinTeamAccount()"><span>参加する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -108,7 +108,7 @@ function joinTeamView(){
 
 function homeView(){
   const a=loadAccount(); const active=loadMeetings().find(m=>m.status==='open');
-  return `<section class="hero home-hero"><div class="hero-copy"><div class="home-team-name"><span>♟</span>${esc(a.teamName)}</div><div class="eyebrow"><span class="eyebrow-icon">♙</span>${esc(a.displayName)}さん・${esc(a.role)}</div><h2>今日は何を話し合いますか？</h2><p>それぞれの意見を集め、最後にチームの一つの結論へまとめます。</p></div><img class="home-alia" src="./icons/alia-standalone.png?v=0.35" alt="Alia"></section>
+  return `<section class="hero home-hero"><div class="hero-copy"><div class="home-team-name"><span>♟</span>${esc(a.teamName)}</div><div class="eyebrow"><span class="eyebrow-icon">♙</span>${esc(a.displayName)}さん・${esc(a.role)}</div><h2>今日は何を話し合いますか？</h2><p>それぞれの意見を集め、最後にチームの一つの結論へまとめます。</p></div><img class="home-alia" src="./icons/alia-standalone.png?v=0.37" alt="Alia"></section>
   <div class="invite-strip"><div><small><span class="invite-icon">⚿</span>チーム招待コード</small><strong>${esc(a.teamCode)}</strong><p>このコードを共有して仲間をチームに招待できます。</p></div><button class="mini-btn" onclick="copyCode()"><span>▣</span>コピー</button></div>
   ${active?`<div class="section-title"><h3>進行中</h3><span>${active.entries.length}件の意見</span></div><div class="progress-card progress-card-modern"><div class="progress-card-top"><span class="pill">進行中</span><span>${esc(active.group)}</span></div><h3>${esc(active.theme||'テーマ未設定')}</h3><div class="progress-stats"><span>意見 <b>${active.entries.length}</b>件</span><span>作成者 <b>${esc(active.ownerName)}</b></span></div><div class="actions"><button class="btn primary" onclick="resume('${active.id}')">続きから</button></div></div>`:''}
   <div class="section-title"><h3>ミーティングを始める</h3><span>3種類</span></div>
@@ -137,8 +137,10 @@ function roomView(){
 function summaryView(){
  const m=getCurrent(); if(!m) return '<div class="empty">ミーティングが見つかりません。</div>';
  const plan=parseActionPlan(m.summary || makeSummary(m),m);
+ const adviceSections=buildAdaptiveAdviceSections(m,plan);
+ const methodSections=adviceSections.map(section=>`<div class="method-block adaptive-method-block"><strong>${esc(section.icon)} ${esc(section.label)}</strong><div>${esc(section.text)}</div></div>`).join('');
  const sourceOpinions = m.entries.length ? m.entries.map((e,i)=>`<article class="summary-source-card"><div class="summary-source-number">${i+1}</div><div class="summary-source-body"><div class="summary-source-meta"><strong>${esc(e.name)}</strong><small>${new Date(e.createdAt||Date.now()).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}</small></div><p>${esc(e.text)}</p></div></article>`).join('') : '<div class="meeting-empty dark-empty"><span>♡</span><b>意見はまだありません</b><small>意見を入力すると、発言者と内容がここに残ります。</small></div>';
- return `<section class="summary-page"><h2 class="page-title">ミーティングまとめ</h2><div class="summary-source-section player-opinions-main"><div class="summary-panel-head player-voices-head"><div><small>PLAYER VOICES</small><h3>選手から出た意見</h3></div><span>${m.entries.length}件</span></div><div class="summary-source-list">${sourceOpinions}</div></div><div class="alia-plan-card"><div class="summary-panel-head alia-plan-head"><div><small>ALIA ADVICE</small></div></div><div class="action-plan-list"><div class="action-plan-card issue"><span class="action-plan-label">課題</span><div class="action-plan-answer">${esc(plan.issue)}</div></div><div class="action-plan-card action"><span class="action-plan-label">行動</span><div class="action-plan-answer">${esc(plan.action)}</div></div><div class="action-plan-card method"><span class="action-plan-label">方法</span><div class="action-plan-answer method-answer"><div class="method-block"><strong>🏐 練習</strong><div>${esc(plan.method)}</div></div><div class="method-block"><strong>🏆 試合</strong><div>試合で実践できるポイントを優先して取り入れましょう。</div></div><div class="method-block"><strong>📊 振り返り</strong><div>実施できたかを試合後に確認し、次回へ活かしましょう。</div></div></div></div></div></div><div class="summary-bottom-actions two-actions"><button class="btn back-action" onclick="state.view='room';render()">‹ 入力へ戻る</button><button class="btn gold" onclick="finalize()">確定して保存</button></div></section>`;
+ return `<section class="summary-page"><h2 class="page-title">ミーティングまとめ</h2><div class="summary-source-section player-opinions-main"><div class="summary-panel-head player-voices-head"><div><small>PLAYER VOICES</small><h3>選手から出た意見</h3></div><span>${m.entries.length}件</span></div><div class="summary-source-list">${sourceOpinions}</div></div><div class="alia-plan-card"><div class="summary-panel-head alia-plan-head"><div><small>ALIA ADVICE</small></div></div><div class="action-plan-list"><div class="action-plan-card issue"><span class="action-plan-label">課題</span><div class="action-plan-answer">${esc(plan.issue)}</div></div><div class="action-plan-card action"><span class="action-plan-label">行動</span><div class="action-plan-answer">${esc(plan.action)}</div></div><div class="action-plan-card method"><span class="action-plan-label">方法</span><div class="action-plan-answer method-answer">${methodSections}</div></div></div></div><div class="summary-bottom-actions two-actions"><button class="btn back-action" onclick="state.view='room';render()">‹ 入力へ戻る</button><button class="btn gold" onclick="finalize()">確定して保存</button></div></section>`;
 }
 function historyView(){
  const ms=loadMeetings().sort((a,b)=>b.createdAt-a.createdAt);
@@ -149,7 +151,7 @@ function growthView(){ const ms=loadMeetings().filter(m=>m.status==='closed'); c
 function menuView(){
   const a=loadAccount();
   return `<section class="menu-page">
-    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.35" alt="Alia"></div>
+    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.37" alt="Alia"></div>
     <div class="menu-list">
       ${menuItem('👥','メンバー管理','メンバー・役割を確認')}
       ${menuItem('🔑','招待コード','コードの確認・コピー','copyCode()')}
@@ -177,6 +179,69 @@ function getCurrent(){return loadMeetings().find(m=>m.id===state.currentMeetingI
 function mutate(fn){const ms=loadMeetings();const i=ms.findIndex(m=>m.id===state.currentMeetingId);if(i<0)return;fn(ms[i]);saveMeetings(ms);}
 function updateTheme(v){mutate(m=>m.theme=v)}
 function addEntry(){const name=document.getElementById('name').value.trim();const text=document.getElementById('text').value.trim();if(!name||!text){toast('名前と意見を入力してください');return}mutate(m=>m.entries.push({name,text,createdAt:Date.now()}));render();toast('意見を追加しました')}
+function buildAdaptiveAdviceSections(m,plan){
+ const theme=(m.theme||'').trim();
+ const voices=(m.entries||[]).map(e=>e.text||'').join(' ');
+ const text=`${theme} ${voices}`;
+ const first=(m.entries||[]).map(e=>(e.text||'').trim()).find(Boolean)||theme||'今回のテーマ';
+ const compact=value=>String(value||'').replace(/^・/gm,'').replace(/\n+/g,'／');
+
+ if(/私生活|生活習慣|生活態度|規則正しい|朝|夜更かし|スマホ|整理整頓|身だしなみ/.test(text)){
+   return [
+    {icon:'🏠',label:'生活習慣',text:'起床・就寝・食事の時刻をまず3日間記録し、直す項目を1つだけ決めます。'},
+    {icon:'⏰',label:'時間の使い方',text:'学校・部活・家庭の予定を前日に確認し、準備と移動に10分の余裕をつくります。'},
+    {icon:'🔁',label:'続け方',text:'できた日をチェックし、週末に「続いた理由／崩れた理由」を短く振り返ります。'}
+   ];
+ }
+ if(/勉強|学習|宿題|成績|テスト|進路|受験|両立/.test(text)){
+   return [
+    {icon:'📚',label:'学習計画',text:'次の締切から逆算し、1日15〜30分で終わる単位に分けます。'},
+    {icon:'🗓',label:'部活との両立',text:'練習日の前後に短時間枠を固定し、疲れている日は復習だけに絞ります。'},
+    {icon:'✅',label:'確認方法',text:'週1回、予定と実績を見比べて、無理だった計画だけ調整します。'}
+   ];
+ }
+ if(/人間関係|仲間|雰囲気|信頼|喧嘩|ケンカ|話し合い|コミュニケーション|声掛け|声かけ/.test(text)){
+   return [
+    {icon:'🗣',label:'伝え方',text:'「事実→自分の気持ち→お願い」の順で、相手を責めずに短く伝えます。'},
+    {icon:'👂',label:'聞き方',text:'途中で否定せず最後まで聞き、最後に相手の意図を一文で確認します。'},
+    {icon:'🤝',label:'チームでの実践',text:'練習後に2分だけ共有時間をつくり、良かった声掛けを1つ挙げます。'}
+   ];
+ }
+ if(/キャプテン|副キャプテン|リーダー|役割|責任|まとめる/.test(text)){
+   return [
+    {icon:'⭐',label:'役割',text:'自分が全部決めず、目的と締切を示して担当を分けます。'},
+    {icon:'🗣',label:'働きかけ',text:'指示の前に理由を一言添え、最後に質問を受ける時間をつくります。'},
+    {icon:'👥',label:'チームづくり',text:'週1回、困っている人と良かった行動を確認し、次の一歩を決めます。'}
+   ];
+ }
+ if(/緊張|不安|プレッシャー|自信|メンタル|怖い/.test(text)){
+   return [
+    {icon:'🧠',label:'気持ちの整え方',text:'4秒吸って6秒吐く呼吸を5回行い、意識を結果ではなく次の1プレーへ戻します。'},
+    {icon:'🔁',label:'ルーティン',text:'試合前とプレー前の動作を毎回同じ順番にし、練習から繰り返します。'},
+    {icon:'📝',label:'振り返り',text:'緊張した場面と実行できた行動を1つずつ記録し、次回の対策を決めます。'}
+   ];
+ }
+ if(/睡眠|疲れ|疲労|休養|回復|体調|食事|栄養|水分/.test(text)){
+   return [
+    {icon:'🌙',label:'休養',text:'起床時刻を大きくずらさず、就寝前30分は強い光とスマホ操作を減らします。'},
+    {icon:'🥤',label:'補給',text:'普段飲み慣れた水分をこまめに取り、練習後は食事を抜かずに回復を優先します。'},
+    {icon:'📋',label:'体調確認',text:'睡眠時間・疲労感・痛みを毎日簡単に記録し、悪化時は指導者へ早めに伝えます。'}
+   ];
+ }
+ if(/ミドル|クイック|速攻|トス|レセプション|サーブレシーブ|返球|サーブ|スパイク|ブロック|ディグ|バレー|試合|練習/.test(text)){
+   return [
+    {icon:'🏐',label:'練習',text:compact(plan.method)},
+    {icon:'🏆',label:'試合',text:`「${first}」を使う条件と合図を事前に決め、試合中は1セットごとに実行できたか確認します。`},
+    {icon:'📊',label:'振り返り',text:'本数・成功した場面・できなかった理由を記録し、次の練習で試すことを1つ決めます。'}
+   ];
+ }
+ return [
+   {icon:'🔍',label:'原因',text:`「${first}」が起きる場面を具体的に3つ挙げ、共通点を探します。`},
+   {icon:'🚶',label:'最初の一歩',text:'明日から全員ができる小さな行動を1つ選び、実施するタイミングを決めます。'},
+   {icon:'✅',label:'確認',text:'1週間後にできた回数と変化を確認し、続けるか方法を変えるか話し合います。'}
+ ];
+}
+
 function buildAliaAdvice(m){
  const texts=(m.entries||[]).map(e=>(e.text||'').trim()).filter(Boolean);
  if(!texts.length) return 'まずは一人ずつ、今感じていることを短く出してみよう。';
@@ -255,7 +320,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.35', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.37', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
