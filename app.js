@@ -12,6 +12,46 @@ const TYPES = {
 };
 const ROLES = ['監督','コーチ','マネージャー','キャプテン','副キャプテン','選手'];
 
+const THEME_CATEGORIES = {
+  position: [
+    ['technique','技術・フォーム'],
+    ['tactics','戦術・判断'],
+    ['coordination','連携・コミュニケーション'],
+    ['mental','メンタル'],
+    ['conditioning','体調管理'],
+    ['other','その他']
+  ],
+  grade: [
+    ['role','学年としての役割'],
+    ['life','学校生活・私生活'],
+    ['time','時間管理・両立'],
+    ['relationship','人間関係・雰囲気'],
+    ['goal','目標・振り返り'],
+    ['mental','メンタル'],
+    ['conditioning','体調管理'],
+    ['other','その他']
+  ],
+  all: [
+    ['team_issue','チーム全体の課題'],
+    ['tactics','戦術・プレー方針'],
+    ['teamwork','チームワーク・雰囲気'],
+    ['rule','チームルール・約束'],
+    ['goal','目標・大会への準備'],
+    ['mental','メンタル'],
+    ['conditioning','体調管理'],
+    ['other','その他']
+  ]
+};
+function themeCategoryOptions(type, selected=''){
+  const options = THEME_CATEGORIES[type] || THEME_CATEGORIES.all;
+  return `<option value="">選択してください</option>` + options.map(([value,label])=>`<option value="${value}" ${value===selected?'selected':''}>${label}</option>`).join('');
+}
+function themeCategoryLabel(type, value){
+  const options = THEME_CATEGORIES[type] || [];
+  return (options.find(([key])=>key===value)||[])[1] || '';
+}
+
+
 function read(key, fallback){ try{return JSON.parse(localStorage.getItem(key)) ?? fallback}catch{return fallback} }
 function write(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
 function loadMeetings(){ return read('tt_meetings', []); }
@@ -74,7 +114,7 @@ function welcomeView(){
      <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.37</div>
+   <div class="welcome-version">Version 0.38</div>
  </main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
@@ -119,12 +159,19 @@ function selectView(){ const t=TYPES[state.selectedType]; return `<button class=
 function roomView(){
  const m=getCurrent(); const a=loadAccount(); if(!m) return '<div class="empty">ミーティングが見つかりません。</div>';
  const typeLabel = m.type==='position' ? 'ポジション別ミーティング' : TYPES[m.type].label;
- const themePlaceholder = m.type==='grade' ? '例：学年として意識したいこと' : m.type==='all' ? '例：次の大会へ向けて' : '例：レセプションの連携';
+ const themePlaceholder = m.type==='grade' ? '例：部活と勉強を両立するには' : m.type==='all' ? '例：次の大会へ向けて改善すること' : '例：ミドルをもっと使うには';
+ const categoryLabel = themeCategoryLabel(m.type,m.themeCategory||'');
  return `<section class="meeting-room">
    <header class="meeting-room-head"><div><small>${esc(typeLabel)}</small><h2>${esc(m.group)}ミーティング</h2></div><span class="meeting-room-mark">✦</span></header>
    <div class="room-meta room-meta-modern"><span><b>作成者</b>${esc(m.ownerName)}</span><span><b>ミーティングコード</b>${esc(a.teamCode)}</span></div>
    <div class="form-card meeting-form-card"><div class="meeting-form-title"><span>✎</span><div><b>意見を送る</b><small>短くても大丈夫。今感じていることを言葉にしよう。</small></div></div>
-     <label class="label">今日のテーマ</label><input id="theme" class="input" value="${esc(m.theme||'')}" placeholder="${themePlaceholder}" onchange="updateTheme(this.value)">
+     <div class="theme-picker-card">
+       <label class="label">今日のテーマ</label>
+       <select id="themeCategory" class="input theme-category-select" onchange="updateThemeCategory(this.value)">${themeCategoryOptions(m.type,m.themeCategory||'')}</select>
+       <label class="label theme-detail-label">具体的なテーマ</label>
+       <input id="theme" class="input" value="${esc(m.theme||'')}" placeholder="${themePlaceholder}" onchange="updateTheme(this.value)">
+       ${categoryLabel?`<small class="theme-selection-note">選択中：${esc(categoryLabel)}</small>`:''}
+     </div>
      <label class="label">名前</label><input id="name" class="input" value="${esc(a.displayName)}">
      <label class="label">意見・気付き・提案</label><textarea id="text" class="textarea" placeholder="短くても大丈夫です。"></textarea>
      <div class="actions meeting-send-actions"><button class="btn gold meeting-send" onclick="addEntry()">意見を送る <span>➤</span></button></div>
@@ -174,61 +221,63 @@ function joinTeamAccount(){ const code=document.getElementById('joinCode').value
 function copyCode(){ const code=loadAccount()?.teamCode||''; navigator.clipboard?.writeText(code).then(()=>toast('招待コードをコピーしました')).catch(()=>toast(`招待コード：${code}`)); }
 function saveProfile(){ const a=loadAccount(); a.displayName=document.getElementById('profileName').value.trim()||a.displayName; a.role=document.getElementById('profileRole').value; saveAccount(a); render(); toast('プロフィールを保存しました'); }
 function startType(type){state.selectedType=type;state.view='select';render()}
-function createMeeting(group){ const a=loadAccount(); const meetings=loadMeetings(); const m={id:uid(),teamId:a.teamId,type:state.selectedType,group,theme:'',entries:[],summary:'',status:'open',createdAt:Date.now(),ownerName:a.displayName}; meetings.push(m);saveMeetings(meetings);state.currentMeetingId=m.id;state.view='room';render(); }
+function createMeeting(group){ const a=loadAccount(); const meetings=loadMeetings(); const m={id:uid(),teamId:a.teamId,type:state.selectedType,group,themeCategory:'',theme:'',entries:[],summary:'',status:'open',createdAt:Date.now(),ownerName:a.displayName}; meetings.push(m);saveMeetings(meetings);state.currentMeetingId=m.id;state.view='room';render(); }
 function getCurrent(){return loadMeetings().find(m=>m.id===state.currentMeetingId)}
 function mutate(fn){const ms=loadMeetings();const i=ms.findIndex(m=>m.id===state.currentMeetingId);if(i<0)return;fn(ms[i]);saveMeetings(ms);}
+function updateThemeCategory(v){mutate(m=>m.themeCategory=v);render()}
 function updateTheme(v){mutate(m=>m.theme=v)}
-function addEntry(){const name=document.getElementById('name').value.trim();const text=document.getElementById('text').value.trim();if(!name||!text){toast('名前と意見を入力してください');return}mutate(m=>m.entries.push({name,text,createdAt:Date.now()}));render();toast('意見を追加しました')}
+function addEntry(){const m=getCurrent();const category=document.getElementById('themeCategory')?.value||m?.themeCategory||'';const theme=document.getElementById('theme')?.value.trim()||m?.theme||'';const name=document.getElementById('name').value.trim();const text=document.getElementById('text').value.trim();if(!category){toast('今日のテーマを選択してください');return}if(!theme){toast('具体的なテーマを入力してください');return}if(!name||!text){toast('名前と意見を入力してください');return}mutate(item=>{item.themeCategory=category;item.theme=theme;item.entries.push({name,text,createdAt:Date.now()})});render();toast('意見を追加しました')}
 function buildAdaptiveAdviceSections(m,plan){
  const theme=(m.theme||'').trim();
  const voices=(m.entries||[]).map(e=>e.text||'').join(' ');
+ const category=m.themeCategory||'';
  const text=`${theme} ${voices}`;
  const first=(m.entries||[]).map(e=>(e.text||'').trim()).find(Boolean)||theme||'今回のテーマ';
  const compact=value=>String(value||'').replace(/^・/gm,'').replace(/\n+/g,'／');
 
- if(/私生活|生活習慣|生活態度|規則正しい|朝|夜更かし|スマホ|整理整頓|身だしなみ/.test(text)){
+ if(['life','time'].includes(category) || /私生活|生活習慣|生活態度|規則正しい|朝|夜更かし|スマホ|整理整頓|身だしなみ/.test(text)){
    return [
     {icon:'🏠',label:'生活習慣',text:'起床・就寝・食事の時刻をまず3日間記録し、直す項目を1つだけ決めます。'},
     {icon:'⏰',label:'時間の使い方',text:'学校・部活・家庭の予定を前日に確認し、準備と移動に10分の余裕をつくります。'},
     {icon:'🔁',label:'続け方',text:'できた日をチェックし、週末に「続いた理由／崩れた理由」を短く振り返ります。'}
    ];
  }
- if(/勉強|学習|宿題|成績|テスト|進路|受験|両立/.test(text)){
+ if(category==='time' || /勉強|学習|宿題|成績|テスト|進路|受験|両立/.test(text)){
    return [
     {icon:'📚',label:'学習計画',text:'次の締切から逆算し、1日15〜30分で終わる単位に分けます。'},
     {icon:'🗓',label:'部活との両立',text:'練習日の前後に短時間枠を固定し、疲れている日は復習だけに絞ります。'},
     {icon:'✅',label:'確認方法',text:'週1回、予定と実績を見比べて、無理だった計画だけ調整します。'}
    ];
  }
- if(/人間関係|仲間|雰囲気|信頼|喧嘩|ケンカ|話し合い|コミュニケーション|声掛け|声かけ/.test(text)){
+ if(['relationship','teamwork','coordination'].includes(category) || /人間関係|仲間|雰囲気|信頼|喧嘩|ケンカ|話し合い|コミュニケーション|声掛け|声かけ/.test(text)){
    return [
     {icon:'🗣',label:'伝え方',text:'「事実→自分の気持ち→お願い」の順で、相手を責めずに短く伝えます。'},
     {icon:'👂',label:'聞き方',text:'途中で否定せず最後まで聞き、最後に相手の意図を一文で確認します。'},
     {icon:'🤝',label:'チームでの実践',text:'練習後に2分だけ共有時間をつくり、良かった声掛けを1つ挙げます。'}
    ];
  }
- if(/キャプテン|副キャプテン|リーダー|役割|責任|まとめる/.test(text)){
+ if(category==='role' || /キャプテン|副キャプテン|リーダー|役割|責任|まとめる/.test(text)){
    return [
     {icon:'⭐',label:'役割',text:'自分が全部決めず、目的と締切を示して担当を分けます。'},
     {icon:'🗣',label:'働きかけ',text:'指示の前に理由を一言添え、最後に質問を受ける時間をつくります。'},
     {icon:'👥',label:'チームづくり',text:'週1回、困っている人と良かった行動を確認し、次の一歩を決めます。'}
    ];
  }
- if(/緊張|不安|プレッシャー|自信|メンタル|怖い/.test(text)){
+ if(category==='mental' || /緊張|不安|プレッシャー|自信|メンタル|怖い/.test(text)){
    return [
     {icon:'🧠',label:'気持ちの整え方',text:'4秒吸って6秒吐く呼吸を5回行い、意識を結果ではなく次の1プレーへ戻します。'},
     {icon:'🔁',label:'ルーティン',text:'試合前とプレー前の動作を毎回同じ順番にし、練習から繰り返します。'},
     {icon:'📝',label:'振り返り',text:'緊張した場面と実行できた行動を1つずつ記録し、次回の対策を決めます。'}
    ];
  }
- if(/睡眠|疲れ|疲労|休養|回復|体調|食事|栄養|水分/.test(text)){
+ if(category==='conditioning' || /睡眠|疲れ|疲労|休養|回復|体調|食事|栄養|水分/.test(text)){
    return [
     {icon:'🌙',label:'休養',text:'起床時刻を大きくずらさず、就寝前30分は強い光とスマホ操作を減らします。'},
     {icon:'🥤',label:'補給',text:'普段飲み慣れた水分をこまめに取り、練習後は食事を抜かずに回復を優先します。'},
     {icon:'📋',label:'体調確認',text:'睡眠時間・疲労感・痛みを毎日簡単に記録し、悪化時は指導者へ早めに伝えます。'}
    ];
  }
- if(/ミドル|クイック|速攻|トス|レセプション|サーブレシーブ|返球|サーブ|スパイク|ブロック|ディグ|バレー|試合|練習/.test(text)){
+ if(['technique','tactics','team_issue'].includes(category) || /ミドル|クイック|速攻|トス|レセプション|サーブレシーブ|返球|サーブ|スパイク|ブロック|ディグ|バレー|試合|練習/.test(text)){
    return [
     {icon:'🏐',label:'練習',text:compact(plan.method)},
     {icon:'🏆',label:'試合',text:`「${first}」を使う条件と合図を事前に決め、試合中は1セットごとに実行できたか確認します。`},
@@ -297,14 +346,16 @@ function makeSummary(m){
  const theme=m.theme||'今回のテーマ';
  const plan=buildActionPlan(m);
  const points=(m.entries||[]).length ? m.entries.slice(0,20).map((e,i)=>`${i+1}. ${e.text}（${e.name}）`).join('\n') : 'まだ意見はありません。';
- return `テーマ：${theme}\n\n【課題】\n${plan.issue}\n\n【行動】\n${plan.action}\n\n【方法】\n${plan.method}\n\n【元の発言】\n${points}`;
+ const categoryLabel=themeCategoryLabel(m.type,m.themeCategory||'');
+ return `分類：${categoryLabel||'未選択'}\nテーマ：${theme}\n\n【課題】\n${plan.issue}\n\n【行動】\n${plan.action}\n\n【方法】\n${plan.method}\n\n【元の発言】\n${points}`;
 }
 function composeSummary(){
  const m=getCurrent();
  if(!m) return '';
  const plan=parseActionPlan(m.summary || makeSummary(m),m);
  const points=(m.entries||[]).length ? m.entries.map((e,i)=>`${i+1}. ${e.text}（${e.name}）`).join('\n') : 'まだ意見はありません。';
- return `テーマ：${m.theme||'今回のテーマ'}\n\n【課題】\n${plan.issue}\n\n【行動】\n${plan.action}\n\n【方法】\n${plan.method}\n\n【元の発言】\n${points}`;
+ const categoryLabel=themeCategoryLabel(m.type,m.themeCategory||'');
+ return `分類：${categoryLabel||'未選択'}\nテーマ：${m.theme||'今回のテーマ'}\n\n【課題】\n${plan.issue}\n\n【行動】\n${plan.action}\n\n【方法】\n${plan.method}\n\n【元の発言】\n${points}`;
 }
 function openSummary(){state.view='summary';render()}
 function finalize(){const m=getCurrent();if(!m){toast('ミーティングが見つかりません');return}const s=composeSummary();mutate(item=>{item.summary=s;item.status='closed';item.closedAt=Date.now()});state.view='meetings';render();toast('ミーティングを保存しました')}
@@ -320,7 +371,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.37', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.38', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
