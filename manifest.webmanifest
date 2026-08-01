@@ -1,0 +1,9 @@
+{
+  "name":"TEAM Theory",
+  "short_name":"TEAM Theory",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#f5f6f8",
+  "theme_color":"#0f1720",
+  "icons":[]
+}
