@@ -212,3 +212,56 @@ button,input,textarea,select{font:inherit}.app-shell{width:100%;max-width:480px;
 @keyframes aliaFloat{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-7px) rotate(4deg)}}
 @media(max-width:390px){.alia-character-stage{min-height:228px}.alia-character{width:196px;max-height:230px}.alia-thought{width:180px;max-width:48%;margin-bottom:62px;padding:17px 14px}.alia-thought strong{font-size:22px}.alia-thought>span:not(.thought-dot){font-size:12.5px}.alia-feather{font-size:24px}.alia-sparkle-1{font-size:21px}}
 @media(max-height:760px){.alia-character-stage{min-height:205px;margin-bottom:10px}.alia-character{width:178px;max-height:205px}.alia-thought{margin-bottom:50px;padding:14px 12px}.alia-thought strong{font-size:20px}.alia-thought>span:not(.thought-dot){font-size:11.5px}}
+
+/* v0.13 reference-image alignment: thought bubble left, Alia right, brighter eyes */
+.alia-home{
+  padding-top:64px;
+  background:
+    radial-gradient(circle at 18% 18%,rgba(244,158,183,.14),transparent 28%),
+    radial-gradient(circle at 84% 12%,rgba(215,181,104,.12),transparent 23%),
+    linear-gradient(180deg,#091321 0%,#0e1a29 58%,#142235 100%);
+}
+.alia-title-block{margin-bottom:8px}
+.alia-title-block .alia-tagline{display:block!important;visibility:visible!important;opacity:1!important;margin:10px 0 0!important;color:#f7ddcf!important}
+.alia-character-stage{
+  min-height:270px;
+  align-items:flex-end;
+  justify-content:center;
+  gap:0;
+  margin:8px auto 18px;
+}
+.alia-thought{
+  order:1;
+  width:205px;
+  max-width:49%;
+  align-self:center;
+  margin:0 -12px 72px 0;
+  padding:20px 18px 18px;
+  border-radius:48% 52% 46% 54% / 52% 48% 52% 48%;
+  z-index:5;
+}
+.alia-character{
+  order:2;
+  width:238px;
+  max-height:270px;
+  margin:0 -18px -3px -10px;
+  filter:drop-shadow(0 16px 24px rgba(0,0,0,.36)) brightness(1.2) contrast(1.08) saturate(1.12);
+  z-index:4;
+}
+.thought-dot-1{left:auto;right:-24px;bottom:28px;width:19px;height:19px}
+.thought-dot-2{left:auto;right:-40px;bottom:15px;width:13px;height:13px}
+.thought-dot-3{left:auto;right:-50px;bottom:5px;width:8px;height:8px}
+.alia-sparkle-1{left:2%;top:18%}.alia-sparkle-2{right:2%;top:5%}.alia-sparkle-3{right:1%;bottom:10%}
+.alia-feather-1{left:-1%;bottom:8%}.alia-feather-2{right:-1%;top:38%}
+@media(max-width:390px){
+  .alia-home{padding-top:56px}
+  .alia-character-stage{min-height:238px;margin-bottom:14px}
+  .alia-thought{width:178px;max-width:48%;margin:0 -10px 62px 0;padding:17px 14px}
+  .alia-character{width:210px;max-height:242px;margin-right:-16px}
+}
+@media(max-height:760px){
+  .alia-home{padding-top:42px}
+  .alia-character-stage{min-height:210px;margin-bottom:10px}
+  .alia-thought{margin-bottom:48px;padding:14px 12px}
+  .alia-character{width:188px;max-height:212px}
+}
