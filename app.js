@@ -69,22 +69,22 @@ function welcomeView(){
        <span class="thought-dot thought-dot-1"></span><span class="thought-dot thought-dot-2"></span><span class="thought-dot thought-dot-3"></span>
        <div class="thought-copy"><strong>Alia</strong><span>今日も最高のチームに<br>しようね！</span></div>
      </div>
-     <img class="alia-character" src="./icons/alia-standalone.png?v=0.20" alt="Alia">
+     <img class="alia-character" src="./icons/alia-standalone.png?v=0.21" alt="Alia">
    </div>
    <div class="welcome-actions">
      <button class="welcome-action create" onclick="go('createTeam')"><span class="action-icon">👥</span><span><b>チームで始める</b><small>代表者はチームを作成。選手は招待コードで参加します。</small></span><span class="action-arrow">›</span></button>
      <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.20</div>
+   <div class="welcome-version">Version 0.21</div>
  </main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
 function createTeamView(){
- return `<main class="onboarding compact"><button class="back standalone" onclick="go('welcome')">‹ 戻る</button><h1>チームを作る</h1><div class="welcome-card form-card"><label class="label">チーム名</label><input id="teamName" class="input" placeholder="例：Alia高校"><label class="label">あなたの名前</label><input id="displayName" class="input" placeholder="例：Alia"><label class="label">役割</label><select id="role" class="input">${roleOptions()}</select><button class="btn primary wide" onclick="createTeamAccount()">作成する</button></div></main>`;
+ return `<main class="onboarding compact form-onboarding"><h1>チームを作る</h1><p class="form-lead">チーム名とあなたの情報を登録します。</p><div class="welcome-card form-card"><label class="label">チーム名</label><input id="teamName" class="input" placeholder="例：Alia高校"><label class="label">あなたの名前</label><input id="displayName" class="input" placeholder="例：Alia"><label class="label">役割</label><select id="role" class="input">${roleOptions()}</select></div><div class="onboarding-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon">⌂</span><span>ホーム</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>作成する</span><span class="bottom-action-arrow">›</span></button></div></main>`;
 }
 function joinTeamView(){
- return `<main class="onboarding compact"><button class="back standalone" onclick="go('welcome')">‹ 戻る</button><h1>チームに参加</h1><div class="welcome-card form-card"><label class="label">招待コード</label><input id="joinCode" class="input code-input" maxlength="6" placeholder="ABC123"><label class="label">チーム名</label><input id="joinTeamName" class="input" placeholder="例：Alia高校"><label class="label">あなたの名前</label><input id="joinName" class="input" placeholder="例：Alia"><label class="label">役割</label><select id="joinRole" class="input">${roleOptions()}</select><button class="btn primary wide" onclick="joinTeamAccount()">参加する</button><p class="note">試作版では参加情報をこの端末に登録します。複数端末同期はオンライン接続版で有効になります。</p></div></main>`;
+ return `<main class="onboarding compact form-onboarding"><h1>チームに参加</h1><p class="form-lead">招待コードとあなたの情報を入力します。</p><div class="welcome-card form-card"><label class="label">招待コード</label><input id="joinCode" class="input code-input" maxlength="6" placeholder="ABC123"><label class="label">チーム名</label><input id="joinTeamName" class="input" placeholder="例：Alia高校"><label class="label">あなたの名前</label><input id="joinName" class="input" placeholder="例：Alia"><label class="label">役割</label><select id="joinRole" class="input">${roleOptions()}</select><p class="note">試作版では参加情報をこの端末に登録します。複数端末同期はオンライン接続版で有効になります。</p></div><div class="onboarding-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon">⌂</span><span>ホーム</span></button><button class="bottom-action join-action" onclick="joinTeamAccount()"><span>参加する</span><span class="bottom-action-arrow">›</span></button></div></main>`;
 }
 
 function homeView(){
@@ -134,7 +134,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.14', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.21', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);

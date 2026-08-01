@@ -615,3 +615,19 @@ button,input,textarea,select{font:inherit}.app-shell{width:100%;max-width:480px;
 @media(max-height:760px){
   .alia-thought{transform:translate(12px,-10px)}
 }
+
+
+/* v0.21 — thumb-friendly bottom actions for create/join screens */
+.form-onboarding{justify-content:flex-start;padding:46px 22px calc(118px + env(safe-area-inset-bottom));text-align:center}
+.form-onboarding h1{margin:18px 0 8px}
+.form-lead{margin:0 0 22px!important;color:#cbd3dc!important;font-size:14px}
+.form-onboarding .welcome-card{margin-top:0}
+.onboarding-bottom-actions{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:.78fr 1.42fr;gap:12px;padding:12px 18px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(15,23,32,0),rgba(15,23,32,.9) 20%,rgba(15,23,32,.98));z-index:40}
+.bottom-action{min-height:58px;border-radius:18px;border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;gap:8px;font-weight:850;font-size:16px;box-shadow:0 10px 24px rgba(0,0,0,.28)}
+.secondary-action{color:#f5f7fa;background:rgba(255,255,255,.09)}
+.primary-action{color:#fff;background:linear-gradient(135deg,#f58baa,#e96f95);border-color:rgba(255,184,205,.62)}
+.join-action{color:#17130b;background:linear-gradient(135deg,#f2c256,#dca62e);border-color:rgba(255,222,146,.62)}
+.bottom-action-icon{font-size:20px;line-height:1;transform:translateY(-1px)}
+.bottom-action-arrow{font-size:28px;line-height:1;margin-left:2px;transform:translateY(-1px)}
+.bottom-action:active{transform:scale(.985)}
+@media(max-width:360px){.onboarding-bottom-actions{gap:9px;padding-left:12px;padding-right:12px}.bottom-action{min-height:54px;font-size:15px;border-radius:16px}}
