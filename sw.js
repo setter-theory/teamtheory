@@ -1,12 +1,15 @@
-const CACHE = 'teamtheory-v0.5';
+const CACHE = 'teamtheory-v0.6';
 const APP_SHELL = [
   './',
   './index.html',
-  './styles.css?v=0.5',
-  './app.js?v=0.5',
-  './manifest.webmanifest?v=0.5',
+  './styles.css?v=0.6',
+  './app.js?v=0.6',
+  './manifest.webmanifest?v=0.6',
   './icons/icon-192.png',
-  './icons/icon-512.png'
+  './icons/icon-512.png',
+  './icons/apple-touch-icon.png',
+  './icons/favicon-32.png',
+  './icons/favicon-64.png'
 ];
 
 self.addEventListener('install', event => {

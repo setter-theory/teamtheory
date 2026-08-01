@@ -32,3 +32,11 @@ button,input,textarea,select{font:inherit}.app-shell{width:100%;max-width:480px;
 .logo-node.n1{top:14px;left:16px}.logo-node.n2{top:14px;right:16px}.logo-node.n3{bottom:13px;left:50%;transform:translateX(-50%)}
 
 .welcome-version{margin:-6px 0 18px;color:#9aa6b2;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+
+
+/* v0.6 formal TEAM Theory icon */
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand-icon{width:46px;height:46px;border-radius:13px;object-fit:cover;box-shadow:0 5px 16px rgba(15,23,32,.18);flex:0 0 auto}
+.brand>div:nth-child(2){min-width:0;flex:1}
+.welcome-app-icon{width:132px;height:132px;border-radius:30px;object-fit:cover;box-shadow:0 18px 45px rgba(15,23,32,.24);margin:8px auto 22px;display:block}
+@media (max-width:380px){.brand-icon{width:40px;height:40px;border-radius:11px}.welcome-app-icon{width:116px;height:116px;border-radius:26px}}

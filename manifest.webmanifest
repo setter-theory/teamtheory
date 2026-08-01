@@ -3,7 +3,7 @@
   "short_name": "TEAM Theory",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f5f6f8",
+  "background_color": "#05070a",
   "theme_color": "#0f1720",
   "icons": [
     {
