@@ -54,8 +54,47 @@ function themeCategoryLabel(type, value){
 
 function read(key, fallback){ try{return JSON.parse(localStorage.getItem(key)) ?? fallback}catch{return fallback} }
 function write(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
-function loadMeetings(){ return read('tt_meetings', []); }
-function saveMeetings(v){ write('tt_meetings', v); }
+function looksLikeMeeting(item){
+  return !!item && typeof item==='object' && (
+    Array.isArray(item.entries) || 'group' in item || 'theme' in item ||
+    'summary' in item || 'status' in item || 'createdAt' in item
+  );
+}
+function normalizeMeetingArray(value){
+  if(Array.isArray(value)) return value.filter(looksLikeMeeting);
+  if(value && typeof value==='object'){
+    for(const key of ['meetings','meetingHistory','history','items','data']){
+      if(Array.isArray(value[key])) return value[key].filter(looksLikeMeeting);
+    }
+  }
+  return [];
+}
+function meetingFingerprint(m){
+  return [m.id||'',m.createdAt||'',m.group||'',m.theme||'',(m.entries||[]).length].join('|');
+}
+function loadMeetings(){
+  const primary=normalizeMeetingArray(read('tt_meetings', []));
+  const recovered=[];
+  // 過去版・試作版で保存キーが変わっていても履歴を回収する。
+  for(let i=0;i<localStorage.length;i++){
+    const key=localStorage.key(i)||'';
+    if(key==='tt_meetings' || !/(meeting|history|議事|履歴)/i.test(key)) continue;
+    try{ recovered.push(...normalizeMeetingArray(JSON.parse(localStorage.getItem(key)))); }catch{}
+  }
+  const merged=[]; const seen=new Set();
+  [...primary,...recovered].forEach(m=>{
+    const fp=meetingFingerprint(m);
+    if(seen.has(fp)) return;
+    seen.add(fp); merged.push(m);
+  });
+  if(merged.length!==primary.length) write('tt_meetings',merged);
+  return merged;
+}
+function saveMeetings(v){
+  write('tt_meetings', v);
+  // 復旧用バックアップ。今後の更新でも履歴を失わない。
+  write('tt_meetings_backup', v);
+}
 function loadAccounts(){
   let accounts=read('tt_accounts', []);
   const legacy=read('tt_account', null);
@@ -89,8 +128,8 @@ function migrateLegacyMeetingOwnership(){
   const active=loadAccount();
   if(!active) return;
   let changed=false;
-  const migrated=meetings.map(m=>{
-    // v0.38以前の履歴や、旧チームIDの履歴を現在の保存チームへ引き継ぐ。
+  let migrated=meetings.map(m=>{
+    // v0.38以前の履歴・旧ID・IDなし履歴を現在の保存チームへ引き継ぐ。
     if(!m.teamId || !validIds.has(m.teamId)){
       changed=true;
       return {...m,teamId:active.teamId,teamName:m.teamName||active.teamName};
@@ -98,6 +137,11 @@ function migrateLegacyMeetingOwnership(){
     if(!m.teamName){ changed=true; return {...m,teamName:(accounts.find(a=>a.teamId===m.teamId)||active).teamName}; }
     return m;
   });
+  // 保存チームが1つだけなら、過去履歴はすべてそのチームのものとして復旧する。
+  if(accounts.length===1 && migrated.some(m=>m.teamId!==active.teamId)){
+    migrated=migrated.map(m=>({...m,teamId:active.teamId,teamName:active.teamName||m.teamName}));
+    changed=true;
+  }
   if(changed) saveMeetings(migrated);
 }
 function currentTeamMeetings(){
@@ -155,7 +199,7 @@ function welcomeView(){
        <span class="thought-dot thought-dot-1"></span><span class="thought-dot thought-dot-2"></span><span class="thought-dot thought-dot-3"></span>
        <div class="thought-copy"><strong>Alia</strong><span>今日も最高のチームに<br>しようね！</span></div>
      </div>
-     <img class="alia-character" src="./icons/alia-standalone.png?v=0.21" alt="Alia">
+     <img class="alia-character" src="./icons/alia-standalone.png?v=0.39.2" alt="Alia">
    </div>
    <div class="welcome-actions">
      <button class="welcome-action create" onclick="go('createTeam')"><span class="action-icon">👥</span><span><b>チームで始める</b><small>代表者はチームを作成。選手は招待コードで参加します。</small></span><span class="action-arrow">›</span></button>
@@ -163,13 +207,15 @@ function welcomeView(){
    </div>
    ${savedTeamsView()}
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.39.1</div>
+   <div class="welcome-version">Version 0.39.2</div>
  </main>`;
 }
 function savedTeamsView(){
  const teams=loadAccounts();
  if(!teams.length) return '';
- return `<section class="saved-teams-panel"><div class="saved-teams-head"><div><small>SAVED TEAMS</small><h2>保存したチーム</h2></div><span>${teams.length}件</span></div><div class="saved-teams-list">${teams.map(a=>`<button class="saved-team-card" onclick="switchTeam('${a.teamId}')"><span class="saved-team-icon">♟</span><span><b>${esc(a.teamName)}</b><small>${esc(a.displayName)}・${esc(a.role)}</small></span><span class="saved-team-arrow">›</span></button>`).join('')}</div></section>`;
+ const visible=teams.slice(0,2);
+ const rest=teams.length-visible.length;
+ return `<section class="saved-teams-panel"><div class="saved-teams-head"><div><small>SAVED TEAMS</small><h2>保存したチーム</h2></div><span>${teams.length}件</span></div><div class="saved-teams-list">${visible.map(a=>`<button class="saved-team-card" onclick="switchTeam('${a.teamId}')"><span class="saved-team-icon">♟</span><span><b>${esc(a.teamName)}</b><small>${esc(a.displayName)}・${esc(a.role)}</small></span><span class="saved-team-arrow">›</span></button>`).join('')}</div>${rest>0?`<button class="saved-teams-more" onclick="go('menu')">ほか${rest}件を見る ›</button>`:''}</section>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
 function createTeamView(){
@@ -180,7 +226,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon">♟</span><span>チーム名</span></label><input id="teamName" class="input create-input" placeholder="例：Alia高校"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon person-icon">●</span><span>あなたの名前</span></label><input id="displayName" class="input create-input" placeholder="例：Alia"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.22" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.39.2" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -447,7 +493,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.39.1', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.39.2', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
