@@ -785,3 +785,17 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
   .history-card-modern h3{font-size:14px}
   .history-card-modern .summary-preview{max-height:36px}
 }
+
+
+/* v0.29 Alia summary attribution: keep every summary connected to its original speaker */
+.summary-source-section{margin-top:20px}
+.summary-source-title{margin:0 0 4px}
+.summary-source-lead{margin:0 0 12px;color:#94a0b1;font-size:12px;line-height:1.55}
+.summary-source-list{display:grid;gap:10px}
+.summary-source-card{display:grid;grid-template-columns:34px 1fr;gap:11px;padding:13px 14px;border:1px solid rgba(241,111,153,.24);border-radius:17px;background:linear-gradient(145deg,#101c2d,#0a1422);box-shadow:0 8px 20px rgba(0,0,0,.16)}
+.summary-source-number{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:linear-gradient(145deg,#f37ba2,#c94a73);color:#fff;font-weight:900;font-size:12px}
+.summary-source-meta{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.summary-source-meta strong{color:#ff91b4;font-size:13px}
+.summary-source-meta small{color:#7f8b9d;font-size:10px}
+.summary-source-body p{margin:7px 0 0;color:#edf1f6;font-size:13px;line-height:1.65;white-space:pre-wrap}
+@media(max-width:390px){.summary-source-card{grid-template-columns:30px 1fr;padding:12px}.summary-source-number{width:27px;height:27px}}
