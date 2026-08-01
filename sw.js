@@ -1,4 +1,4 @@
-const CACHE = 'teamtheory-v0.23';
+const CACHE = 'teamtheory-v0.24';
 const APP_SHELL = [
   './',
   './index.html',

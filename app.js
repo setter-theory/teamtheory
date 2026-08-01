@@ -25,10 +25,10 @@ function esc(s=''){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&l
 function shell(content, active='home'){
   const a=loadAccount();
   const team=a?.teamName || 'TEAM Theory';
-  return `<div class="topbar"><div class="brand"><img class="brand-icon" src="./icons/icon-192.png?v=0.12" alt=""><div><h1>TEAM Theory</h1><div class="team-name">${esc(team)}</div></div><div class="version">Prototype 0.15</div></div></div>
+  return `<div class="topbar"><div class="brand"><img class="brand-icon" src="./icons/icon-192.png?v=0.24" alt="TEAM Theory"><div class="brand-copy"><h1>TEAM Theory</h1><div class="team-name"><span class="team-badge">♟</span>${esc(team)}</div></div><div class="top-actions"><button class="top-icon" aria-label="通知">♧<span class="notify-dot"></span></button><button class="top-icon menu-icon" aria-label="メニュー">☰</button></div></div></div>
   <main class="content">${content}</main>
   <nav class="bottom-nav">
-    ${nav('home','⌂','ホーム',active)}${nav('meetings','▣','履歴',active)}${nav('growth','↗','成長',active)}${nav('profile','●','設定',active)}
+    ${nav('home','⌂','ホーム',active)}${nav('meetings','▤','履歴',active)}${nav('growth','↗','成長',active)}${nav('profile','⚙','設定',active)}
   </nav>`;
 }
 function nav(view,icon,label,active){return `<button class="nav-btn ${active===view?'active':''}" onclick="go('${view}')"><span>${icon}</span>${label}</button>`}
@@ -76,7 +76,7 @@ function welcomeView(){
      <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.23</div>
+   <div class="welcome-version">Version 0.24</div>
  </main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
@@ -110,8 +110,8 @@ function joinTeamView(){
 
 function homeView(){
   const a=loadAccount(); const active=loadMeetings().find(m=>m.status==='open');
-  return `<section class="hero"><div class="eyebrow">${esc(a.displayName)}さん・${esc(a.role)}</div><h2>今日は何を話し合いますか？</h2><p>それぞれの意見を集め、最後にチームの一つの結論へまとめます。</p></section>
-  <div class="invite-strip"><div><small>チーム招待コード</small><strong>${esc(a.teamCode)}</strong></div><button class="mini-btn" onclick="copyCode()">コピー</button></div>
+  return `<section class="hero home-hero"><div class="hero-copy"><div class="eyebrow"><span class="eyebrow-icon">♙</span>${esc(a.displayName)}さん・${esc(a.role)}</div><h2>今日は何を話し合いますか？</h2><p>それぞれの意見を集め、最後にチームの一つの結論へまとめます。</p></div><img class="home-alia" src="./icons/alia-standalone.png?v=0.24" alt="Alia"></section>
+  <div class="invite-strip"><div><small><span class="invite-icon">⚿</span>チーム招待コード</small><strong>${esc(a.teamCode)}</strong><p>このコードを共有して仲間をチームに招待できます。</p></div><button class="mini-btn" onclick="copyCode()"><span>▣</span>コピー</button></div>
   ${active?`<div class="section-title"><h3>進行中</h3><span>${active.entries.length}件の意見</span></div><div class="progress-card"><span class="pill">進行中</span><h3>${esc(active.group)}ミーティング</h3><p class="subtitle">${esc(active.theme||'テーマ未設定')}</p><div class="actions"><button class="btn primary" onclick="resume('${active.id}')">続きから</button></div></div>`:''}
   <div class="section-title"><h3>ミーティングを始める</h3><span>3種類</span></div>
   <div class="card-grid">${meetingCard('position','ポジション別','同じ役割だから見える課題を共有')}${meetingCard('grade','学年別','学年ごとの役割と行動を整理')}${meetingCard('all','全体','各グループの結論をチームの方針へ')}</div>`;
