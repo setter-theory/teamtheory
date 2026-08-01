@@ -25,7 +25,7 @@ function esc(s=''){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&l
 function shell(content, active='home'){
   const a=loadAccount();
   const team=a?.teamName || 'TEAM Theory';
-  return `<div class="topbar"><div class="brand"><div><h1>TEAM Theory</h1><div class="team-name">${esc(team)}</div></div><div class="version">Prototype 0.3</div></div></div>
+  return `<div class="topbar"><div class="brand"><div><h1>TEAM Theory</h1><div class="team-name">${esc(team)}</div></div><div class="version">Prototype 0.4</div></div></div>
   <main class="content">${content}</main>
   <nav class="bottom-nav">
     ${nav('home','⌂','ホーム',active)}${nav('meetings','▣','履歴',active)}${nav('growth','↗','成長',active)}${nav('profile','●','設定',active)}
@@ -49,14 +49,14 @@ function render(){
 }
 
 function welcomeView(){
- return `<main class="onboarding"><div class="logo-mark">TT</div><h1>TEAM Theory</h1><p>教わるから、考えるへ。</p><div class="welcome-card"><h2>チームで始める</h2><p>代表者はチームを作成。選手は招待コードで参加します。</p><button class="btn primary wide" onclick="go('createTeam')">チームを作る</button><button class="btn secondary wide" onclick="go('joinTeam')">コードで参加する</button></div></main>`;
+ return `<main class="onboarding"><div class="logo-mark" aria-label="TEAM Theory"><span class="logo-t">T</span><span class="logo-node n1"></span><span class="logo-node n2"></span><span class="logo-node n3"></span></div><h1>TEAM Theory</h1><p>教わるから、考えるへ。</p><div class="welcome-card"><h2>チームで始める</h2><p>代表者はチームを作成。選手は招待コードで参加します。</p><button class="btn primary wide" onclick="go('createTeam')">チームを作る</button><button class="btn secondary wide" onclick="go('joinTeam')">コードで参加する</button></div></main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
 function createTeamView(){
- return `<main class="onboarding compact"><button class="back standalone" onclick="go('welcome')">‹ 戻る</button><h1>チームを作る</h1><div class="welcome-card form-card"><label class="label">チーム名</label><input id="teamName" class="input" placeholder="例：佐沼高校 女子バレー部"><label class="label">あなたの名前</label><input id="displayName" class="input" placeholder="例：鹿野 裕太"><label class="label">役割</label><select id="role" class="input">${roleOptions()}</select><button class="btn primary wide" onclick="createTeamAccount()">作成する</button></div></main>`;
+ return `<main class="onboarding compact"><button class="back standalone" onclick="go('welcome')">‹ 戻る</button><h1>チームを作る</h1><div class="welcome-card form-card"><label class="label">チーム名</label><input id="teamName" class="input" placeholder="例：Aquila高校"><label class="label">あなたの名前</label><input id="displayName" class="input" placeholder="例：Aquila"><label class="label">役割</label><select id="role" class="input">${roleOptions()}</select><button class="btn primary wide" onclick="createTeamAccount()">作成する</button></div></main>`;
 }
 function joinTeamView(){
- return `<main class="onboarding compact"><button class="back standalone" onclick="go('welcome')">‹ 戻る</button><h1>チームに参加</h1><div class="welcome-card form-card"><label class="label">招待コード</label><input id="joinCode" class="input code-input" maxlength="6" placeholder="ABC123"><label class="label">チーム名</label><input id="joinTeamName" class="input" placeholder="例：佐沼高校 女子バレー部"><label class="label">あなたの名前</label><input id="joinName" class="input" placeholder="例：佐藤 花子"><label class="label">役割</label><select id="joinRole" class="input">${roleOptions()}</select><button class="btn primary wide" onclick="joinTeamAccount()">参加する</button><p class="note">試作版では参加情報をこの端末に登録します。複数端末同期はオンライン接続版で有効になります。</p></div></main>`;
+ return `<main class="onboarding compact"><button class="back standalone" onclick="go('welcome')">‹ 戻る</button><h1>チームに参加</h1><div class="welcome-card form-card"><label class="label">招待コード</label><input id="joinCode" class="input code-input" maxlength="6" placeholder="ABC123"><label class="label">チーム名</label><input id="joinTeamName" class="input" placeholder="例：Aquila高校"><label class="label">あなたの名前</label><input id="joinName" class="input" placeholder="例：Aquila"><label class="label">役割</label><select id="joinRole" class="input">${roleOptions()}</select><button class="btn primary wide" onclick="joinTeamAccount()">参加する</button><p class="note">試作版では参加情報をこの端末に登録します。複数端末同期はオンライン接続版で有効になります。</p></div></main>`;
 }
 
 function homeView(){
@@ -99,5 +99,5 @@ function go(v){state.view=v;render()}
 function resetAll(){if(confirm('この端末のチーム登録と試作データを削除しますか？')){localStorage.removeItem('tt_account');localStorage.removeItem('tt_meetings');state.currentMeetingId=null;state.view='welcome';render();}}
 function toast(msg){const el=document.createElement('div');el.className='toast';el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),1800)}
 
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=0.3').catch(()=>{});
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=0.4').catch(()=>{});
 render();

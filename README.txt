@@ -1,3 +1,12 @@
+TEAM Theory Prototype 0.4
+
+変更内容
+- チーム名の例を「Aquila高校」に変更
+- 名前の例を「Aquila」に変更
+- TEAM Theory仮アイコンを新デザインへ変更
+- PWA/ホーム画面アイコンを追加
+- キャッシュバージョンを0.4へ更新
+
 TEAM Theory Prototype 0.3
 
 更新内容
