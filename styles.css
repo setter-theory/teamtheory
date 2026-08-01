@@ -30,3 +30,5 @@ button,input,textarea,select{font:inherit}.app-shell{width:100%;max-width:480px;
 .logo-t{position:relative;z-index:2;font-size:38px;font-weight:950;line-height:1;letter-spacing:-3px;transform:translateX(-1px)}
 .logo-node{position:absolute;width:9px;height:9px;border-radius:50%;background:#101820;z-index:3;box-shadow:0 0 0 2px rgba(255,255,255,.28)}
 .logo-node.n1{top:14px;left:16px}.logo-node.n2{top:14px;right:16px}.logo-node.n3{bottom:13px;left:50%;transform:translateX(-50%)}
+
+.welcome-version{margin:-6px 0 18px;color:#9aa6b2;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}

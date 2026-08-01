@@ -25,7 +25,7 @@ function esc(s=''){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&l
 function shell(content, active='home'){
   const a=loadAccount();
   const team=a?.teamName || 'TEAM Theory';
-  return `<div class="topbar"><div class="brand"><div><h1>TEAM Theory</h1><div class="team-name">${esc(team)}</div></div><div class="version">Prototype 0.4</div></div></div>
+  return `<div class="topbar"><div class="brand"><div><h1>TEAM Theory</h1><div class="team-name">${esc(team)}</div></div><div class="version">Prototype 0.5</div></div></div>
   <main class="content">${content}</main>
   <nav class="bottom-nav">
     ${nav('home','⌂','ホーム',active)}${nav('meetings','▣','履歴',active)}${nav('growth','↗','成長',active)}${nav('profile','●','設定',active)}
@@ -49,7 +49,7 @@ function render(){
 }
 
 function welcomeView(){
- return `<main class="onboarding"><div class="logo-mark" aria-label="TEAM Theory"><span class="logo-t">T</span><span class="logo-node n1"></span><span class="logo-node n2"></span><span class="logo-node n3"></span></div><h1>TEAM Theory</h1><p>教わるから、考えるへ。</p><div class="welcome-card"><h2>チームで始める</h2><p>代表者はチームを作成。選手は招待コードで参加します。</p><button class="btn primary wide" onclick="go('createTeam')">チームを作る</button><button class="btn secondary wide" onclick="go('joinTeam')">コードで参加する</button></div></main>`;
+ return `<main class="onboarding"><div class="logo-mark" aria-label="TEAM Theory"><span class="logo-t">T</span><span class="logo-node n1"></span><span class="logo-node n2"></span><span class="logo-node n3"></span></div><h1>TEAM Theory</h1><p>教わるから、考えるへ。</p><div class="welcome-version">Version 0.5</div><div class="welcome-card"><h2>チームで始める</h2><p>代表者はチームを作成。選手は招待コードで参加します。</p><button class="btn primary wide" onclick="go('createTeam')">チームを作る</button><button class="btn secondary wide" onclick="go('joinTeam')">コードで参加する</button></div></main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
 function createTeamView(){
@@ -99,5 +99,18 @@ function go(v){state.view=v;render()}
 function resetAll(){if(confirm('この端末のチーム登録と試作データを削除しますか？')){localStorage.removeItem('tt_account');localStorage.removeItem('tt_meetings');state.currentMeetingId=null;state.view='welcome';render();}}
 function toast(msg){const el=document.createElement('div');el.className='toast';el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),1800)}
 
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=0.4').catch(()=>{});
+if ('serviceWorker' in navigator) {
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    location.reload();
+  });
+  navigator.serviceWorker.register('./sw.js?v=0.5', { updateViaCache: 'none' })
+    .then(reg => {
+      reg.update().catch(()=>{});
+      setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
+    })
+    .catch(()=>{});
+}
 render();
