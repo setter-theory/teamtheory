@@ -814,7 +814,7 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
 @media(max-width:390px){.action-plan-card{padding:12px}.action-plan-textarea{min-height:98px!important}.method-textarea{min-height:150px!important}}
 
 
-/* v0.31 player-first meeting summary: opinions lead, team decides, Alia advises briefly */
+/* v0.32 player-first meeting summary: opinions lead, team decides, Alia advises briefly */
 .player-opinions-main{margin-top:18px}
 .team-decision-card{margin-top:20px;padding:18px;border:1.5px solid rgba(241,111,153,.52);border-radius:22px;background:linear-gradient(145deg,#0f1b2c,#091421);box-shadow:0 16px 34px rgba(0,0,0,.22)}
 .team-decision-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
@@ -830,4 +830,33 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
  .team-decision-card{padding:14px}
  .team-decision-head h3{font-size:16px}
  .summary-bottom-actions.two-actions{grid-template-columns:1fr 1.25fr}
+}
+\n\n/* v0.32 summary cards: answers sit directly inside each card and are read-only */
+.player-opinions-main{
+  padding:16px;
+  border:1.5px solid rgba(241,111,153,.42);
+  border-radius:22px;
+  background:linear-gradient(145deg,#0f1b2c,#091421);
+  box-shadow:0 14px 30px rgba(0,0,0,.2)
+}
+.player-opinions-main .summary-source-list{gap:9px}
+.compact-decision{padding:14px;margin-top:14px;border-width:1px;box-shadow:0 10px 24px rgba(0,0,0,.17)}
+.compact-decision .team-decision-head{margin-bottom:10px;padding-bottom:9px}
+.compact-decision .team-decision-head h3{font-size:16px}
+.compact-decision .action-plan-list{gap:8px}
+.compact-decision .action-plan-card{padding:11px 12px;border-radius:15px}
+.compact-decision .action-plan-label{font-size:13px}
+.compact-decision .action-plan-card small{margin-bottom:5px;font-size:9px}
+.action-plan-answer{
+  color:#eef2f7;
+  font-size:12px;
+  line-height:1.58;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere
+}
+.method-answer{line-height:1.62}
+@media(max-width:390px){
+  .player-opinions-main{padding:13px}
+  .compact-decision{padding:12px}
+  .compact-decision .action-plan-card{padding:10px 11px}
 }
