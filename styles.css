@@ -604,3 +604,14 @@ button,input,textarea,select{font:inherit}.app-shell{width:100%;max-width:480px;
   .alia-character{width:228px;max-height:257px}
   .alia-thought{width:122px;height:88px;margin-bottom:46px}
 }
+
+/* v0.20 — move Alia thought bubble slightly right and upward */
+.alia-thought{
+  transform:translate(18px,-16px);
+}
+@media(max-width:390px){
+  .alia-thought{transform:translate(14px,-13px)}
+}
+@media(max-height:760px){
+  .alia-thought{transform:translate(12px,-10px)}
+}
