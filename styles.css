@@ -1063,3 +1063,61 @@ body:has(.alia-home .saved-teams-panel){overflow:hidden!important}
     font-size:8.5px!important;
   }
 }
+
+
+/* v0.39.5 — iPhone 13 final top balance + saved-team containment */
+@media (max-width:430px) and (min-height:780px){
+  .alia-home:has(.saved-teams-panel){
+    padding-top:calc(env(safe-area-inset-top) + 46px)!important;
+  }
+
+  /* Move the opening visual group slightly lower without enlarging it. */
+  .alia-home:has(.saved-teams-panel) .alia-title-block{
+    transform:translateY(4px) scale(.82)!important;
+  }
+  .alia-home:has(.saved-teams-panel) .alia-character-stage{
+    margin:8px auto 3px!important;
+  }
+
+  /* Two saved-team rows must stay completely inside the rounded parent frame. */
+  .alia-home:has(.saved-teams-panel) .saved-teams-panel{
+    box-sizing:border-box!important;
+    margin:4px auto 7px!important;
+    padding:10px 10px 12px!important;
+    min-height:170px!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow:hidden!important;
+    flex:0 0 auto!important;
+  }
+  .alia-home:has(.saved-teams-panel) .saved-teams-list{
+    width:100%!important;
+    box-sizing:border-box!important;
+  }
+  .alia-home:has(.saved-teams-panel) .saved-team-card{
+    box-sizing:border-box!important;
+    width:100%!important;
+    min-height:48px!important;
+    flex:none!important;
+  }
+  .alia-home:has(.saved-teams-panel) .saved-team-card:last-child{
+    margin-bottom:0!important;
+  }
+
+  /* Recover the extra parent-card height while retaining a no-scroll iPhone 13 layout. */
+  .alia-home:has(.saved-teams-panel) .welcome-actions{
+    gap:6px!important;
+  }
+  .alia-home:has(.saved-teams-panel) .welcome-action{
+    min-height:58px!important;
+  }
+  .alia-home:has(.saved-teams-panel) .welcome-utility{
+    min-height:38px!important;
+    margin-top:6px!important;
+    padding-top:4px!important;
+    padding-bottom:4px!important;
+  }
+  .alia-home:has(.saved-teams-panel) .welcome-version{
+    bottom:calc(env(safe-area-inset-bottom) + 5px)!important;
+  }
+}
