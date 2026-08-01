@@ -23,12 +23,9 @@ function teamCode(){ return Math.random().toString(36).replace(/[^a-z0-9]/g,'').
 function esc(s=''){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
 function shell(content, active='home'){
-  const a=loadAccount();
-  const team=a?.teamName || 'TEAM Theory';
-  return `<div class="topbar"><div class="brand"><img class="brand-icon" src="./icons/icon-192.png?v=0.24" alt="TEAM Theory"><div class="brand-copy"><h1>TEAM Theory</h1><div class="team-name"><span class="team-badge">♟</span>${esc(team)}</div></div><div class="top-actions"><button class="top-icon" aria-label="通知">♧<span class="notify-dot"></span></button><button class="top-icon menu-icon" aria-label="メニュー">☰</button></div></div></div>
-  <main class="content">${content}</main>
+  return `<main class="content content-no-header">${content}</main>
   <nav class="bottom-nav">
-    ${nav('home','⌂','ホーム',active)}${nav('meetings','▤','履歴',active)}${nav('growth','↗','成長',active)}${nav('profile','⚙','設定',active)}
+    ${nav('home','⌂','ホーム',active)}${nav('meetings','▤','ミーティング',active)}${nav('growth','↗','成長',active)}${nav('menu','☰','メニュー',active)}
   </nav>`;
 }
 function nav(view,icon,label,active){return `<button class="nav-btn ${active===view?'active':''}" onclick="go('${view}')"><span>${icon}</span>${label}</button>`}
@@ -45,7 +42,8 @@ function render(){
   else if(state.view==='summary') app.innerHTML=shell(summaryView(),'home');
   else if(state.view==='meetings') app.innerHTML=shell(historyView(),'meetings');
   else if(state.view==='growth') app.innerHTML=shell(growthView(),'growth');
-  else app.innerHTML=shell(profileView(),'profile');
+  else if(state.view==='menu') app.innerHTML=shell(menuView(),'menu');
+  else app.innerHTML=shell(profileView(),'menu');
 }
 
 function welcomeView(){
@@ -76,7 +74,7 @@ function welcomeView(){
      <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.24</div>
+   <div class="welcome-version">Version 0.25</div>
  </main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
@@ -110,7 +108,7 @@ function joinTeamView(){
 
 function homeView(){
   const a=loadAccount(); const active=loadMeetings().find(m=>m.status==='open');
-  return `<section class="hero home-hero"><div class="hero-copy"><div class="eyebrow"><span class="eyebrow-icon">♙</span>${esc(a.displayName)}さん・${esc(a.role)}</div><h2>今日は何を話し合いますか？</h2><p>それぞれの意見を集め、最後にチームの一つの結論へまとめます。</p></div><img class="home-alia" src="./icons/alia-standalone.png?v=0.24" alt="Alia"></section>
+  return `<section class="hero home-hero"><div class="hero-copy"><div class="home-team-name"><span>♟</span>${esc(a.teamName)}</div><div class="eyebrow"><span class="eyebrow-icon">♙</span>${esc(a.displayName)}さん・${esc(a.role)}</div><h2>今日は何を話し合いますか？</h2><p>それぞれの意見を集め、最後にチームの一つの結論へまとめます。</p></div><img class="home-alia" src="./icons/alia-standalone.png?v=0.25" alt="Alia"></section>
   <div class="invite-strip"><div><small><span class="invite-icon">⚿</span>チーム招待コード</small><strong>${esc(a.teamCode)}</strong><p>このコードを共有して仲間をチームに招待できます。</p></div><button class="mini-btn" onclick="copyCode()"><span>▣</span>コピー</button></div>
   ${active?`<div class="section-title"><h3>進行中</h3><span>${active.entries.length}件の意見</span></div><div class="progress-card"><span class="pill">進行中</span><h3>${esc(active.group)}ミーティング</h3><p class="subtitle">${esc(active.theme||'テーマ未設定')}</p><div class="actions"><button class="btn primary" onclick="resume('${active.id}')">続きから</button></div></div>`:''}
   <div class="section-title"><h3>ミーティングを始める</h3><span>3種類</span></div>
@@ -127,6 +125,26 @@ function roomView(){
 function summaryView(){ const m=getCurrent(); if(!m) return '<div class="empty">ミーティングが見つかりません。</div>'; const draft=m.summary || makeSummary(m); return `<button class="back" onclick="state.view='room';render()">‹ 入力へ戻る</button><h2 class="page-title">Aliaまとめ</h2><p class="subtitle">集まった意見を一つの情報に整理します。</p><div class="form-card"><label class="label">まとめ案</label><textarea id="summaryText" class="textarea" style="min-height:240px">${esc(draft)}</textarea></div><div class="actions"><button class="btn secondary" onclick="regenerate()">作り直す</button><button class="btn primary" onclick="finalize()">確定して保存</button></div>`; }
 function historyView(){ const ms=loadMeetings().sort((a,b)=>b.createdAt-a.createdAt); return `<h2 class="page-title">ミーティング履歴</h2><p class="subtitle">過去の話し合いと結論を見返せます。</p>${ms.length?ms.map(m=>`<div class="history-card"><span class="pill ${m.status==='closed'?'closed':''}">${m.status==='closed'?'完了':'進行中'}</span><h3>${esc(m.group)}ミーティング</h3><p class="subtitle">${new Date(m.createdAt).toLocaleString('ja-JP')}・意見${m.entries.length}件</p>${m.summary?`<div class="summary-box">${esc(m.summary)}</div>`:''}${m.status==='open'?`<div class="actions"><button class="btn primary" onclick="resume('${m.id}')">開く</button></div>`:''}</div>`).join(''):'<div class="empty">履歴はまだありません。</div>'}`; }
 function growthView(){ const ms=loadMeetings().filter(m=>m.status==='closed'); const entries=ms.reduce((n,m)=>n+m.entries.length,0); return `<h2 class="page-title">チームの成長</h2><p class="subtitle">試作版では活動量を表示します。</p><div class="card-grid"><div class="progress-card"><small>完了したミーティング</small><h2>${ms.length}回</h2></div><div class="progress-card"><small>集まった意見</small><h2>${entries}件</h2></div><div class="progress-card"><small>チームの結論</small><h2>${ms.filter(m=>m.summary).length}件</h2></div></div>`; }
+
+function menuView(){
+  const a=loadAccount();
+  return `<section class="menu-page">
+    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.25" alt="Alia"></div>
+    <div class="menu-list">
+      ${menuItem('👥','メンバー管理','メンバー・役割を確認')}
+      ${menuItem('🔑','招待コード','コードの確認・コピー','copyCode()')}
+      ${menuItem('🔔','通知','新着情報を確認')}
+      ${menuItem('⚙','チーム設定','チーム名や運用設定')}
+      ${menuItem('●','プロフィール','表示名・役割を変更',"go('profile')")}
+      ${menuItem('⇧','データ出力','記録の共有・保存')}
+      ${menuItem('?','ヘルプ','使い方を確認')}
+      ${menuItem('ⓘ','アプリ情報','バージョン・利用情報')}
+    </div>
+  </section>`;
+}
+function menuItem(icon,title,desc,action="toast('この機能は準備中です')"){
+  return `<button class="menu-list-item" onclick="${action}"><span class="menu-list-icon">${icon}</span><span><b>${title}</b><small>${desc}</small></span><span class="menu-list-chevron">›</span></button>`;
+}
 function profileView(){ const a=loadAccount(); return `<h2 class="page-title">設定</h2><div class="form-card"><label class="label">チーム名</label><input class="input" value="${esc(a.teamName)}" disabled><label class="label">招待コード</label><div class="code-row"><input class="input code-input" value="${esc(a.teamCode)}" disabled><button class="mini-btn" onclick="copyCode()">コピー</button></div><label class="label">名前</label><input id="profileName" class="input" value="${esc(a.displayName)}"><label class="label">役割</label><select id="profileRole" class="input">${ROLES.map(r=>`<option ${r===a.role?'selected':''}>${r}</option>`).join('')}</select><div class="actions"><button class="btn primary" onclick="saveProfile()">保存</button></div></div><div class="form-card"><b>オンライン共有</b><p class="subtitle" style="margin-top:8px">チームコードと権限の土台を追加しました。次の段階でオンラインデータベースへ接続し、複数スマホへ同時反映します。</p></div><div class="actions"><button class="btn danger" onclick="resetAll()">この端末の登録を削除</button></div>`; }
 
 function createTeamAccount(){ const teamName=document.getElementById('teamName').value.trim(); const displayName=document.getElementById('displayName').value.trim(); const role=document.getElementById('role').value; if(!teamName||!displayName){toast('チーム名と名前を入力してください');return} saveAccount({teamId:uid('t'),teamName,teamCode:teamCode(),displayName,role,createdAt:Date.now(),mode:'owner'}); go('home'); }
