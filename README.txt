@@ -1,4 +1,4 @@
-TEAM Theory Prototype 0.7
+TEAM Theory Prototype 0.8
 
 正式アプリアイコン実装版。
 - PWA 192/512
