@@ -61,17 +61,18 @@ function welcomeView(){
      <div class="alia-feather alia-feather-1">❧</div>
      <div class="alia-feather alia-feather-2">❧</div>
      <div class="alia-thought">
+       <i class="cloud-lobe l1"></i><i class="cloud-lobe l2"></i><i class="cloud-lobe l3"></i><i class="cloud-lobe l4"></i><i class="cloud-lobe l5"></i><i class="cloud-lobe l6"></i>
        <span class="thought-dot thought-dot-1"></span><span class="thought-dot thought-dot-2"></span><span class="thought-dot thought-dot-3"></span>
        <strong>Alia</strong><span>今日も最高のチームにしようね！</span>
      </div>
-     <img class="alia-character" src="./icons/alia-standalone.png?v=0.13" alt="Alia">
+     <img class="alia-character" src="./icons/alia-standalone.png?v=0.14" alt="Alia">
    </div>
    <div class="welcome-actions">
      <button class="welcome-action create" onclick="go('createTeam')"><span class="action-icon">👥</span><span><b>チームで始める</b><small>代表者はチームを作成。選手は招待コードで参加します。</small></span><span class="action-arrow">›</span></button>
      <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.13</div>
+   <div class="welcome-version">Version 0.14</div>
  </main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
@@ -129,7 +130,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.13', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.14', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
