@@ -60,8 +60,8 @@ Version 0.44.4: ミーティング履歴をteamIdで完全分離。チーム切�
 
 Version 0.44.4: 学年別AIを追加。1年・2年・3年でAlia Adviceの課題・行動・方法を調整し、チーム作成・参加・設定にポジションと学年登録を追加。ポジション×学年の両方を考慮。全画面VERSION・キャッシュキー・Service Workerを0.44.4へ統一。
 
-Version 0.47.0: TEAM SCOREを実装。活動量・参加率・発言率・実行率・継続率を0〜100点でチーム別集計し、推移・内訳・Alia成長コメントを表示。履歴に実行済み確認を追加。全画面VERSION・キャッシュ・Service Workerを0.47.0へ統一。
+Version 0.48.0: TEAM SCOREを実装。活動量・参加率・発言率・実行率・継続率を0〜100点でチーム別集計し、推移・内訳・Alia成長コメントを表示。履歴に実行済み確認を追加。全画面VERSION・キャッシュ・Service Workerを0.48.0へ統一。
 
-Version 0.47.0: Growth Timelineを追加。1週間・1か月・半年・1年、TEAM SCORE・参加率・発言率・実行率・継続率の切替、ポジション別・学年別比較、Alia Growth Insight、Achievementを実装。全画面VERSION・キャッシュ・Service Workerを0.47.0へ統一。
+Version 0.48.0: Growth Timelineを追加。1週間・1か月・半年・1年、TEAM SCORE・参加率・発言率・実行率・継続率の切替、ポジション別・学年別比較、Alia Growth Insight、Achievementを実装。全画面VERSION・キャッシュ・Service Workerを0.48.0へ統一。
 
-Version 0.47.0: Alia Intelligence完成版。テーマ分類・ポジション・学年・ミーティング種別・チームレベルを組み合わせて提案文脈を表示し、必要時のみ「根拠を見る」で提案の考え方を確認できるようにした。トップ画面を含むVERSION、アセット、Service Workerを0.47.0へ統一。
+Version 0.48.0: Alia Intelligence完成版。テーマ分類・ポジション・学年・ミーティング種別・チームレベルを組み合わせて提案文脈を表示し、必要時のみ「根拠を見る」で提案の考え方を確認できるようにした。トップ画面を含むVERSION、アセット、Service Workerを0.48.0へ統一。
