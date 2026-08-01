@@ -129,3 +129,67 @@ button,input,textarea,select{font:inherit}.app-shell{width:100%;max-width:480px;
   .alia-character-stage .alia-bubble strong{font-size:18px}
   .alia-character-stage .alia-bubble span{font-size:11px}
 }
+
+/* v0.11 Alia cute polish */
+.alia-home{
+  font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI","Meiryo",system-ui,sans-serif;
+  padding:72px 20px 30px;
+  justify-content:flex-start;
+  gap:0;
+}
+.alia-title-block{width:min(100%,440px);margin:0 auto 14px;text-align:center;position:relative;z-index:2}
+.alia-home h1{
+  font-family:"Arial Rounded MT Bold","Hiragino Maru Gothic ProN","Yu Gothic UI",sans-serif;
+  font-size:46px;line-height:1.05;margin:0 0 10px;font-weight:900;letter-spacing:-1px;
+  text-shadow:0 4px 18px rgba(0,0,0,.24);
+}
+.alia-home h1 span{color:#f58eae}
+.alia-tagline{font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI",sans-serif;font-size:18px!important;font-weight:700;letter-spacing:.03em;margin:0!important;color:#f5d9c7!important}
+.alia-character-stage{
+  width:min(100%,440px);min-height:232px;margin:4px auto 18px;
+  display:flex;align-items:flex-end;justify-content:center;gap:0;position:relative;z-index:2;
+}
+.alia-character{
+  width:210px;max-height:244px;object-fit:contain;object-position:center bottom;
+  margin:0 -6px -4px -6px;filter:drop-shadow(0 16px 22px rgba(0,0,0,.35)) brightness(1.06) saturate(1.05);
+}
+.alia-character-stage .alia-bubble{
+  width:210px;max-width:52%;margin:0 -4px 72px 0;padding:18px 18px 17px;
+  border:2px solid #f6a8bf;border-radius:34px;background:linear-gradient(145deg,#fffafd,#ffe7ef);
+  box-shadow:0 14px 28px rgba(0,0,0,.20), inset 0 0 0 1px rgba(255,255,255,.9);
+  font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI",sans-serif;
+}
+.alia-character-stage .alia-bubble::before,
+.alia-character-stage .alia-bubble::after{content:"";position:absolute;background:#ffeaf1;border:2px solid #f6a8bf;border-radius:50%;z-index:-1}
+.alia-character-stage .alia-bubble::before{width:42px;height:42px;left:10px;top:-17px}
+.alia-character-stage .alia-bubble::after{width:28px;height:28px;right:-9px;bottom:20px;border-left:0;border-top:0;transform:rotate(-22deg)}
+.alia-character-stage .alia-bubble strong{font-family:"Arial Rounded MT Bold","Hiragino Maru Gothic ProN",sans-serif;font-size:25px;color:#e96f96;margin-bottom:8px;letter-spacing:.02em}
+.alia-character-stage .alia-bubble span{font-size:14px;line-height:1.65;font-weight:800;color:#2a3440}
+.welcome-actions{width:min(100%,440px);gap:16px;margin:0 auto;position:relative;z-index:2}
+.welcome-action{min-height:132px;border-radius:28px;padding:22px 18px;grid-template-columns:60px 1fr 42px;gap:15px}
+.welcome-action b{font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI",sans-serif;font-size:22px;line-height:1.25;margin-bottom:9px}
+.welcome-action small{font-family:"Hiragino Maru Gothic ProN","Yu Gothic UI",sans-serif;font-size:14px;line-height:1.7}
+.action-icon{width:58px;height:58px;border-radius:20px;font-size:26px}
+.action-arrow{width:42px;height:42px;font-size:34px}
+.alia-support{width:min(100%,440px);margin:18px auto 0;padding:14px 18px;font-size:14px;font-weight:800;border-radius:999px}
+.alia-home .welcome-version{right:20px;bottom:16px;font-family:"Arial Rounded MT Bold","Hiragino Maru Gothic ProN",sans-serif;font-size:11px}
+@media(max-width:390px){
+  .alia-home{padding:64px 16px 28px}
+  .alia-home h1{font-size:42px}
+  .alia-character-stage{min-height:220px;margin-bottom:16px}
+  .alia-character{width:196px;max-height:228px}
+  .alia-character-stage .alia-bubble{width:184px;max-width:50%;margin-bottom:66px;padding:16px 14px}
+  .alia-character-stage .alia-bubble strong{font-size:23px}
+  .alia-character-stage .alia-bubble span{font-size:13px}
+  .welcome-action{min-height:126px;padding:20px 15px;grid-template-columns:54px 1fr 38px}
+  .welcome-action b{font-size:20px}
+  .welcome-action small{font-size:13px}
+}
+@media(max-height:760px){
+  .alia-home{padding-top:48px}
+  .alia-character-stage{min-height:198px;margin-bottom:12px}
+  .alia-character{width:178px;max-height:205px}
+  .alia-character-stage .alia-bubble{margin-bottom:54px;padding:14px}
+  .welcome-action{min-height:112px;padding-top:16px;padding-bottom:16px}
+  .alia-support{margin-top:12px}
+}

@@ -1,6 +1,3 @@
-TEAM Theory Prototype 0.10
+TEAM Theory Prototype 0.11
 
-・ホーム画面の視線順を「タイトル → Alia → キャッチコピー → メニュー」に調整
-・Aliaの吹き出しをキャラクター横に維持
-・Version 0.10を右下に表示
-・既存機能と正式アイコンを維持
+Alia cute polish: brighter character rendering, rounder typography, cloud-style speech bubble, larger cards, and improved vertical spacing.

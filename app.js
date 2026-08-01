@@ -25,7 +25,7 @@ function esc(s=''){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&l
 function shell(content, active='home'){
   const a=loadAccount();
   const team=a?.teamName || 'TEAM Theory';
-  return `<div class="topbar"><div class="brand"><img class="brand-icon" src="./icons/icon-192.png?v=0.10" alt=""><div><h1>TEAM Theory</h1><div class="team-name">${esc(team)}</div></div><div class="version">Prototype 0.10</div></div></div>
+  return `<div class="topbar"><div class="brand"><img class="brand-icon" src="./icons/icon-192.png?v=0.11" alt=""><div><h1>TEAM Theory</h1><div class="team-name">${esc(team)}</div></div><div class="version">Prototype 0.11</div></div></div>
   <main class="content">${content}</main>
   <nav class="bottom-nav">
     ${nav('home','⌂','ホーム',active)}${nav('meetings','▣','履歴',active)}${nav('growth','↗','成長',active)}${nav('profile','●','設定',active)}
@@ -56,14 +56,14 @@ function welcomeView(){
    </div>
    <div class="alia-character-stage">
      <div class="alia-bubble"><strong>Alia</strong><span>今日も最高のチームにしようね！</span></div>
-     <img class="alia-character" src="./icons/alia-standalone.png?v=0.10" alt="Alia">
+     <img class="alia-character" src="./icons/alia-standalone.png?v=0.11" alt="Alia">
    </div>
    <div class="welcome-actions">
      <button class="welcome-action create" onclick="go('createTeam')"><span class="action-icon">👥</span><span><b>チームで始める</b><small>代表者はチームを作成。選手は招待コードで参加します。</small></span><span class="action-arrow">›</span></button>
      <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.10</div>
+   <div class="welcome-version">Version 0.11</div>
  </main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
@@ -121,7 +121,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.10', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.11', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
