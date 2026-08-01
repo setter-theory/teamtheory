@@ -878,3 +878,14 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
 .alia-plan-card .action-plan-card small{margin-bottom:5px;font-size:9px}
 .alia-plan-card .action-plan-answer{font-size:12px;line-height:1.55}
 @media(max-width:390px){.summary-panel-head h3{font-size:16px}.alia-plan-card{padding:12px}.alia-plan-card .action-plan-card{padding:10px 11px}}
+
+
+/* v0.34: PLAYER VOICES outer frame and concise, read-only ALIA ADVICE */
+.player-opinions-main{border:1.5px solid rgba(241,111,153,.58);box-shadow:0 16px 34px rgba(0,0,0,.24),0 0 0 1px rgba(241,111,153,.06) inset}
+.player-opinions-main .summary-panel-head{margin-bottom:12px}
+.alia-plan-card{padding:13px 14px;border-color:rgba(242,197,108,.34)}
+.alia-plan-head{margin-bottom:9px;padding-bottom:8px}
+.alia-plan-head small{font-size:10px;color:#f2c56c;letter-spacing:.16em}
+.alia-plan-card .action-plan-card small,.alia-plan-lead,.summary-source-lead{display:none!important}
+.alia-plan-card .action-plan-answer{margin-top:6px;user-select:text}
+.alia-plan-card textarea,.alia-plan-card input,[contenteditable="true"].action-plan-answer{pointer-events:none!important}
