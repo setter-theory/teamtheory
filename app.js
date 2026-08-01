@@ -12,6 +12,8 @@ const TYPES = {
   all: {label:'全体ミーティング', icon:'🤝', groups:['チーム全員']},
 };
 const ROLES = ['監督','コーチ','マネージャー','キャプテン','副キャプテン','選手'];
+const POSITIONS = ['未設定','セッター','アウトサイドヒッター','オポジット','ミドルブロッカー','リベロ','スタッフ'];
+const GRADES = ['未設定','1年','2年','3年','対象外'];
 
 const THEME_CATEGORIES = {
   position: [
@@ -170,6 +172,51 @@ function positionPlanOverride(m,joined,theme){
   }
   return null;
 }
+
+function gradeKeyForMeeting(m){
+  const raw=m?.type==='grade' ? (m?.group||'') : (m?.ownerGrade||loadAccount()?.grade||'');
+  if(/1年/.test(raw)) return 'grade1';
+  if(/2年/.test(raw)) return 'grade2';
+  if(/3年/.test(raw)) return 'grade3';
+  return '';
+}
+function gradeLabelForKey(key){
+  return ({grade1:'1年生',grade2:'2年生',grade3:'3年生'})[key]||'';
+}
+function applyGradePerspective(m,plan){
+  const key=gradeKeyForMeeting(m);
+  if(!key || !plan) return plan;
+  const lines=String(plan.method||'').split(/\n+/).filter(Boolean).map(x=>x.startsWith('・')?x:`・${x}`);
+  if(key==='grade1'){
+    return {
+      issue:`${plan.issue} 1年生は遠慮や経験不足で、分からないことを抱え込みやすい点にも注意が必要です。`,
+      action:`${plan.action} まずは自分から一度動き、分からない点をその日のうちに確認します。`,
+      method:[...lines.slice(0,2),'・練習後に「できたこと1つ・質問1つ」を先輩か指導者へ伝える'].join('\n')
+    };
+  }
+  if(key==='grade2'){
+    return {
+      issue:`${plan.issue} 2年生は自分の実行だけでなく、下級生を支える中核としての働きかけが求められます。`,
+      action:`${plan.action} 自分が実行した後、1年生にも同じ基準を短く伝えます。`,
+      method:[...lines.slice(0,2),'・練習中に1年生1人へ具体的な声掛けを行い、終了後に伝わったか確認する'].join('\n')
+    };
+  }
+  return {
+    issue:`${plan.issue} 3年生は個人の改善を、チーム全体で再現できる形へ広げる必要があります。`,
+    action:`${plan.action} 判断基準を言葉にし、全員が同じ行動を選べる状態をつくります。`,
+    method:[...lines.slice(0,2),'・練習前に基準を30秒で共有し、終了後に次回も続ける行動を1つ決める'].join('\n')
+  };
+}
+function gradeAwareSections(m,sections){
+  const key=gradeKeyForMeeting(m);
+  if(!key) return sections;
+  const extra={
+    grade1:'分からない点はその日のうちに質問し、小さな成功を1つ記録します。',
+    grade2:'自分の実行後に1年生へ伝え、相手が再現できたか確認します。',
+    grade3:'基準を短く言語化して全体へ共有し、次回へ引き継ぎます。'
+  }[key];
+  return sections.map((x,i)=>i===sections.length-1?{...x,text:`${x.text} ${extra}`} : x);
+}
 function classifyAliaContext(m){
   const theme=(m?.theme||'').trim();
   const voices=(m?.entries||[]).map(e=>e?.text||'').join(' ');
@@ -195,7 +242,10 @@ function classifyAliaContext(m){
     confidence=0.4;
   }
   const domain=ALIA_THEME_DOMAINS.find(d=>d.id===domainId)||ALIA_THEME_DOMAINS[0];
-  const audience=m?.type==='position'?`ポジション：${m.group||'未設定'}`:m?.type==='grade'?`学年：${m.group||'未設定'}`:'対象：チーム全体';
+  const account=loadAccount()||{};
+  const gradeText=m?.type==='grade'?(m.group||'未設定'):(m?.ownerGrade||account.grade||'未設定');
+  const positionText=m?.type==='position'?(m.group||'未設定'):(m?.ownerPosition||account.position||'未設定');
+  const audience=m?.type==='all'?'対象：チーム全体':`対象：${positionText}・${gradeText}`;
   return {domainId:domain.id, domainLabel:domain.label, confidence, audience, source:selected&&selected!=='other'?'選択テーマ':'内容判定'};
 }
 
@@ -354,7 +404,7 @@ function welcomeView(){
          <p class="alia-tagline">教わるから、考えるへ。</p>
        </div>
      </div>
-     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.44.3" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.44.4" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
@@ -363,7 +413,7 @@ function welcomeView(){
    </div>
    <button class="welcome-utility" onclick="showTopSettingsNotice()"><span class="welcome-utility-icon">⚙</span><span>設定・その他</span><span class="welcome-utility-arrow">›</span></button>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.44.3</div>
+   <div class="welcome-version">Version 0.44.4</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -374,7 +424,9 @@ function savedTeamsView(){
  return `<section class="saved-teams-panel"><div class="saved-teams-head"><div><small>SAVED TEAMS</small><h2>保存したチーム</h2></div><span>${teams.length}件</span></div><div class="saved-teams-list">${visible.map(a=>`<button class="saved-team-card" onclick="switchTeam('${a.teamId}')"><span class="saved-team-icon">♟</span><span><b>${esc(a.teamName)}</b><small>${esc(a.displayName)}・${esc(a.role)}</small></span><span class="saved-team-arrow">›</span></button>`).join('')}</div>${rest>0?`<button class="saved-teams-more" onclick="go('menu')">ほか${rest}件を見る ›</button>`:''}</section>`;
 }
 function showTopSettingsNotice(){alert("設定・その他は、保存したチームを選択すると利用できます。")}
-function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
+function roleOptions(selected=''){return ROLES.map(r=>`<option value="${r}" ${r===selected?'selected':''}>${r}</option>`).join('')}
+function positionOptions(selected='未設定'){return POSITIONS.map(v=>`<option value="${v}" ${v===selected?'selected':''}>${v}</option>`).join('')}
+function gradeOptions(selected='未設定'){return GRADES.map(v=>`<option value="${v}" ${v===selected?'selected':''}>${v}</option>`).join('')}
 function createTeamView(){
  return `<main class="onboarding compact form-onboarding create-team-screen">
    <div class="create-decor create-heart">♥</div><div class="create-decor create-sparkle">✦</div><div class="create-decor create-wing">❧</div>
@@ -383,7 +435,9 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon">♟</span><span>チーム名</span></label><input id="teamName" class="input create-input" placeholder="例：Alia高校"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon person-icon">●</span><span>あなたの名前</span></label><input id="displayName" class="input create-input" placeholder="例：Alia"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.44.3" class="create-alia" alt="Alia"></div>
+     <div class="create-field"><label class="create-label"><span class="create-label-icon">🏐</span><span>ポジション</span></label><select id="position" class="input create-input create-select">${positionOptions()}</select></div>
+     <div class="create-field"><label class="create-label"><span class="create-label-icon">🎓</span><span>学年</span></label><select id="grade" class="input create-input create-select">${gradeOptions()}</select></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.44.4" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -397,6 +451,8 @@ function joinTeamView(){
      <div class="join-field"><label class="join-label"><span class="join-label-icon team-icon">♟</span><span>チーム名</span></label><input id="joinTeamName" class="input join-input" placeholder="例：Alia高校"><small class="join-help">参加先のチーム名を入力してください。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon person-icon"></span><span>あなたの名前</span></label><input id="joinName" class="input join-input" placeholder="例：Alia"><small class="join-help">チーム内で表示されるあなたの名前です。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon shield-icon">★</span><span>役割</span></label><select id="joinRole" class="input join-input join-select">${roleOptions()}</select><small class="join-help">チーム内でのあなたの役割を選択してください。</small></div>
+     <div class="join-field"><label class="join-label"><span class="join-label-icon">🏐</span><span>ポジション</span></label><select id="joinPosition" class="input join-input join-select">${positionOptions()}</select></div>
+     <div class="join-field"><label class="join-label"><span class="join-label-icon">🎓</span><span>学年</span></label><select id="joinGrade" class="input join-input join-select">${gradeOptions()}</select></div>
      <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.37" class="join-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions join-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon">⌂</span><span>トップ</span></button><button class="bottom-action join-action" onclick="joinTeamAccount()"><span>参加する</span><span class="bottom-action-arrow">›</span></button></div>
@@ -457,7 +513,7 @@ function summaryView(){
  const m=getCurrent(); if(!m) return '<div class="empty">ミーティングが見つかりません。</div>';
  const plan=parseActionPlan(m.summary || makeSummary(m),m);
  const aliaContext=classifyAliaContext(m);
- const adviceSections=buildAdaptiveAdviceSections(m,plan);
+ const adviceSections=gradeAwareSections(m,buildAdaptiveAdviceSections(m,plan));
  const methodSections=adviceSections.map(section=>`<div class="method-block adaptive-method-block"><strong>${esc(section.icon)} ${esc(section.label)}</strong><div>${esc(section.text)}</div></div>`).join('');
  const sourceOpinions = m.entries.length ? m.entries.map((e,i)=>`<article class="summary-source-card"><div class="summary-source-number">${i+1}</div><div class="summary-source-body"><div class="summary-source-meta"><strong>${esc(e.name)}</strong><small>${new Date(e.createdAt||Date.now()).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}</small></div><p>${esc(e.text)}</p></div></article>`).join('') : '<div class="meeting-empty dark-empty"><span>♡</span><b>意見はまだありません</b><small>意見を入力すると、発言者と内容がここに残ります。</small></div>';
  return `<section class="summary-page"><h2 class="page-title">ミーティングまとめ</h2><div class="summary-source-section player-opinions-main"><div class="summary-panel-head player-voices-head"><div><small>PLAYER VOICES</small><h3>選手から出た意見</h3></div><span>${m.entries.length}件</span></div><div class="summary-source-list">${sourceOpinions}</div></div><div class="alia-plan-card"><div class="summary-panel-head alia-plan-head"><div><small>ALIA ADVICE</small></div><span class="alia-context-chip">${esc(aliaContext.domainLabel)}・${esc(aliaContext.audience)}</span></div><div class="action-plan-list"><div class="action-plan-card issue"><span class="action-plan-label">課題</span><div class="action-plan-answer">${esc(plan.issue)}</div></div><div class="action-plan-card action"><span class="action-plan-label">行動</span><div class="action-plan-answer">${esc(plan.action)}</div></div><div class="action-plan-card method"><span class="action-plan-label">方法</span><div class="action-plan-answer method-answer">${methodSections}</div></div></div></div><div class="summary-bottom-actions two-actions"><button class="btn back-action" onclick="state.view='room';render()">‹ 入力へ戻る</button><button class="btn gold" onclick="finalize()">確定して保存</button></div></section>`;
@@ -624,7 +680,7 @@ function membersView(){
   const a=loadAccount();
   const localMembers=loadAccounts().filter(x=>x.teamId===a.teamId);
   const members=localMembers.length?localMembers:[a];
-  return `<section class="members-page"><div class="members-head"><small>TEAM MEMBERS</small><h2>メンバー</h2><p>${esc(a.teamName)}の端末内メンバー情報</p></div><div class="members-list">${members.map((m,i)=>`<article class="member-card"><span class="member-avatar">${esc((m.displayName||'?').slice(0,1))}</span><div><b>${esc(m.displayName)}</b><small>${esc(m.role)}${i===0?'・現在のユーザー':''}</small></div></article>`).join('')}</div><div class="members-note">オンライン共有に接続すると、チーム全員の一覧をここに表示できます。</div></section>`;
+  return `<section class="members-page"><div class="members-head"><small>TEAM MEMBERS</small><h2>メンバー</h2><p>${esc(a.teamName)}の端末内メンバー情報</p></div><div class="members-list">${members.map((m,i)=>`<article class="member-card"><span class="member-avatar">${esc((m.displayName||'?').slice(0,1))}</span><div><b>${esc(m.displayName)}</b><small>${esc(m.role)}・${esc(m.position||'未設定')}・${esc(m.grade||'未設定')}${i===0?'・現在のユーザー':''}</small></div></article>`).join('')}</div><div class="members-note">オンライン共有に接続すると、チーム全員の一覧をここに表示できます。</div></section>`;
 }
 
 function menuView(){
@@ -648,14 +704,14 @@ function menuView(){
 function menuItem(icon,title,desc,action="toast('この機能は準備中です')"){
   return `<button class="menu-list-item" onclick="${action}"><span class="menu-list-icon">${icon}</span><span><b>${title}</b><small>${desc}</small></span><span class="menu-list-chevron">›</span></button>`;
 }
-function profileView(){ const a=loadAccount(); return `<h2 class="page-title">設定</h2><div class="form-card"><label class="label">チーム名</label><input class="input" value="${esc(a.teamName)}" disabled><label class="label">招待コード</label><div class="code-row"><input class="input code-input" value="${esc(a.teamCode)}" disabled><button class="mini-btn" onclick="copyCode()">コピー</button></div><label class="label">名前</label><input id="profileName" class="input" value="${esc(a.displayName)}"><label class="label">役割</label><select id="profileRole" class="input">${ROLES.map(r=>`<option ${r===a.role?'selected':''}>${r}</option>`).join('')}</select><div class="actions"><button class="btn primary" onclick="saveProfile()">保存</button></div></div><div class="form-card"><b>オンライン共有</b><p class="subtitle" style="margin-top:8px">チームコードと権限の土台を追加しました。次の段階でオンラインデータベースへ接続し、複数スマホへ同時反映します。</p></div><div class="actions"><button class="btn danger" onclick="resetAll()">この端末の登録を削除</button></div>`; }
+function profileView(){ const a=loadAccount(); return `<h2 class="page-title">設定</h2><div class="form-card"><label class="label">チーム名</label><input class="input" value="${esc(a.teamName)}" disabled><label class="label">招待コード</label><div class="code-row"><input class="input code-input" value="${esc(a.teamCode)}" disabled><button class="mini-btn" onclick="copyCode()">コピー</button></div><label class="label">名前</label><input id="profileName" class="input" value="${esc(a.displayName)}"><label class="label">役割</label><select id="profileRole" class="input">${roleOptions(a.role)}</select><label class="label">ポジション</label><select id="profilePosition" class="input">${positionOptions(a.position||'未設定')}</select><label class="label">学年</label><select id="profileGrade" class="input">${gradeOptions(a.grade||'未設定')}</select><div class="actions"><button class="btn primary" onclick="saveProfile()">保存</button></div></div><div class="form-card"><b>オンライン共有</b><p class="subtitle" style="margin-top:8px">チームコードと権限の土台を追加しました。次の段階でオンラインデータベースへ接続し、複数スマホへ同時反映します。</p></div><div class="actions"><button class="btn danger" onclick="resetAll()">この端末の登録を削除</button></div>`; }
 
-function createTeamAccount(){ const teamName=document.getElementById('teamName').value.trim(); const displayName=document.getElementById('displayName').value.trim(); const role=document.getElementById('role').value; if(!teamName||!displayName){toast('チーム名と名前を入力してください');return} saveAccount({teamId:uid('t'),teamName,teamCode:teamCode(),displayName,role,createdAt:Date.now(),mode:'owner'}); go('home'); }
-function joinTeamAccount(){ const code=document.getElementById('joinCode').value.trim().toUpperCase(); const teamName=document.getElementById('joinTeamName').value.trim(); const displayName=document.getElementById('joinName').value.trim(); const role=document.getElementById('joinRole').value; if(code.length!==6||!teamName||!displayName){toast('6文字のコード・チーム名・名前を入力してください');return} saveAccount({teamId:'remote_'+code,teamName,teamCode:code,displayName,role,createdAt:Date.now(),mode:'member'}); go('home'); }
+function createTeamAccount(){ const teamName=document.getElementById('teamName').value.trim(); const displayName=document.getElementById('displayName').value.trim(); const role=document.getElementById('role').value; const position=document.getElementById('position').value; const grade=document.getElementById('grade').value; if(!teamName||!displayName){toast('チーム名と名前を入力してください');return} saveAccount({teamId:uid('t'),teamName,teamCode:teamCode(),displayName,role,position,grade,createdAt:Date.now(),mode:'owner'}); go('home'); }
+function joinTeamAccount(){ const code=document.getElementById('joinCode').value.trim().toUpperCase(); const teamName=document.getElementById('joinTeamName').value.trim(); const displayName=document.getElementById('joinName').value.trim(); const role=document.getElementById('joinRole').value; const position=document.getElementById('joinPosition').value; const grade=document.getElementById('joinGrade').value; if(code.length!==6||!teamName||!displayName){toast('6文字のコード・チーム名・名前を入力してください');return} saveAccount({teamId:'remote_'+code,teamName,teamCode:code,displayName,role,position,grade,createdAt:Date.now(),mode:'member'}); go('home'); }
 function copyCode(){ const code=loadAccount()?.teamCode||''; navigator.clipboard?.writeText(code).then(()=>toast('招待コードをコピーしました')).catch(()=>toast(`招待コード：${code}`)); }
-function saveProfile(){ const a=loadAccount(); a.displayName=document.getElementById('profileName').value.trim()||a.displayName; a.role=document.getElementById('profileRole').value; saveAccount(a); render(); toast('プロフィールを保存しました'); }
+function saveProfile(){ const a=loadAccount(); a.displayName=document.getElementById('profileName').value.trim()||a.displayName; a.role=document.getElementById('profileRole').value; a.position=document.getElementById('profilePosition').value; a.grade=document.getElementById('profileGrade').value; saveAccount(a); render(); toast('プロフィールを保存しました'); }
 function startType(type){state.selectedType=type;state.view='select';render()}
-function createMeeting(group){ const a=loadAccount(); const meetings=loadMeetings(); const m={id:uid(),teamId:a.teamId,type:state.selectedType,group,themeCategory:'',theme:'',aliaContext:null,entries:[],summary:'',status:'open',createdAt:Date.now(),ownerName:a.displayName}; meetings.push(m);saveMeetings(meetings);state.currentMeetingId=m.id;state.view='room';render(); }
+function createMeeting(group){ const a=loadAccount(); const meetings=loadMeetings(); const m={id:uid(),teamId:a.teamId,type:state.selectedType,group,themeCategory:'',theme:'',aliaContext:null,entries:[],summary:'',status:'open',createdAt:Date.now(),ownerName:a.displayName,ownerPosition:a.position||'未設定',ownerGrade:a.grade||'未設定'}; meetings.push(m);saveMeetings(meetings);state.currentMeetingId=m.id;state.view='room';render(); }
 function getCurrent(){return loadMeetings().find(m=>m.id===state.currentMeetingId)}
 function mutate(fn){const ms=loadMeetings();const i=ms.findIndex(m=>m.id===state.currentMeetingId);if(i<0)return;fn(ms[i]);saveMeetings(ms);}
 function updateThemeCategory(v){mutate(m=>{m.themeCategory=v;m.aliaContext=classifyAliaContext(m)});render()}
@@ -833,7 +889,7 @@ function buildActionPlan(m){
  }
  const positionOverride=positionPlanOverride(m,joined,theme);
  if(positionOverride){ issue=positionOverride.issue; action=positionOverride.action; method=positionOverride.method; }
- return {issue,action,method};
+ return applyGradePerspective(m,{issue,action,method});
 }
 function parseActionPlan(summary,m){
  const fallback=buildActionPlan(m);
@@ -899,7 +955,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.44.3', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.44.4', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
