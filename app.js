@@ -214,7 +214,7 @@ function welcomeView(){
          <p class="alia-tagline">教わるから、考えるへ。</p>
        </div>
      </div>
-     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.42" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.43" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
@@ -223,7 +223,7 @@ function welcomeView(){
    </div>
    <button class="welcome-utility" onclick="showTopSettingsNotice()"><span class="welcome-utility-icon">⚙</span><span>設定・その他</span><span class="welcome-utility-arrow">›</span></button>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.41.1</div>
+   <div class="welcome-version">Version 0.43</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -243,7 +243,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon">♟</span><span>チーム名</span></label><input id="teamName" class="input create-input" placeholder="例：Alia高校"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon person-icon">●</span><span>あなたの名前</span></label><input id="displayName" class="input create-input" placeholder="例：Alia"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.42" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.43" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -570,6 +570,55 @@ function buildAdaptiveAdviceSections(m,plan){
     {icon:'📋',label:'体調確認',text:'睡眠時間・疲労感・痛みを毎日簡単に記録し、悪化時は指導者へ早めに伝えます。'}
    ];
  }
+ if(/ミドル|クイック|速攻/.test(text)){
+   return [
+    {icon:'🏐',label:'合わせる',text:'セッターとミドルで助走開始とトス位置を確認し、A・Bクイックを各10本ずつ合わせます。'},
+    {icon:'👀',label:'使う条件',text:'良い返球時は相手ミドルの位置を確認し、中央に残ればサイド、外へ寄ればクイックを選びます。'},
+    {icon:'📊',label:'確認する',text:'ローテーション別のミドル配球本数と決定率を記録し、次回は増やす場面を1つ決めます。'}
+   ];
+ }
+ if(/トス|セッター|配球/.test(text)){
+   return [
+    {icon:'🎯',label:'精度',text:'同じ助走・同じ構えから3か所へ各10本上げ、打点からずれた方向を記録します。'},
+    {icon:'👀',label:'判断',text:'返球前に相手ブロックと自チームの助走を確認し、第一候補と第二候補を決めます。'},
+    {icon:'📊',label:'配球確認',text:'ローテーション別の配球本数と決定率を振り返り、偏りが出た理由を1つ整理します。'}
+   ];
+ }
+ if(/レセプション|サーブレシーブ|返球/.test(text)){
+   return [
+    {icon:'📍',label:'立ち位置',text:'サーバーの位置と球種に合わせ、前後左右の担当範囲をサーブ前に短く確認します。'},
+    {icon:'🏐',label:'反復',text:'狙う返球位置を決め、同じ球種を5本連続で受けて成功数を記録します。'},
+    {icon:'🔁',label:'切り返し',text:'返球後すぐ攻撃準備へ移るところまでを1セットにし、止まらず連続で練習します。'}
+   ];
+ }
+ if(/サーブ/.test(text)){
+   return [
+    {icon:'🎯',label:'狙い',text:'打つ前にゾーンか選手を1つ決め、10本中何本狙いどおりに入ったか記録します。'},
+    {icon:'🔁',label:'ルーティン',text:'構え・呼吸・トス・スイングの順番を固定し、練習から毎回同じ手順で打ちます。'},
+    {icon:'📊',label:'効果確認',text:'イン率だけでなく、相手を崩した本数と次の攻撃につながった割合も確認します。'}
+   ];
+ }
+ if(/ブロック/.test(text)){
+   return [
+    {icon:'👀',label:'見る順番',text:'返球→セッター→アタッカーの順に視線を移し、助走方向から打点を予測します。'},
+    {icon:'🤝',label:'連携',text:'隣のブロッカーと「誰がどこを止めるか」をサーブ前に短い言葉で共有します。'},
+    {icon:'📊',label:'振り返り',text:'タッチ本数、止めたコース、抜かれた場所を記録し、次回の基準位置を調整します。'}
+   ];
+ }
+ if(/ディグ|レシーブ|守備/.test(text)){
+   return [
+    {icon:'📍',label:'守備位置',text:'相手の助走方向とブロック位置を見て、打たれる前に基本位置から半歩調整します。'},
+    {icon:'🏐',label:'練習',text:'コースを限定したスパイクを5本ずつ受け、構えの早さと返球位置を確認します。'},
+    {icon:'🔁',label:'次の動き',text:'ディグ後に止まらず助走・カバーへ移るところまでを連続動作として練習します。'}
+   ];
+ }
+ if(/スパイク|アタック|決定率/.test(text)){
+   return [
+    {icon:'👣',label:'助走',text:'助走開始位置と最後の2歩を固定し、同じ打点で打てるか動画か目印で確認します。'},
+    {icon:'👀',label:'打ち分け',text:'ブロックの手と守備位置を見て、強打・フェイント・ブロックアウトを選びます。'},
+    {icon:'📊',label:'評価',text:'決定・継続・ミスを10本単位で記録し、最も得点につながった打ち方を残します。'}
+   ];
+ }
  if(['technique','tactics','team_issue'].includes(category) || /ミドル|クイック|速攻|トス|レセプション|サーブレシーブ|返球|サーブ|スパイク|ブロック|ディグ|バレー|試合|練習/.test(text)){
    return [
     {icon:'🏐',label:'練習',text:compact(plan.method)},
@@ -619,6 +668,14 @@ function buildActionPlan(m){
    issue='狙いと目的が曖昧なままサーブを打ち、相手を崩す確率が安定していません。';
    action='コースと狙う相手を決めてから、同じルーティンで打ちます。';
    method='・打つ前に狙うゾーンを声か指で確認する\n・練習で同じコースへ10本中何本入るか記録する\n・試合では相手の苦手な選手か連携の間を優先する';
+ }else if(/私生活|生活習慣|夜更かし|遅刻|時間管理/.test(joined)){
+   issue='生活のリズムや準備のばらつきが、練習への集中とチーム行動に影響しています。';
+   action='全員が守れる最低限の生活ルールを一つ決め、短期間で試します。';
+   method='・起床、就寝、集合準備の時刻を3日間記録する\n・改善する項目を一つだけ選ぶ\n・1週間後に続いた日数と理由を確認する';
+ }else if(/勉強|学習|宿題|テスト|進路|両立/.test(joined)){
+   issue='部活動と学習の予定が整理されず、直前に負担が集中しています。';
+   action='締切から逆算し、練習日でも続けられる短い学習時間を固定します。';
+   method='・課題を15〜30分単位に分ける\n・練習日の学習枠を前日に決める\n・週末に予定と実績を見比べて調整する';
  }
  return {issue,action,method};
 }
@@ -684,7 +741,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.42', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.43', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);

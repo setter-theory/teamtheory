@@ -1245,7 +1245,7 @@ body:has(.alia-home .saved-teams-panel){overflow:hidden!important}
 @media(max-width:390px){.team-home-live-stats{gap:6px}.team-home-live-stats>div{padding:10px 5px}.team-home-live-stats b{font-size:12px}}
 
 
-/* v0.42 Team Growth dashboard */
+/* v0.43 Team Growth dashboard */
 .growth-page{padding:4px 0 24px;display:grid;gap:18px;color:#f7f8fb}
 .growth-header{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:4px 4px 0}
 .growth-header h2{font-size:31px;line-height:1.15;margin:3px 0 8px;letter-spacing:-.02em}
