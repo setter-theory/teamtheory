@@ -860,3 +860,21 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
   .compact-decision{padding:12px}
   .compact-decision .action-plan-card{padding:10px 11px}
 }
+
+
+/* v0.33: player voices are the main record; issue/action/method are read-only Alia Advice */
+.summary-panel-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.summary-panel-head small{display:block;color:#f16f99;font-size:9px;font-weight:900;letter-spacing:.15em}
+.summary-panel-head h3{margin:4px 0 0;color:#fff;font-size:17px}
+.summary-panel-head>span{color:#ff91b4;font-size:11px}
+.player-voices-head{margin-bottom:8px}
+.alia-plan-card{margin-top:14px;padding:14px;border:1px solid rgba(241,111,153,.34);border-radius:22px;background:linear-gradient(145deg,#0f1b2c,#091421);box-shadow:0 10px 24px rgba(0,0,0,.17)}
+.alia-plan-head small{color:#f2c56c}
+.alia-plan-head>span{color:#98a4b5;font-size:10px}
+.alia-plan-lead{margin:0 0 10px;color:#9aa6b7;font-size:11px;line-height:1.55}
+.alia-plan-card .action-plan-list{gap:8px}
+.alia-plan-card .action-plan-card{padding:11px 12px;border-radius:15px}
+.alia-plan-card .action-plan-label{font-size:13px}
+.alia-plan-card .action-plan-card small{margin-bottom:5px;font-size:9px}
+.alia-plan-card .action-plan-answer{font-size:12px;line-height:1.55}
+@media(max-width:390px){.summary-panel-head h3{font-size:16px}.alia-plan-card{padding:12px}.alia-plan-card .action-plan-card{padding:10px 11px}}
