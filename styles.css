@@ -934,3 +934,10 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
   font-size:12px;
   line-height:1.5;
 }
+
+
+/* v0.39 Top / Team Home navigation */
+.saved-teams-panel{width:min(100%,440px);margin:2px auto 82px;padding:16px;border:1px solid rgba(243,123,162,.48);border-radius:24px;background:linear-gradient(145deg,rgba(19,31,49,.96),rgba(10,19,32,.98));box-shadow:0 14px 34px rgba(0,0,0,.28),0 0 26px rgba(239,94,139,.08);position:relative;z-index:2}
+.saved-teams-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:12px}.saved-teams-head small{display:block;color:#f1789e;font-size:10px;font-weight:900;letter-spacing:.18em}.saved-teams-head h2{margin:3px 0 0;color:#fff;font-size:18px}.saved-teams-head>span{padding:5px 9px;border-radius:999px;background:rgba(239,94,139,.13);color:#f49ab6;font-size:11px;font-weight:800}
+.saved-teams-list{display:grid;gap:9px}.saved-team-card{width:100%;display:grid;grid-template-columns:45px 1fr 22px;align-items:center;gap:11px;padding:11px 12px;border:1px solid rgba(142,155,178,.24);border-radius:17px;background:linear-gradient(145deg,#111d2e,#0b1524);color:#fff;text-align:left;box-shadow:0 8px 20px rgba(0,0,0,.18)}.saved-team-card:active{transform:scale(.985)}.saved-team-icon{display:grid;place-items:center;width:43px;height:43px;border-radius:14px;background:linear-gradient(145deg,#f47fa5,#cb4c75);font-size:20px}.saved-team-card b{display:block;font-size:14px}.saved-team-card small{display:block;margin-top:3px;color:#aeb8c7;font-size:10px}.saved-team-arrow{color:#f47fa5;font-size:28px;text-align:center}
+.alia-home:has(.saved-teams-panel){min-height:100dvh;height:auto;overflow-y:auto;padding-bottom:28px}.alia-home:has(.saved-teams-panel) .alia-support{position:relative;bottom:auto;margin-top:-62px;margin-bottom:36px}.alia-home:has(.saved-teams-panel) .welcome-version{position:fixed}
