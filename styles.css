@@ -1235,3 +1235,11 @@ body:has(.alia-home .saved-teams-panel){overflow:hidden!important}
 /* v0.40.1 team-home header cleanup */
 .team-home-header>div{min-width:0}.team-home-header p{white-space:nowrap}.team-home-members:active{transform:scale(.98)}
 @media(max-width:390px){.team-home-members{min-width:84px;height:40px;padding:0 9px;gap:6px}.team-home-members-count{font-size:12px}}
+
+
+/* v0.41 team home meeting dashboard */
+.team-home-live-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 16px}
+.team-home-live-stats>div{padding:11px 8px;border:1px solid rgba(255,255,255,.08);border-radius:14px;background:rgba(255,255,255,.035);text-align:center}
+.team-home-live-stats small,.team-home-live-stats b{display:block}.team-home-live-stats small{color:var(--muted);font-size:10px;margin-bottom:5px}.team-home-live-stats b{font-size:13px}
+.team-home-recent-empty{padding:15px 16px;border:1px solid rgba(255,255,255,.08);border-radius:17px;background:rgba(255,255,255,.025);color:var(--muted);font-size:12px;text-align:center}
+@media(max-width:390px){.team-home-live-stats{gap:6px}.team-home-live-stats>div{padding:10px 5px}.team-home-live-stats b{font-size:12px}}
