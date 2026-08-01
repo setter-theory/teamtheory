@@ -1154,3 +1154,36 @@ body:has(.alia-home .saved-teams-panel){overflow:hidden!important}
   .alia-title-v396 h1{font-size:25px!important}.alia-title-v396 .alia-tagline{font-size:10.5px!important}
   .alia-character-v396{right:-22px!important;width:194px!important}.alia-thought-v396{width:137px!important}
 }
+
+
+/* v0.39.7 — final hero order: Alia speech above TEAM Theory */
+.alia-hero-left-v396{
+  display:flex!important;
+  flex-direction:column!important;
+}
+.alia-thought-v396{
+  order:1!important;
+}
+.alia-title-v396{
+  order:2!important;
+}
+@media (max-width:430px) and (min-height:780px){
+  .alia-home:has(.saved-teams-panel) .alia-hero-v396{
+    height:236px!important;
+    flex-basis:236px!important;
+  }
+  .alia-home:has(.saved-teams-panel) .alia-hero-left-v396{
+    justify-content:flex-start!important;
+  }
+  .alia-home:has(.saved-teams-panel) .alia-thought-v396{
+    order:1!important;
+    margin:0 0 10px 3px!important;
+  }
+  .alia-home:has(.saved-teams-panel) .alia-title-v396{
+    order:2!important;
+    margin:0!important;
+  }
+  .alia-home:has(.saved-teams-panel) .alia-character-v396{
+    right:-24px!important;
+  }
+}
