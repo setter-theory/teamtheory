@@ -74,7 +74,7 @@ function welcomeView(){
      <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.29</div>
+   <div class="welcome-version">Version 0.30</div>
  </main>`;
 }
 function roleOptions(){return ROLES.map(r=>`<option value="${r}">${r}</option>`).join('')}
@@ -100,7 +100,7 @@ function joinTeamView(){
      <div class="join-field"><label class="join-label"><span class="join-label-icon team-icon">♟</span><span>チーム名</span></label><input id="joinTeamName" class="input join-input" placeholder="例：Alia高校"><small class="join-help">参加先のチーム名を入力してください。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon person-icon"></span><span>あなたの名前</span></label><input id="joinName" class="input join-input" placeholder="例：Alia"><small class="join-help">チーム内で表示されるあなたの名前です。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon shield-icon">★</span><span>役割</span></label><select id="joinRole" class="input join-input join-select">${roleOptions()}</select><small class="join-help">チーム内でのあなたの役割を選択してください。</small></div>
-     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.29" class="join-alia" alt="Alia"></div>
+     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.30" class="join-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions join-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon">⌂</span><span>ホーム</span></button><button class="bottom-action join-action" onclick="joinTeamAccount()"><span>参加する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -108,7 +108,7 @@ function joinTeamView(){
 
 function homeView(){
   const a=loadAccount(); const active=loadMeetings().find(m=>m.status==='open');
-  return `<section class="hero home-hero"><div class="hero-copy"><div class="home-team-name"><span>♟</span>${esc(a.teamName)}</div><div class="eyebrow"><span class="eyebrow-icon">♙</span>${esc(a.displayName)}さん・${esc(a.role)}</div><h2>今日は何を話し合いますか？</h2><p>それぞれの意見を集め、最後にチームの一つの結論へまとめます。</p></div><img class="home-alia" src="./icons/alia-standalone.png?v=0.29" alt="Alia"></section>
+  return `<section class="hero home-hero"><div class="hero-copy"><div class="home-team-name"><span>♟</span>${esc(a.teamName)}</div><div class="eyebrow"><span class="eyebrow-icon">♙</span>${esc(a.displayName)}さん・${esc(a.role)}</div><h2>今日は何を話し合いますか？</h2><p>それぞれの意見を集め、最後にチームの一つの結論へまとめます。</p></div><img class="home-alia" src="./icons/alia-standalone.png?v=0.30" alt="Alia"></section>
   <div class="invite-strip"><div><small><span class="invite-icon">⚿</span>チーム招待コード</small><strong>${esc(a.teamCode)}</strong><p>このコードを共有して仲間をチームに招待できます。</p></div><button class="mini-btn" onclick="copyCode()"><span>▣</span>コピー</button></div>
   ${active?`<div class="section-title"><h3>進行中</h3><span>${active.entries.length}件の意見</span></div><div class="progress-card progress-card-modern"><div class="progress-card-top"><span class="pill">進行中</span><span>${esc(active.group)}</span></div><h3>${esc(active.theme||'テーマ未設定')}</h3><div class="progress-stats"><span>意見 <b>${active.entries.length}</b>件</span><span>作成者 <b>${esc(active.ownerName)}</b></span></div><div class="actions"><button class="btn primary" onclick="resume('${active.id}')">続きから</button></div></div>`:''}
   <div class="section-title"><h3>ミーティングを始める</h3><span>3種類</span></div>
@@ -136,9 +136,9 @@ function roomView(){
 }
 function summaryView(){
  const m=getCurrent(); if(!m) return '<div class="empty">ミーティングが見つかりません。</div>';
- const draft=m.summary || makeSummary(m);
+ const plan=parseActionPlan(m.summary || makeSummary(m),m);
  const sourceOpinions = m.entries.length ? m.entries.map((e,i)=>`<article class="summary-source-card"><div class="summary-source-number">${i+1}</div><div class="summary-source-body"><div class="summary-source-meta"><strong>${esc(e.name)}</strong><small>${new Date(e.createdAt||Date.now()).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}</small></div><p>${esc(e.text)}</p></div></article>`).join('') : '<div class="meeting-empty dark-empty"><span>♡</span><b>元の発言はありません</b><small>意見を入力すると、ここに発言者と内容が残ります。</small></div>';
- return `<section class="summary-page"><h2 class="page-title">✦ Aliaまとめ</h2><p class="subtitle">要約と元の発言を一緒に確認できます。</p><div class="alia-summary-card"><div class="summary-card-head"><span>Alia</span><b>${esc(m.theme||'今回のテーマ')}</b></div><label class="label">まとめ案</label><textarea id="summaryText" class="textarea summary-textarea">${esc(draft)}</textarea><div class="alia-tip">💡 要約を見ながら、下の「誰が・何を言ったか」も確認できます。</div></div><div class="summary-source-section"><div class="section-title summary-source-title"><h3>元の発言</h3><span>${m.entries.length}件</span></div><p class="summary-source-lead">誰がどの意見を出したかを、そのまま残しています。</p><div class="summary-source-list">${sourceOpinions}</div></div><div class="summary-bottom-actions"><button class="btn back-action" onclick="state.view='room';render()">‹ 入力へ戻る</button><button class="btn secondary" onclick="regenerate()">作り直す</button><button class="btn gold" onclick="finalize()">確定して保存</button></div></section>`;
+ return `<section class="summary-page"><h2 class="page-title">✦ Aliaまとめ</h2><p class="subtitle">意見を「課題・行動・方法」に整理しました。</p><div class="alia-summary-card"><div class="summary-card-head"><span>Alia</span><b>${esc(m.theme||'今回のテーマ')}</b></div><div class="action-plan-list"><label class="action-plan-card issue"><span class="action-plan-label">課題</span><small>いま何が問題なのか</small><textarea id="summaryIssue" class="textarea action-plan-textarea">${esc(plan.issue)}</textarea></label><label class="action-plan-card action"><span class="action-plan-label">行動</span><small>チームとして何をするのか</small><textarea id="summaryAction" class="textarea action-plan-textarea">${esc(plan.action)}</textarea></label><label class="action-plan-card method"><span class="action-plan-label">方法</span><small>どうやって実践するのか</small><textarea id="summaryMethod" class="textarea action-plan-textarea method-textarea">${esc(plan.method)}</textarea></label></div><div class="alia-tip">💡 Aliaの案は編集できます。チームで話し合い、実行できる内容に整えてください。</div></div><div class="summary-source-section"><div class="section-title summary-source-title"><h3>元の発言</h3><span>${m.entries.length}件</span></div><p class="summary-source-lead">誰がどの意見を出したかを、そのまま残しています。</p><div class="summary-source-list">${sourceOpinions}</div></div><div class="summary-bottom-actions"><button class="btn back-action" onclick="state.view='room';render()">‹ 入力へ戻る</button><button class="btn secondary" onclick="regenerate()">作り直す</button><button class="btn gold" onclick="finalize()">確定して保存</button></div></section>`;
 }
 function historyView(){
  const ms=loadMeetings().sort((a,b)=>b.createdAt-a.createdAt);
@@ -149,7 +149,7 @@ function growthView(){ const ms=loadMeetings().filter(m=>m.status==='closed'); c
 function menuView(){
   const a=loadAccount();
   return `<section class="menu-page">
-    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.29" alt="Alia"></div>
+    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.30" alt="Alia"></div>
     <div class="menu-list">
       ${menuItem('👥','メンバー管理','メンバー・役割を確認')}
       ${menuItem('🔑','招待コード','コードの確認・コピー','copyCode()')}
@@ -177,10 +177,47 @@ function getCurrent(){return loadMeetings().find(m=>m.id===state.currentMeetingI
 function mutate(fn){const ms=loadMeetings();const i=ms.findIndex(m=>m.id===state.currentMeetingId);if(i<0)return;fn(ms[i]);saveMeetings(ms);}
 function updateTheme(v){mutate(m=>m.theme=v)}
 function addEntry(){const name=document.getElementById('name').value.trim();const text=document.getElementById('text').value.trim();if(!name||!text){toast('名前と意見を入力してください');return}mutate(m=>m.entries.push({name,text,createdAt:Date.now()}));render();toast('意見を追加しました')}
-function makeSummary(m){ const theme=m.theme||'今回のテーマ'; if(!m.entries.length)return `テーマ：${theme}\n\nまだ意見が入力されていません。`; const points=m.entries.slice(0,8).map((e,i)=>`${i+1}. ${e.text}（${e.name}）`).join('\n'); return `テーマ：${theme}\n\n【集まった意見】\n${points}\n\n【チームとして決めること】\n・共通する課題：\n・次回までの行動：\n・担当・確認方法：`; }
+function buildActionPlan(m){
+ const theme=m.theme||'今回のテーマ';
+ const texts=(m.entries||[]).map(e=>(e.text||'').trim()).filter(Boolean);
+ if(!texts.length) return {issue:`「${theme}」について、まだ意見が集まっていません。`,action:'まず全員から意見を集め、チームとして優先する課題を一つ決めます。',method:'・一人ずつ意見を入力する\n・似ている意見をまとめる\n・次回までに確認する担当を決める'};
+ const top=texts.slice(0,3);
+ const quoted=top.map(t=>`「${t}」`).join('、');
+ const issue=`「${theme}」について、${quoted}という意見が挙がっています。共通している問題を整理し、チーム全体の課題として共有する必要があります。`;
+ const action=`まずは「${top[0]}」を重点項目にし、全員が同じ意識で取り組みます。練習や試合のあとに、できたかどうかを必ず振り返ります。`;
+ const method=top.map((t,i)=>`・${i+1}. 「${t}」を練習前に確認し、終了後に実行できたか振り返る`).join('\n');
+ return {issue,action,method};
+}
+function parseActionPlan(summary,m){
+ const fallback=buildActionPlan(m);
+ if(!summary) return fallback;
+ const get=(label,next)=>{
+   const marker=`【${label}】`;
+   const start=summary.indexOf(marker);
+   if(start<0) return '';
+   const from=start+marker.length;
+   const end=next?summary.indexOf(`【${next}】`,from):-1;
+   return summary.slice(from,end<0?undefined:end).trim();
+ };
+ return {issue:get('課題','行動')||fallback.issue,action:get('行動','方法')||fallback.action,method:get('方法','元の発言')||fallback.method};
+}
+function makeSummary(m){
+ const theme=m.theme||'今回のテーマ';
+ const plan=buildActionPlan(m);
+ const points=(m.entries||[]).length ? m.entries.slice(0,20).map((e,i)=>`${i+1}. ${e.text}（${e.name}）`).join('\n') : 'まだ意見はありません。';
+ return `テーマ：${theme}\n\n【課題】\n${plan.issue}\n\n【行動】\n${plan.action}\n\n【方法】\n${plan.method}\n\n【元の発言】\n${points}`;
+}
+function composeSummary(){
+ const m=getCurrent();
+ const issue=document.getElementById('summaryIssue')?.value.trim()||'';
+ const action=document.getElementById('summaryAction')?.value.trim()||'';
+ const method=document.getElementById('summaryMethod')?.value.trim()||'';
+ const points=(m?.entries||[]).length ? m.entries.map((e,i)=>`${i+1}. ${e.text}（${e.name}）`).join('\n') : 'まだ意見はありません。';
+ return `テーマ：${m?.theme||'今回のテーマ'}\n\n【課題】\n${issue}\n\n【行動】\n${action}\n\n【方法】\n${method}\n\n【元の発言】\n${points}`;
+}
 function openSummary(){state.view='summary';render()}
-function regenerate(){const m=getCurrent();document.getElementById('summaryText').value=makeSummary(m);toast('まとめ案を作り直しました')}
-function finalize(){const s=document.getElementById('summaryText').value.trim();if(!s){toast('まとめを入力してください');return}mutate(m=>{m.summary=s;m.status='closed';m.closedAt=Date.now()});state.view='meetings';render();toast('ミーティングを保存しました')}
+function regenerate(){const m=getCurrent();const plan=buildActionPlan(m);document.getElementById('summaryIssue').value=plan.issue;document.getElementById('summaryAction').value=plan.action;document.getElementById('summaryMethod').value=plan.method;toast('課題・行動・方法を作り直しました')}
+function finalize(){const issue=document.getElementById('summaryIssue').value.trim();const action=document.getElementById('summaryAction').value.trim();const method=document.getElementById('summaryMethod').value.trim();if(!issue||!action||!method){toast('課題・行動・方法をすべて確認してください');return}const s=composeSummary();mutate(m=>{m.summary=s;m.status='closed';m.closedAt=Date.now()});state.view='meetings';render();toast('ミーティングを保存しました')}
 function resume(id){state.currentMeetingId=id;const m=getCurrent();state.view=m?.status==='closed'?'summary':'room';render()}
 function go(v){state.view=v;render()}
 function resetAll(){if(confirm('この端末のチーム登録と試作データを削除しますか？')){localStorage.removeItem('tt_account');localStorage.removeItem('tt_meetings');state.currentMeetingId=null;state.view='welcome';render();}}
@@ -193,7 +230,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.29', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.30', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);

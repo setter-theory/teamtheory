@@ -787,7 +787,7 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
 }
 
 
-/* v0.29 Alia summary attribution: keep every summary connected to its original speaker */
+/* v0.30 Alia summary attribution: keep every summary connected to its original speaker */
 .summary-source-section{margin-top:20px}
 .summary-source-title{margin:0 0 4px}
 .summary-source-lead{margin:0 0 12px;color:#94a0b1;font-size:12px;line-height:1.55}
@@ -799,3 +799,16 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
 .summary-source-meta small{color:#7f8b9d;font-size:10px}
 .summary-source-body p{margin:7px 0 0;color:#edf1f6;font-size:13px;line-height:1.65;white-space:pre-wrap}
 @media(max-width:390px){.summary-source-card{grid-template-columns:30px 1fr;padding:12px}.summary-source-number{width:27px;height:27px}}
+
+
+/* v0.30 Alia action plan: always show concrete answers for issue, action and method */
+.action-plan-list{display:grid;gap:12px}
+.action-plan-card{display:block;padding:14px;border:1px solid rgba(241,111,153,.26);border-radius:18px;background:linear-gradient(145deg,#101c2d,#0a1422)}
+.action-plan-card.issue{border-left:4px solid #ff7fa8}
+.action-plan-card.action{border-left:4px solid #f2c56c}
+.action-plan-card.method{border-left:4px solid #79c7ff}
+.action-plan-label{display:block;color:#fff;font-size:15px;font-weight:900;margin-bottom:2px}
+.action-plan-card small{display:block;color:#8f9bae;font-size:10px;margin-bottom:9px}
+.action-plan-textarea{min-height:92px!important;background:#091521!important;color:#eef2f7!important;border-color:rgba(255,255,255,.09)!important;line-height:1.65!important}
+.method-textarea{min-height:138px!important}
+@media(max-width:390px){.action-plan-card{padding:12px}.action-plan-textarea{min-height:98px!important}.method-textarea{min-height:150px!important}}
