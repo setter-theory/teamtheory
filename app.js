@@ -404,7 +404,7 @@ function welcomeView(){
          <p class="alia-tagline">教わるから、考えるへ。</p>
        </div>
      </div>
-     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.44.4" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.45.0" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
@@ -413,7 +413,7 @@ function welcomeView(){
    </div>
    <button class="welcome-utility" onclick="showTopSettingsNotice()"><span class="welcome-utility-icon">⚙</span><span>設定・その他</span><span class="welcome-utility-arrow">›</span></button>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.44.4</div>
+   <div class="welcome-version">Version 0.45.0</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -437,7 +437,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon">🏐</span><span>ポジション</span></label><select id="position" class="input create-input create-select">${positionOptions()}</select></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon">🎓</span><span>学年</span></label><select id="grade" class="input create-input create-select">${gradeOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.44.4" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.45.0" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -453,7 +453,7 @@ function joinTeamView(){
      <div class="join-field"><label class="join-label"><span class="join-label-icon shield-icon">★</span><span>役割</span></label><select id="joinRole" class="input join-input join-select">${roleOptions()}</select><small class="join-help">チーム内でのあなたの役割を選択してください。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon">🏐</span><span>ポジション</span></label><select id="joinPosition" class="input join-input join-select">${positionOptions()}</select></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon">🎓</span><span>学年</span></label><select id="joinGrade" class="input join-input join-select">${gradeOptions()}</select></div>
-     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.37" class="join-alia" alt="Alia"></div>
+     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.45.0" class="join-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions join-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon">⌂</span><span>トップ</span></button><button class="bottom-action join-action" onclick="joinTeamAccount()"><span>参加する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -520,7 +520,7 @@ function summaryView(){
 }
 function historyView(){
  const ms=currentTeamMeetings().sort((a,b)=>b.createdAt-a.createdAt);
- return `<section class="history-page"><h2 class="page-title">ミーティング履歴</h2><p class="subtitle">過去の話し合いと結論を見返せます。</p>${ms.length?`<div class="history-list">${ms.map(m=>`<article class="history-card history-card-modern" data-meeting-id="${esc(m.id)}"><button class="history-more-btn" aria-label="操作メニュー" onclick="toggleHistoryMenu(event,'${m.id}')">⋯</button><div id="history-menu-${m.id}" class="history-card-menu" hidden><button onclick="resume('${m.id}')">${m.status==='open'?'▶ 続きから':'👁 詳細を見る'}</button><button onclick="renameMeeting('${m.id}')">✎ 名前を変更</button><button onclick="duplicateMeeting('${m.id}')">▤ 複製</button><button class="danger" onclick="deleteMeeting('${m.id}')">🗑 削除</button></div><div class="history-head"><span class="pill ${m.status==='closed'?'closed':''}">${m.status==='closed'?'完了':'進行中'}</span><span>${new Date(m.createdAt).toLocaleDateString('ja-JP')}</span></div><h3>${esc(m.group)}ミーティング</h3><p class="history-theme">${esc(m.theme||'テーマ未設定')}</p><div class="history-stats"><span>意見 <b>${m.entries.length}</b>件</span><span>${new Date(m.createdAt).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}</span></div>${m.summary?`<div class="summary-preview">${esc(m.summary).split('\n').join('<br>')}</div>`:''}<div class="actions"><button class="btn primary" onclick="resume('${m.id}')">${m.status==='open'?'続きから':'詳細を見る'}</button></div></article>`).join('')}</div>`:'<div class="meeting-empty dark-empty"><span>▤</span><b>履歴はまだありません</b><small>ミーティングを保存するとここに表示されます。</small></div>'}<div class="history-bottom-actions"><button class="btn back-action" onclick="go('home')">‹ ホームへ戻る</button></div></section>`;
+ return `<section class="history-page"><h2 class="page-title">ミーティング履歴</h2><p class="subtitle">過去の話し合いと結論を見返せます。</p>${ms.length?`<div class="history-list">${ms.map(m=>`<article class="history-card history-card-modern" data-meeting-id="${esc(m.id)}"><button class="history-more-btn" aria-label="操作メニュー" onclick="toggleHistoryMenu(event,'${m.id}')">⋯</button><div id="history-menu-${m.id}" class="history-card-menu" hidden><button onclick="resume('${m.id}')">${m.status==='open'?'▶ 続きから':'👁 詳細を見る'}</button><button onclick="renameMeeting('${m.id}')">✎ 名前を変更</button><button onclick="duplicateMeeting('${m.id}')">▤ 複製</button>${m.status==='closed'?`<button onclick="toggleActionCompleted('${m.id}')">${m.actionCompleted?'✓ 実行確認を外す':'✓ 実行済みにする'}</button>`:''}<button class="danger" onclick="deleteMeeting('${m.id}')">🗑 削除</button></div><div class="history-head"><span class="pill ${m.status==='closed'?'closed':''}">${m.status==='closed'?'完了':'進行中'}</span><span>${new Date(m.createdAt).toLocaleDateString('ja-JP')}</span></div><h3>${esc(m.group)}ミーティング</h3><p class="history-theme">${esc(m.theme||'テーマ未設定')}</p><div class="history-stats"><span>意見 <b>${m.entries.length}</b>件</span><span>${new Date(m.createdAt).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}</span>${m.status==='closed'?`<span class="history-action-status ${m.actionCompleted?'done':''}">${m.actionCompleted?'実行済み':'未確認'}</span>`:''}</div>${m.summary?`<div class="summary-preview">${esc(m.summary).split('\n').join('<br>')}</div>`:''}<div class="actions"><button class="btn primary" onclick="resume('${m.id}')">${m.status==='open'?'続きから':'詳細を見る'}</button></div></article>`).join('')}</div>`:'<div class="meeting-empty dark-empty"><span>▤</span><b>履歴はまだありません</b><small>ミーティングを保存するとここに表示されます。</small></div>'}<div class="history-bottom-actions"><button class="btn back-action" onclick="go('home')">‹ ホームへ戻る</button></div></section>`;
 }
 function closeHistoryMenus(exceptId=''){
  document.querySelectorAll('.history-card-menu').forEach(menu=>{ if(menu.id!==`history-menu-${exceptId}`) menu.hidden=true; });
@@ -554,6 +554,15 @@ function duplicateMeeting(id){
  copy.id=uid('m'); copy.createdAt=Date.now(); copy.closedAt=null; copy.status='open'; copy.theme=`${source.theme||'テーマ未設定'}（コピー）`;
  meetings.push(copy); saveMeetings(meetings); render(); toast('ミーティングを複製しました');
 }
+function toggleActionCompleted(id){
+ closeHistoryMenus();
+ const meetings=loadMeetings();
+ const m=meetings.find(item=>item.id===id);
+ if(!m) return toast('履歴が見つかりません');
+ m.actionCompleted=!m.actionCompleted;
+ m.actionCompletedAt=m.actionCompleted?Date.now():null;
+ saveMeetings(meetings); render(); toast(m.actionCompleted?'実行済みにしました':'実行確認を外しました');
+}
 function deleteMeeting(id){
  closeHistoryMenus();
  const meetings=loadMeetings();
@@ -567,45 +576,47 @@ function deleteMeeting(id){
  render(); toast('ミーティング履歴を削除しました');
 }
 document.addEventListener('click',()=>closeHistoryMenus());
-function growthScoreForMeeting(m){
- const entryCount=(m.entries||[]).length;
- const hasSummary=!!(m.summary&&String(m.summary).trim());
- return 10 + Math.min(entryCount,10)*3 + (hasSummary?8:0);
+function clampScore(value){ return Math.max(0,Math.min(100,Math.round(value||0))); }
+function teamMemberCount(){
+ const a=loadAccount();
+ if(!a) return 1;
+ const members=loadAccounts().filter(x=>x.teamId===a.teamId);
+ return Math.max(1,new Set(members.map(x=>x.displayName).filter(Boolean)).size);
 }
-function growthLevel(total){
- const levels=[
-  ['START',0,80],['BRONZE I',80,180],['BRONZE II',180,320],['SILVER I',320,500],
-  ['SILVER II',500,720],['GOLD I',720,1000],['GOLD II',1000,1350],['PLATINUM',1350,1800]
- ];
- let current=levels[0];
- for(const level of levels){ if(total>=level[1]) current=level; }
- const next=current[2];
- const start=current[1];
- const progress=Math.max(0,Math.min(100,((total-start)/(next-start))*100));
- return {name:current[0],progress:Math.round(progress),current:total-start,next:next-start};
+function meetingSpeakers(m){ return new Set((m.entries||[]).map(e=>e.name).filter(Boolean)).size; }
+function teamScoreMetrics(meetings){
+ const closed=meetings.filter(m=>m.status==='closed');
+ const memberCount=teamMemberCount();
+ const activity=clampScore((closed.length/8)*100);
+ const participation=closed.length?clampScore(closed.reduce((n,m)=>n+Math.min(1,meetingSpeakers(m)/memberCount),0)/closed.length*100):0;
+ const speaking=closed.length?clampScore(closed.reduce((n,m)=>n+Math.min(1,(m.entries||[]).length/Math.max(1,memberCount*1.5)),0)/closed.length*100):0;
+ const action=closed.length?clampScore(closed.filter(m=>m.actionCompleted).length/closed.length*100):0;
+ const now=Date.now(), week=7*86400000;
+ let activeWeeks=0;
+ for(let i=0;i<4;i++){
+  const to=now-i*week, from=to-week;
+  if(closed.some(m=>{const t=m.closedAt||m.createdAt||0;return t>=from&&t<to;})) activeWeeks++;
+ }
+ const continuity=clampScore(activeWeeks/4*100);
+ const score=clampScore(activity*.20+participation*.25+speaking*.20+action*.20+continuity*.15);
+ return {score,activity,participation,speaking,action,continuity,closedCount:closed.length,memberCount};
 }
-function growthTrendData(meetings,days){
+function scoreForMeetingsUntil(meetings,until){
+ return teamScoreMetrics(meetings.filter(m=>(m.closedAt||m.createdAt||0)<=until)).score;
+}
+function teamScoreTrendData(meetings,days){
  const now=Date.now();
  const start=now-days*86400000;
- const buckets=[];
  const count=days<=7?7:days<=30?10:12;
  const span=(now-start)/count;
- for(let i=0;i<count;i++) buckets.push({from:start+i*span,to:start+(i+1)*span,value:0,label:''});
- meetings.forEach(m=>{
-  const t=m.closedAt||m.createdAt||0;
-  if(t<start||t>now) return;
-  const index=Math.min(count-1,Math.floor((t-start)/span));
-  buckets[index].value+=growthScoreForMeeting(m);
+ return Array.from({length:count},(_,i)=>{
+  const to=start+(i+1)*span;
+  const d=new Date(to);
+  return {value:scoreForMeetingsUntil(meetings,to),label:days<=7?`${d.getMonth()+1}/${d.getDate()}`:days<=30?`${d.getDate()}日`:`${d.getMonth()+1}月`};
  });
- buckets.forEach((b,i)=>{
-  const d=new Date(b.to);
-  b.label=days<=7?`${d.getMonth()+1}/${d.getDate()}`:days<=30?`${d.getDate()}日`:`${d.getMonth()+1}月`;
- });
- return buckets;
 }
 function growthTrendSvg(data){
- const w=620,h=190,padX=28,padY=24;
- const max=Math.max(20,...data.map(d=>d.value));
+ const w=620,h=190,padX=28,padY=24,max=100;
  const points=data.map((d,i)=>{
   const x=padX+(data.length===1?0:i*(w-padX*2)/(data.length-1));
   const y=h-padY-(d.value/max)*(h-padY*2);
@@ -613,41 +624,39 @@ function growthTrendSvg(data){
  });
  const line=points.map(p=>`${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
  const area=`${padX},${h-padY} ${line} ${w-padX},${h-padY}`;
- return `<div class="growth-chart-wrap"><svg class="growth-chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="チーム成長推移"><defs><linearGradient id="growthArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f4759d" stop-opacity=".38"/><stop offset="100%" stop-color="#f4759d" stop-opacity="0"/></linearGradient></defs><line x1="${padX}" y1="${h-padY}" x2="${w-padX}" y2="${h-padY}" class="growth-axis"/><polygon points="${area}" fill="url(#growthArea)"/><polyline points="${line}" class="growth-line"/>${points.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="5" class="growth-dot"><title>${p.label}: ${p.value}pt</title></circle>`).join('')}</svg><div class="growth-chart-labels">${data.map(d=>`<span>${esc(d.label)}</span>`).join('')}</div></div>`;
+ return `<div class="growth-chart-wrap"><svg class="growth-chart" viewBox="0 0 ${w} ${h}" role="img" aria-label="TEAM SCORE推移"><defs><linearGradient id="growthArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#f4759d" stop-opacity=".38"/><stop offset="100%" stop-color="#f4759d" stop-opacity="0"/></linearGradient></defs><line x1="${padX}" y1="${h-padY}" x2="${w-padX}" y2="${h-padY}" class="growth-axis"/><polygon points="${area}" fill="url(#growthArea)"/><polyline points="${line}" class="growth-line"/>${points.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="5" class="growth-dot"><title>${p.label}: ${p.value}</title></circle>`).join('')}</svg><div class="growth-chart-labels">${data.map(d=>`<span>${esc(d.label)}</span>`).join('')}</div></div>`;
 }
-function growthReport(meetings){
- if(!meetings.length) return '最初のミーティングを終えると、チームの変化をここで確認できます。';
- const recent=[...meetings].sort((a,b)=>(b.closedAt||b.createdAt||0)-(a.closedAt||a.createdAt||0)).slice(0,5);
- const entries=recent.flatMap(m=>m.entries||[]);
- const themes=recent.map(m=>m.theme).filter(Boolean);
- const words=['声','連携','ミドル','レセプション','サーブ','緊張','生活','時間','目標','役割'];
- const joined=[...themes,...entries.map(e=>e.text||'')].join(' ');
- const hit=words.map(word=>[word,(joined.match(new RegExp(word,'g'))||[]).length]).sort((a,b)=>b[1]-a[1])[0];
- const speakers=new Set(entries.map(e=>e.name).filter(Boolean)).size;
- if(hit&&hit[1]>0) return `最近は「${hit[0]}」に関する意見が多く出ています。${speakers>1?`${speakers}人の視点が集まっているので、`:''}次回は決めた行動が実行できたかを一つ確認しましょう。`;
- return `${recent.length}回のミーティングで${entries.length}件の意見が集まりました。次回は、前回決めた行動を一つ振り返ってから始めましょう。`;
+function teamScoreReport(metrics,previous){
+ if(!metrics.closedCount) return 'ミーティングを完了すると、TEAM SCOREの測定が始まります。';
+ const items=[['参加率',metrics.participation],['発言率',metrics.speaking],['実行率',metrics.action],['継続率',metrics.continuity]];
+ const strongest=[...items].sort((a,b)=>b[1]-a[1])[0];
+ const weakest=[...items].sort((a,b)=>a[1]-b[1])[0];
+ const delta=metrics.score-previous;
+ return `${delta>0?`前回より${delta}ポイント上がりました。`:delta<0?`前回より${Math.abs(delta)}ポイント下がっています。`:'前回と同じスコアです。'} 強みは「${strongest[0]}」、次に伸ばしたいのは「${weakest[0]}」です。次のミーティングで一つだけ行動を決め、履歴から実行確認を付けましょう。`;
+}
+function scoreMetricCard(label,value,note,cls=''){
+ return `<div class="team-score-metric ${cls}"><div><span>${label}</span><small>${note}</small></div><strong>${value}<i>%</i></strong><div class="team-score-mini"><b style="width:${value}%"></b></div></div>`;
 }
 function growthView(){
  const all=currentTeamMeetings();
  const closed=all.filter(m=>m.status==='closed');
- const entries=closed.flatMap(m=>m.entries||[]);
- const speakers=new Set(entries.map(e=>e.name).filter(Boolean));
- const completed=closed.filter(m=>m.summary&&String(m.summary).trim()).length;
- const completion=all.length?Math.round(closed.length/all.length*100):0;
- const totalScore=closed.reduce((n,m)=>n+growthScoreForMeeting(m),0);
- const level=growthLevel(totalScore);
- const trend=growthTrendData(closed,state.growthRange||30);
- return `<section class="growth-page">
-   <header class="growth-header"><div><p class="growth-eyebrow">TEAM GROWTH</p><h2>チームの成長</h2><p>話し合いの積み重ねを、成長として確認します。</p></div><div class="growth-level-badge">${esc(level.name)}</div></header>
-   <section class="growth-level-card"><div class="growth-level-top"><div><small>TEAM LEVEL</small><strong>${esc(level.name)}</strong></div><span>${totalScore} pt</span></div><div class="growth-progress"><i style="width:${level.progress}%"></i></div><div class="growth-progress-meta"><span>${level.current} pt</span><span>次まで ${Math.max(0,level.next-level.current)} pt</span></div></section>
-   <section class="growth-panel"><div class="growth-panel-title"><div><small>TEAM GROWTH</small><h3>活動の積み重ね</h3></div></div><div class="growth-stat-grid">
-    <div class="growth-stat"><span>ミーティング</span><strong>${closed.length}</strong><small>回</small></div>
-    <div class="growth-stat"><span>集まった意見</span><strong>${entries.length}</strong><small>件</small></div>
-    <div class="growth-stat"><span>発言した人数</span><strong>${speakers.size}</strong><small>人</small></div>
-    <div class="growth-stat"><span>完了率</span><strong>${completion}</strong><small>%</small></div>
+ const metrics=teamScoreMetrics(all);
+ const previous=scoreForMeetingsUntil(all,Date.now()-7*86400000);
+ const delta=metrics.score-previous;
+ const trend=teamScoreTrendData(closed,state.growthRange||30);
+ const measuring=metrics.closedCount<2;
+ return `<section class="growth-page team-score-page">
+   <header class="growth-header"><div><p class="growth-eyebrow">TEAM SCORE</p><h2>チームの成長</h2><p>話し合い・参加・実行・継続を、チームごとに確認します。</p></div><div class="growth-level-badge">${measuring?'測定中':metrics.score>=80?'S':metrics.score>=65?'A':metrics.score>=50?'B':'C'}</div></header>
+   <section class="team-score-hero"><div class="team-score-ring" style="--score:${metrics.score}"><div><strong>${metrics.score}</strong><span>/ 100</span></div></div><div class="team-score-copy"><small>CURRENT TEAM SCORE</small><h3>${measuring?'データを集めています':delta>0?'成長しています':delta<0?'見直しポイントあり':'安定しています'}</h3><p>${measuring?'完了したミーティングが2件以上になると、変化を比較できます。':`7日前から ${delta>=0?'+':''}${delta} pt`}</p></div></section>
+   <section class="growth-panel"><div class="growth-panel-title"><div><small>SCORE BREAKDOWN</small><h3>スコアの内訳</h3></div></div><div class="team-score-metrics">
+    ${scoreMetricCard('活動量',metrics.activity,`${metrics.closedCount}回完了`,'activity')}
+    ${scoreMetricCard('参加率',metrics.participation,`${metrics.memberCount}人を基準`,'participation')}
+    ${scoreMetricCard('発言率',metrics.speaking,'意見数から算出','speaking')}
+    ${scoreMetricCard('実行率',metrics.action,'履歴で実行確認','action')}
+    ${scoreMetricCard('継続率',metrics.continuity,'直近4週間','continuity')}
    </div></section>
-   <section class="growth-panel"><div class="growth-panel-title growth-trend-title"><div><small>TEAM TREND</small><h3>成長推移</h3></div><div class="growth-range">${[[7,'1週間'],[30,'1か月'],[180,'半年']].map(([v,l])=>`<button class="${state.growthRange===v?'active':''}" onclick="setGrowthRange(${v})">${l}</button>`).join('')}</div></div>${growthTrendSvg(trend)}<p class="growth-chart-note">ミーティングの完了・意見数・まとめをTEAM Scoreとして表示</p></section>
-   <section class="growth-panel growth-report"><div class="growth-panel-title"><div><small>ALIA GROWTH REPORT</small><h3>Aliaから見た変化</h3></div><span class="growth-report-icon">✦</span></div><p>${esc(growthReport(closed))}</p><div class="growth-report-foot"><span>まとめ作成 ${completed}件</span><span>更新：${new Date().toLocaleDateString('ja-JP')}</span></div></section>
+   <section class="growth-panel"><div class="growth-panel-title growth-trend-title"><div><small>TEAM SCORE TREND</small><h3>スコア推移</h3></div><div class="growth-range">${[[7,'1週間'],[30,'1か月'],[180,'半年']].map(([v,l])=>`<button class="${state.growthRange===v?'active':''}" onclick="setGrowthRange(${v})">${l}</button>`).join('')}</div></div>${growthTrendSvg(trend)}<p class="growth-chart-note">0〜100点で表示。選択中のチーム履歴だけを集計しています。</p></section>
+   <section class="growth-panel growth-report"><div class="growth-panel-title"><div><small>ALIA GROWTH REPORT</small><h3>Aliaから見た変化</h3></div><span class="growth-report-icon">✦</span></div><p>${esc(teamScoreReport(metrics,previous))}</p><div class="growth-report-foot"><span>実行確認 ${closed.filter(m=>m.actionCompleted).length}/${closed.length}件</span><span>更新：${new Date().toLocaleDateString('ja-JP')}</span></div></section>
  </section>`;
 }
 function setGrowthRange(days){ state.growthRange=days; render(); }
@@ -686,7 +695,7 @@ function membersView(){
 function menuView(){
   const a=loadAccount();
   return `<section class="menu-page">
-    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.37" alt="Alia"></div>
+    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.45.0" alt="Alia"></div>
     <div class="menu-list">
       ${menuItem('⇄','チームを切り替える','保存したチームを選択','goTop()')}
       ${menuItem('⌂','トップ画面へ戻る','チーム作成・参加・切り替え','goTop()')}
@@ -955,7 +964,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.44.4', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.45.0', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
