@@ -148,7 +148,15 @@ function currentTeamMeetings(){
   const a=loadAccount();
   if(!a) return loadMeetings();
   migrateLegacyMeetingOwnership();
-  return loadMeetings().filter(m=>m.teamId===a.teamId);
+  const all=loadMeetings();
+  const own=all.filter(m=>m.teamId===a.teamId);
+  const accounts=loadAccounts();
+  // v0.38以前はチーム情報を持たない履歴が多いため、最初に保存したチームでは
+  // 旧履歴をまとめて確認できるようにする。新規作成分はteamIdで分離される。
+  if(accounts[0] && accounts[0].teamId===a.teamId && own.length<all.length){
+    return all;
+  }
+  return own;
 }
 function uid(prefix='m'){ return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2,7); }
 function teamCode(){ return Math.random().toString(36).replace(/[^a-z0-9]/g,'').slice(0,6).toUpperCase(); }
@@ -199,15 +207,15 @@ function welcomeView(){
        <span class="thought-dot thought-dot-1"></span><span class="thought-dot thought-dot-2"></span><span class="thought-dot thought-dot-3"></span>
        <div class="thought-copy"><strong>Alia</strong><span>今日も最高のチームに<br>しようね！</span></div>
      </div>
-     <img class="alia-character" src="./icons/alia-standalone.png?v=0.39.2" alt="Alia">
-   </div>
-   <div class="welcome-actions">
-     <button class="welcome-action create" onclick="go('createTeam')"><span class="action-icon">👥</span><span><b>チームで始める</b><small>代表者はチームを作成。選手は招待コードで参加します。</small></span><span class="action-arrow">›</span></button>
-     <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon qr-icon">▦</span><span><b>コードで参加する</b><small>招待コードを入力してチームに参加します。</small></span><span class="action-arrow">›</span></button>
+     <img class="alia-character" src="./icons/alia-standalone.png?v=0.39.3" alt="Alia">
    </div>
    ${savedTeamsView()}
+   <div class="welcome-actions">
+     <button class="welcome-action create" onclick="go('createTeam')"><span class="action-icon">👥</span><span><b>チームで始める</b><small>新しいチームを作成します。</small></span><span class="action-arrow">›</span></button>
+     <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon qr-icon">▦</span><span><b>コードで参加する</b><small>招待コードでチームに参加します。</small></span><span class="action-arrow">›</span></button>
+   </div>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.39.2</div>
+   <div class="welcome-version">Version 0.39.3</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -226,7 +234,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon">♟</span><span>チーム名</span></label><input id="teamName" class="input create-input" placeholder="例：Alia高校"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon person-icon">●</span><span>あなたの名前</span></label><input id="displayName" class="input create-input" placeholder="例：Alia"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.39.2" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.39.3" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -493,7 +501,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.39.2', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.39.3', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
