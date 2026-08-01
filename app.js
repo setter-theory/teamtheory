@@ -25,7 +25,7 @@ function esc(s=''){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&l
 function shell(content, active='home'){
   const a=loadAccount();
   const team=a?.teamName || 'TEAM Theory';
-  return `<div class="topbar"><div class="brand"><div><h1>TEAM Theory</h1><div class="team-name">${esc(team)}</div></div><div class="version">Prototype 0.2</div></div></div>
+  return `<div class="topbar"><div class="brand"><div><h1>TEAM Theory</h1><div class="team-name">${esc(team)}</div></div><div class="version">Prototype 0.3</div></div></div>
   <main class="content">${content}</main>
   <nav class="bottom-nav">
     ${nav('home','⌂','ホーム',active)}${nav('meetings','▣','履歴',active)}${nav('growth','↗','成長',active)}${nav('profile','●','設定',active)}
@@ -99,5 +99,5 @@ function go(v){state.view=v;render()}
 function resetAll(){if(confirm('この端末のチーム登録と試作データを削除しますか？')){localStorage.removeItem('tt_account');localStorage.removeItem('tt_meetings');state.currentMeetingId=null;state.view='welcome';render();}}
 function toast(msg){const el=document.createElement('div');el.className='toast';el.textContent=msg;document.body.appendChild(el);setTimeout(()=>el.remove(),1800)}
 
-if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js?v=0.3').catch(()=>{});
 render();
