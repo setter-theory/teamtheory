@@ -1121,3 +1121,36 @@ body:has(.alia-home .saved-teams-panel){overflow:hidden!important}
     bottom:calc(env(safe-area-inset-bottom) + 5px)!important;
   }
 }
+
+/* v0.39.6 — approved hero composition: speech above brand, Alia shifted right */
+.qr-icon svg{width:23px;height:23px;display:block;fill:currentColor}
+.alia-hero-v396{width:min(100%,440px);height:270px;margin:0 auto 10px;position:relative;display:grid;grid-template-columns:minmax(0,1fr) 52%;align-items:end;isolation:isolate;z-index:2}
+.alia-hero-left-v396{min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-start;align-items:flex-start;padding-top:2px;z-index:4}
+.alia-thought-v396{width:178px;max-width:100%;margin:0 0 14px 3px;padding:15px 15px 14px;border-radius:44% 56% 50% 50% / 48% 48% 52% 52%;align-self:flex-start}
+.alia-thought-v396 strong{font-size:21px}.alia-thought-v396>span:not(.thought-dot),.alia-thought-v396 .thought-copy>span{font-size:12px;line-height:1.55}
+.alia-title-v396{width:245px!important;max-width:142%;margin:0!important;text-align:left!important;position:relative;z-index:5}
+.alia-title-v396 h1{font-size:33px!important;white-space:nowrap;line-height:1.04!important;letter-spacing:-.4px!important}
+.alia-title-v396 .alia-tagline{font-size:14px!important;margin:8px 0 0!important;white-space:nowrap}
+.alia-character-v396{position:absolute;right:-10px;bottom:0;width:236px;max-height:258px;margin:0!important;z-index:3;object-fit:contain;object-position:right bottom}
+.alia-hero-v396 .alia-sparkle-1{left:34%;top:20%}.alia-hero-v396 .alia-sparkle-2{right:1%;top:4%}.alia-hero-v396 .alia-sparkle-3{right:0;bottom:8%}.alia-hero-v396 .alia-feather-1{left:31%;bottom:27%}.alia-hero-v396 .alia-feather-2{right:-1%;top:33%}
+
+@media (max-width:430px) and (min-height:780px){
+  .alia-home:has(.saved-teams-panel){padding-top:calc(env(safe-area-inset-top) + 38px)!important}
+  .alia-home:has(.saved-teams-panel) .alia-hero-v396{height:236px!important;margin:0 auto 5px!important;transform:none!important;flex:0 0 236px}
+  .alia-home:has(.saved-teams-panel) .alia-hero-left-v396{padding-top:0}
+  .alia-home:has(.saved-teams-panel) .alia-thought-v396{width:144px!important;margin:0 0 10px 3px!important;padding:12px 11px 11px!important}
+  .alia-home:has(.saved-teams-panel) .alia-thought-v396 strong{font-size:17px!important;margin-bottom:4px!important}
+  .alia-home:has(.saved-teams-panel) .alia-thought-v396 .thought-copy>span{font-size:9.5px!important;line-height:1.45!important}
+  .alia-home:has(.saved-teams-panel) .alia-title-v396{width:205px!important;max-width:150%!important}
+  .alia-home:has(.saved-teams-panel) .alia-title-v396 h1{font-size:28px!important}
+  .alia-home:has(.saved-teams-panel) .alia-title-v396 .alia-tagline{font-size:11.5px!important;margin-top:5px!important}
+  .alia-home:has(.saved-teams-panel) .alia-character-v396{right:-18px!important;bottom:-2px!important;width:207px!important;max-height:225px!important}
+  .alia-home:has(.saved-teams-panel) .saved-teams-panel{margin:5px auto 7px!important}
+  .alia-home:has(.saved-teams-panel) .welcome-actions{gap:6px!important}
+  .alia-home:has(.saved-teams-panel) .welcome-version{bottom:calc(env(safe-area-inset-bottom) + 5px)!important}
+}
+
+@media (max-width:380px){
+  .alia-title-v396 h1{font-size:25px!important}.alia-title-v396 .alia-tagline{font-size:10.5px!important}
+  .alia-character-v396{right:-22px!important;width:194px!important}.alia-thought-v396{width:137px!important}
+}

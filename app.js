@@ -188,11 +188,7 @@ function render(){
 
 function welcomeView(){
  return `<main class="onboarding alia-home">
-   <div class="alia-title-block">
-     <h1><span>TEAM</span> Theory</h1>
-     <p class="alia-tagline">教わるから、考えるへ。</p>
-   </div>
-   <div class="alia-character-stage">
+   <div class="alia-hero-v396">
      <div class="alia-sparkle alia-sparkle-1">♥</div>
      <div class="alia-sparkle alia-sparkle-2">✦</div>
      <div class="alia-sparkle alia-sparkle-3">♡</div>
@@ -200,23 +196,29 @@ function welcomeView(){
      <div class="alia-feather alia-feather-2">❧</div>
      <div class="alia-sparkle alia-sparkle-4">♥</div>
      <div class="alia-feather alia-feather-3">❧</div>
-     <div class="alia-thought">
-       <svg class="thought-cloud" viewBox="0 0 320 220" aria-hidden="true">
-         <path d="M74 196C34 196 10 171 15 139C-3 116 8 78 40 66C41 31 76 12 105 28C129 1 178 5 196 34C226 15 268 34 270 69C309 76 323 112 304 139C311 173 280 199 244 194C225 221 181 224 157 202C132 223 91 220 74 196Z"/>
-       </svg>
-       <span class="thought-dot thought-dot-1"></span><span class="thought-dot thought-dot-2"></span><span class="thought-dot thought-dot-3"></span>
-       <div class="thought-copy"><strong>Alia</strong><span>今日も最高のチームに<br>しようね！</span></div>
+     <div class="alia-hero-left-v396">
+       <div class="alia-thought alia-thought-v396">
+         <svg class="thought-cloud" viewBox="0 0 320 220" aria-hidden="true">
+           <path d="M74 196C34 196 10 171 15 139C-3 116 8 78 40 66C41 31 76 12 105 28C129 1 178 5 196 34C226 15 268 34 270 69C309 76 323 112 304 139C311 173 280 199 244 194C225 221 181 224 157 202C132 223 91 220 74 196Z"/>
+         </svg>
+         <span class="thought-dot thought-dot-1"></span><span class="thought-dot thought-dot-2"></span><span class="thought-dot thought-dot-3"></span>
+         <div class="thought-copy"><strong>Alia</strong><span>今日も最高のチームに<br>しようね！</span></div>
+       </div>
+       <div class="alia-title-block alia-title-v396">
+         <h1><span>TEAM</span> Theory</h1>
+         <p class="alia-tagline">教わるから、考えるへ。</p>
+       </div>
      </div>
-     <img class="alia-character" src="./icons/alia-standalone.png?v=0.39.5" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.39.6" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
      <button class="welcome-action create" onclick="go('createTeam')"><span class="action-icon">👥</span><span><b>チームで始める</b><small>新しいチームを作成します。</small></span><span class="action-arrow">›</span></button>
-     <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon qr-icon">▦</span><span><b>コードで参加する</b><small>招待コードでチームに参加します。</small></span><span class="action-arrow">›</span></button>
+     <button class="welcome-action join" onclick="go('joinTeam')"><span class="action-icon qr-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM15 14h2v2h-2zM18 14h2v2h-2zM14 17h2v3h-2zM17 18h3v2h-3z"/></svg></span><span><b>コードで参加する</b><small>招待コードでチームに参加します。</small></span><span class="action-arrow">›</span></button>
    </div>
    <button class="welcome-utility" onclick="showTopSettingsNotice()"><span class="welcome-utility-icon">⚙</span><span>設定・その他</span><span class="welcome-utility-arrow">›</span></button>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.39.5</div>
+   <div class="welcome-version">Version 0.39.6</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -236,7 +238,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon">♟</span><span>チーム名</span></label><input id="teamName" class="input create-input" placeholder="例：Alia高校"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon person-icon">●</span><span>あなたの名前</span></label><input id="displayName" class="input create-input" placeholder="例：Alia"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.39.5" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.39.6" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
