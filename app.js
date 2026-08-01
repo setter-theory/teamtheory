@@ -81,8 +81,10 @@ function loadMeetings(){
     if(key==='tt_meetings' || !/(meeting|history|議事|履歴)/i.test(key)) continue;
     try{ recovered.push(...normalizeMeetingArray(JSON.parse(localStorage.getItem(key)))); }catch{}
   }
+  const deletedIds=new Set(read('tt_deleted_meeting_ids', []));
   const merged=[]; const seen=new Set();
   [...primary,...recovered].forEach(m=>{
+    if(m?.id && deletedIds.has(m.id)) return;
     const fp=meetingFingerprint(m);
     if(seen.has(fp)) return;
     seen.add(fp); merged.push(m);
@@ -210,7 +212,7 @@ function welcomeView(){
          <p class="alia-tagline">教わるから、考えるへ。</p>
        </div>
      </div>
-     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.39.8" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.39.9" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
@@ -239,7 +241,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon">♟</span><span>チーム名</span></label><input id="teamName" class="input create-input" placeholder="例：Alia高校"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon person-icon">●</span><span>あなたの名前</span></label><input id="displayName" class="input create-input" placeholder="例：Alia"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.39.8" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.39.9" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -303,8 +305,53 @@ function summaryView(){
 }
 function historyView(){
  const ms=currentTeamMeetings().sort((a,b)=>b.createdAt-a.createdAt);
- return `<section class="history-page"><h2 class="page-title">ミーティング履歴</h2><p class="subtitle">過去の話し合いと結論を見返せます。</p>${ms.length?`<div class="history-list">${ms.map(m=>`<article class="history-card history-card-modern"><div class="history-head"><span class="pill ${m.status==='closed'?'closed':''}">${m.status==='closed'?'完了':'進行中'}</span><span>${new Date(m.createdAt).toLocaleDateString('ja-JP')}</span></div><h3>${esc(m.group)}ミーティング</h3><p class="history-theme">${esc(m.theme||'テーマ未設定')}</p><div class="history-stats"><span>意見 <b>${m.entries.length}</b>件</span><span>${new Date(m.createdAt).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}</span></div>${m.summary?`<div class="summary-preview">${esc(m.summary).split('\n').join('<br>')}</div>`:''}<div class="actions"><button class="btn primary" onclick="resume('${m.id}')">${m.status==='open'?'続きから':'詳細を見る'}</button></div></article>`).join('')}</div>`:'<div class="meeting-empty dark-empty"><span>▤</span><b>履歴はまだありません</b><small>ミーティングを保存するとここに表示されます。</small></div>'}<div class="history-bottom-actions"><button class="btn back-action" onclick="go('home')">‹ ホームへ戻る</button></div></section>`;
+ return `<section class="history-page"><h2 class="page-title">ミーティング履歴</h2><p class="subtitle">過去の話し合いと結論を見返せます。</p>${ms.length?`<div class="history-list">${ms.map(m=>`<article class="history-card history-card-modern" data-meeting-id="${esc(m.id)}"><button class="history-more-btn" aria-label="操作メニュー" onclick="toggleHistoryMenu(event,'${m.id}')">⋯</button><div id="history-menu-${m.id}" class="history-card-menu" hidden><button onclick="resume('${m.id}')">${m.status==='open'?'▶ 続きから':'👁 詳細を見る'}</button><button onclick="renameMeeting('${m.id}')">✎ 名前を変更</button><button onclick="duplicateMeeting('${m.id}')">▤ 複製</button><button class="danger" onclick="deleteMeeting('${m.id}')">🗑 削除</button></div><div class="history-head"><span class="pill ${m.status==='closed'?'closed':''}">${m.status==='closed'?'完了':'進行中'}</span><span>${new Date(m.createdAt).toLocaleDateString('ja-JP')}</span></div><h3>${esc(m.group)}ミーティング</h3><p class="history-theme">${esc(m.theme||'テーマ未設定')}</p><div class="history-stats"><span>意見 <b>${m.entries.length}</b>件</span><span>${new Date(m.createdAt).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}</span></div>${m.summary?`<div class="summary-preview">${esc(m.summary).split('\n').join('<br>')}</div>`:''}<div class="actions"><button class="btn primary" onclick="resume('${m.id}')">${m.status==='open'?'続きから':'詳細を見る'}</button></div></article>`).join('')}</div>`:'<div class="meeting-empty dark-empty"><span>▤</span><b>履歴はまだありません</b><small>ミーティングを保存するとここに表示されます。</small></div>'}<div class="history-bottom-actions"><button class="btn back-action" onclick="go('home')">‹ ホームへ戻る</button></div></section>`;
 }
+function closeHistoryMenus(exceptId=''){
+ document.querySelectorAll('.history-card-menu').forEach(menu=>{ if(menu.id!==`history-menu-${exceptId}`) menu.hidden=true; });
+}
+function toggleHistoryMenu(event,id){
+ event.stopPropagation();
+ const menu=document.getElementById(`history-menu-${id}`);
+ if(!menu) return;
+ const willOpen=menu.hidden;
+ closeHistoryMenus(id);
+ menu.hidden=!willOpen;
+}
+function renameMeeting(id){
+ closeHistoryMenus();
+ const meetings=loadMeetings();
+ const m=meetings.find(item=>item.id===id);
+ if(!m) return toast('履歴が見つかりません');
+ const name=prompt('履歴に表示するテーマ名を入力してください',m.theme||'');
+ if(name===null) return;
+ const trimmed=name.trim();
+ if(!trimmed) return toast('名前を入力してください');
+ m.theme=trimmed;
+ saveMeetings(meetings); render(); toast('名前を変更しました');
+}
+function duplicateMeeting(id){
+ closeHistoryMenus();
+ const meetings=loadMeetings();
+ const source=meetings.find(item=>item.id===id);
+ if(!source) return toast('履歴が見つかりません');
+ const copy=JSON.parse(JSON.stringify(source));
+ copy.id=uid('m'); copy.createdAt=Date.now(); copy.closedAt=null; copy.status='open'; copy.theme=`${source.theme||'テーマ未設定'}（コピー）`;
+ meetings.push(copy); saveMeetings(meetings); render(); toast('ミーティングを複製しました');
+}
+function deleteMeeting(id){
+ closeHistoryMenus();
+ const meetings=loadMeetings();
+ const target=meetings.find(item=>item.id===id);
+ if(!target) return toast('履歴が見つかりません');
+ const label=`${target.group||''}ミーティング「${target.theme||'テーマ未設定'}」`;
+ if(!confirm(`${label}を削除しますか？\n\nこの操作は元に戻せません。`)) return;
+ saveMeetings(meetings.filter(item=>item.id!==id));
+ const deleted=new Set(read('tt_deleted_meeting_ids', [])); deleted.add(id); write('tt_deleted_meeting_ids',[...deleted]);
+ if(state.currentMeetingId===id) state.currentMeetingId=null;
+ render(); toast('ミーティング履歴を削除しました');
+}
+document.addEventListener('click',()=>closeHistoryMenus());
 function growthView(){ const ms=currentTeamMeetings().filter(m=>m.status==='closed'); const entries=ms.reduce((n,m)=>n+m.entries.length,0); return `<h2 class="page-title">チームの成長</h2><p class="subtitle">試作版では活動量を表示します。</p><div class="card-grid"><div class="progress-card"><small>完了したミーティング</small><h2>${ms.length}回</h2></div><div class="progress-card"><small>集まった意見</small><h2>${entries}件</h2></div><div class="progress-card"><small>チームの結論</small><h2>${ms.filter(m=>m.summary).length}件</h2></div></div>`; }
 
 
@@ -529,7 +576,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.39.3', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.39.9', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);

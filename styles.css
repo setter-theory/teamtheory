@@ -1204,3 +1204,14 @@ body:has(.alia-home .saved-teams-panel){overflow:hidden!important}
 .invite-code-note{margin:18px 0 0;color:#8f9cad;font-size:12px;text-align:center}
 .invite-code-bottom{margin-top:16px}
 @media(max-width:390px){.invite-code-value{font-size:29px}.invite-code-actions{grid-template-columns:1fr}.invite-code-card{padding:20px}}
+
+/* v0.39.9 meeting history actions */
+.history-card-modern{position:relative}
+.history-more-btn{position:absolute;top:8px;right:9px;z-index:3;width:34px;height:30px;border:0;border-radius:11px;background:rgba(255,255,255,.06);color:#dce4ef;font-size:22px;line-height:20px;display:grid;place-items:center;cursor:pointer}
+.history-more-btn:active{transform:scale(.96);background:rgba(241,111,153,.16)}
+.history-card-modern .history-head{padding-right:42px}
+.history-card-menu{position:absolute;top:42px;right:10px;z-index:20;min-width:166px;padding:6px;border:1px solid rgba(241,111,153,.3);border-radius:15px;background:rgba(8,17,29,.98);box-shadow:0 14px 38px rgba(0,0,0,.46);backdrop-filter:blur(14px)}
+.history-card-menu[hidden]{display:none}
+.history-card-menu button{width:100%;border:0;background:transparent;color:#e9eef6;text-align:left;padding:10px 11px;border-radius:10px;font:inherit;font-size:12px;cursor:pointer}
+.history-card-menu button:active{background:rgba(255,255,255,.08)}
+.history-card-menu button.danger{color:#ff7f94;border-top:1px solid rgba(255,255,255,.08);margin-top:3px;padding-top:11px}
