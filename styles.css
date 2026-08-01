@@ -1007,3 +1007,59 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
   .alia-home:has(.saved-teams-panel) .alia-support{display:none!important}
   .alia-home:has(.saved-teams-panel) .welcome-version{position:absolute!important;right:12px!important;bottom:calc(env(safe-area-inset-bottom) + 3px)!important;font-size:8.5px!important}
 }
+
+
+/* v0.39.4 — iPhone 13 approved top-screen balance */
+body:has(.alia-home .saved-teams-panel){overflow:hidden!important}
+.app-shell:has(.alia-home .saved-teams-panel){height:100dvh!important;min-height:100dvh!important;overflow:hidden!important}
+.welcome-utility{display:none}
+@media (max-width:430px) and (min-height:780px){
+  .alia-home:has(.saved-teams-panel){
+    padding:calc(env(safe-area-inset-top) + 34px) 14px calc(env(safe-area-inset-bottom) + 8px)!important;
+  }
+  .alia-home:has(.saved-teams-panel) .alia-title-block{
+    height:70px!important;
+    transform:scale(.82)!important;
+    transform-origin:top center!important;
+  }
+  .alia-home:has(.saved-teams-panel) .alia-character-stage{
+    min-height:136px!important;
+    height:136px!important;
+    margin:2px auto 8px!important;
+    transform:scale(.70)!important;
+  }
+  .alia-home:has(.saved-teams-panel) .saved-teams-panel{
+    margin:8px auto 7px!important;
+    max-height:151px!important;
+  }
+  .alia-home:has(.saved-teams-panel) .welcome-actions{gap:7px!important}
+  .alia-home:has(.saved-teams-panel) .welcome-action{min-height:61px!important}
+  .alia-home:has(.saved-teams-panel) .welcome-utility{
+    order:5;
+    width:min(100%,440px);
+    min-height:42px;
+    margin:8px auto 0;
+    padding:6px 10px;
+    display:grid;
+    grid-template-columns:30px 1fr 20px;
+    align-items:center;
+    gap:8px;
+    border:0;
+    border-top:1px solid rgba(255,255,255,.10);
+    background:transparent;
+    color:#f19ab5;
+    text-align:left;
+    font-size:12px;
+    font-weight:800;
+    position:relative;
+    z-index:2;
+  }
+  .welcome-utility-icon{font-size:18px;color:#b9c2d0}
+  .welcome-utility-arrow{font-size:24px;text-align:right;color:#f47fa5}
+  .alia-home:has(.saved-teams-panel) .welcome-version{
+    right:50%!important;
+    transform:translateX(50%)!important;
+    bottom:calc(env(safe-area-inset-bottom) + 4px)!important;
+    font-size:8.5px!important;
+  }
+}
