@@ -812,3 +812,22 @@ body{background:#07111d;color:#fff}.app-shell{background:linear-gradient(180deg,
 .action-plan-textarea{min-height:92px!important;background:#091521!important;color:#eef2f7!important;border-color:rgba(255,255,255,.09)!important;line-height:1.65!important}
 .method-textarea{min-height:138px!important}
 @media(max-width:390px){.action-plan-card{padding:12px}.action-plan-textarea{min-height:98px!important}.method-textarea{min-height:150px!important}}
+
+
+/* v0.31 player-first meeting summary: opinions lead, team decides, Alia advises briefly */
+.player-opinions-main{margin-top:18px}
+.team-decision-card{margin-top:20px;padding:18px;border:1.5px solid rgba(241,111,153,.52);border-radius:22px;background:linear-gradient(145deg,#0f1b2c,#091421);box-shadow:0 16px 34px rgba(0,0,0,.22)}
+.team-decision-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.08)}
+.team-decision-head small{display:block;color:#f16f99;font-size:9px;font-weight:900;letter-spacing:.14em}
+.team-decision-head h3{margin:4px 0 0;color:#fff;font-size:18px}
+.team-decision-head>span{color:#98a4b5;font-size:10px}
+.alia-advice-card{margin-top:14px;padding:12px 14px;border:1px solid rgba(241,111,153,.22);border-radius:16px;background:rgba(241,111,153,.075)}
+.alia-advice-title{color:#ff91b4;font-size:12px;font-weight:900}
+.alia-advice-card p{margin:6px 0 0;color:#d8dee8;font-size:12px;line-height:1.55}
+.summary-bottom-actions.two-actions{grid-template-columns:1fr 1.35fr}
+.summary-bottom-actions.two-actions .gold{grid-column:auto}
+@media(max-width:390px){
+ .team-decision-card{padding:14px}
+ .team-decision-head h3{font-size:16px}
+ .summary-bottom-actions.two-actions{grid-template-columns:1fr 1.25fr}
+}
