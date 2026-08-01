@@ -1187,3 +1187,20 @@ body:has(.alia-home .saved-teams-panel){overflow:hidden!important}
     right:-24px!important;
   }
 }
+
+/* v0.39.8 — move team invite code from Home to Menu */
+.invite-code-page{padding:10px 0 120px}
+.invite-code-head small{display:block;color:#f07aa2;font-size:12px;font-weight:900;letter-spacing:.18em;margin-bottom:8px}
+.invite-code-head h2{margin:0;color:#fff;font-size:30px}
+.invite-code-head p{margin:10px 0 22px;color:#99a6b6;line-height:1.7}
+.invite-code-card{border:1.5px solid #ef6f9b;border-radius:26px;padding:24px;background:linear-gradient(145deg,#0d1828,#09121f);box-shadow:0 18px 38px rgba(0,0,0,.26)}
+.invite-team-label{display:flex;align-items:center;gap:12px;color:#f07aa2}
+.invite-team-label>span{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:rgba(240,111,155,.14);font-size:22px}
+.invite-team-label small{display:block;color:#8795a6;font-size:11px;margin-bottom:2px}
+.invite-team-label b{color:#fff;font-size:18px}
+.invite-code-value{margin:24px 0 20px;padding:20px 12px;border-radius:18px;border:1px solid rgba(240,111,155,.4);background:rgba(255,255,255,.025);color:#fff;text-align:center;font-size:34px;font-weight:900;letter-spacing:.24em;text-indent:.24em}
+.invite-code-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.invite-code-actions .btn{margin:0}
+.invite-code-note{margin:18px 0 0;color:#8f9cad;font-size:12px;text-align:center}
+.invite-code-bottom{margin-top:16px}
+@media(max-width:390px){.invite-code-value{font-size:29px}.invite-code-actions{grid-template-columns:1fr}.invite-code-card{padding:20px}}
