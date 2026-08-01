@@ -100,7 +100,7 @@ function joinTeamView(){
      <div class="join-field"><label class="join-label"><span class="join-label-icon team-icon">♟</span><span>チーム名</span></label><input id="joinTeamName" class="input join-input" placeholder="例：Alia高校"><small class="join-help">参加先のチーム名を入力してください。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon person-icon"></span><span>あなたの名前</span></label><input id="joinName" class="input join-input" placeholder="例：Alia"><small class="join-help">チーム内で表示されるあなたの名前です。</small></div>
      <div class="join-field"><label class="join-label"><span class="join-label-icon shield-icon">★</span><span>役割</span></label><select id="joinRole" class="input join-input join-select">${roleOptions()}</select><small class="join-help">チーム内でのあなたの役割を選択してください。</small></div>
-     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.23" class="join-alia" alt="Alia"></div>
+     <div class="join-alia-zone"><div class="join-alia-bubble">招待コードは<br>大文字・小文字を<br>気にしなくて<br>大丈夫だよ♪</div><img src="./icons/alia-standalone.png?v=0.27" class="join-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions join-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon">⌂</span><span>ホーム</span></button><button class="bottom-action join-action" onclick="joinTeamAccount()"><span>参加する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -108,9 +108,9 @@ function joinTeamView(){
 
 function homeView(){
   const a=loadAccount(); const active=loadMeetings().find(m=>m.status==='open');
-  return `<section class="hero home-hero"><div class="hero-copy"><div class="home-team-name"><span>♟</span>${esc(a.teamName)}</div><div class="eyebrow"><span class="eyebrow-icon">♙</span>${esc(a.displayName)}さん・${esc(a.role)}</div><h2>今日は何を話し合いますか？</h2><p>それぞれの意見を集め、最後にチームの一つの結論へまとめます。</p></div><img class="home-alia" src="./icons/alia-standalone.png?v=0.25" alt="Alia"></section>
+  return `<section class="hero home-hero"><div class="hero-copy"><div class="home-team-name"><span>♟</span>${esc(a.teamName)}</div><div class="eyebrow"><span class="eyebrow-icon">♙</span>${esc(a.displayName)}さん・${esc(a.role)}</div><h2>今日は何を話し合いますか？</h2><p>それぞれの意見を集め、最後にチームの一つの結論へまとめます。</p></div><img class="home-alia" src="./icons/alia-standalone.png?v=0.27" alt="Alia"></section>
   <div class="invite-strip"><div><small><span class="invite-icon">⚿</span>チーム招待コード</small><strong>${esc(a.teamCode)}</strong><p>このコードを共有して仲間をチームに招待できます。</p></div><button class="mini-btn" onclick="copyCode()"><span>▣</span>コピー</button></div>
-  ${active?`<div class="section-title"><h3>進行中</h3><span>${active.entries.length}件の意見</span></div><div class="progress-card"><span class="pill">進行中</span><h3>${esc(active.group)}ミーティング</h3><p class="subtitle">${esc(active.theme||'テーマ未設定')}</p><div class="actions"><button class="btn primary" onclick="resume('${active.id}')">続きから</button></div></div>`:''}
+  ${active?`<div class="section-title"><h3>進行中</h3><span>${active.entries.length}件の意見</span></div><div class="progress-card progress-card-modern"><div class="progress-card-top"><span class="pill">進行中</span><span>${esc(active.group)}</span></div><h3>${esc(active.theme||'テーマ未設定')}</h3><div class="progress-stats"><span>意見 <b>${active.entries.length}</b>件</span><span>作成者 <b>${esc(active.ownerName)}</b></span></div><div class="actions"><button class="btn primary" onclick="resume('${active.id}')">続きから</button></div></div>`:''}
   <div class="section-title"><h3>ミーティングを始める</h3><span>3種類</span></div>
   <div class="card-grid">${meetingCard('position','ポジション別','同じ役割だから見える課題を共有')}${meetingCard('grade','学年別','学年ごとの役割と行動を整理')}${meetingCard('all','全体','各グループの結論をチームの方針へ')}</div>`;
 }
@@ -130,18 +130,25 @@ function roomView(){
      <div class="actions meeting-send-actions"><button class="btn gold meeting-send" onclick="addEntry()">意見を送る <span>➤</span></button></div>
    </div>
    <div class="section-title meeting-opinion-title"><h3>集まった意見</h3><span>${m.entries.length}件</span></div>
-   <div class="form-card opinion-list-card">${m.entries.length?m.entries.map(e=>`<div class="entry"><strong>${esc(e.name)}</strong><p>${esc(e.text)}</p></div>`).join(''):'<div class="empty meeting-empty"><span>♡</span><b>まだ意見はありません</b><small>あなたの一言が、チームの成長につながります。</small></div>'}</div>
-   <div class="actions meeting-room-actions"><button class="btn secondary" onclick="go('home')">一時保存</button><button class="btn primary" onclick="openSummary()">まとめへ</button></div>
+   <div class="opinion-list">${m.entries.length?m.entries.map(e=>`<article class="opinion-card"><div class="opinion-meta"><span class="opinion-avatar">${esc((e.name||'?').slice(0,1))}</span><div><strong>${esc(e.name)}</strong><small>${new Date(e.createdAt||Date.now()).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}</small></div></div><p>${esc(e.text)}</p></article>`).join(''):'<div class="meeting-empty dark-empty"><span>♡</span><b>まだ意見はありません</b><small>最初の意見を送ってみよう！</small></div>'}</div>
+   <div class="meeting-bottom-actions"><button class="btn back-action" onclick="state.view='select';render()">‹ 戻る</button><button class="btn secondary" onclick="go('home')">一時保存</button><button class="btn gold alia-summary-action" onclick="openSummary()">✦ Aliaまとめへ</button></div>
  </section>`;
 }
-function summaryView(){ const m=getCurrent(); if(!m) return '<div class="empty">ミーティングが見つかりません。</div>'; const draft=m.summary || makeSummary(m); return `<button class="back" onclick="state.view='room';render()">‹ 入力へ戻る</button><h2 class="page-title">Aliaまとめ</h2><p class="subtitle">集まった意見を一つの情報に整理します。</p><div class="form-card"><label class="label">まとめ案</label><textarea id="summaryText" class="textarea" style="min-height:240px">${esc(draft)}</textarea></div><div class="actions"><button class="btn secondary" onclick="regenerate()">作り直す</button><button class="btn primary" onclick="finalize()">確定して保存</button></div>`; }
-function historyView(){ const ms=loadMeetings().sort((a,b)=>b.createdAt-a.createdAt); return `<h2 class="page-title">ミーティング履歴</h2><p class="subtitle">過去の話し合いと結論を見返せます。</p>${ms.length?ms.map(m=>`<div class="history-card"><span class="pill ${m.status==='closed'?'closed':''}">${m.status==='closed'?'完了':'進行中'}</span><h3>${esc(m.group)}ミーティング</h3><p class="subtitle">${new Date(m.createdAt).toLocaleString('ja-JP')}・意見${m.entries.length}件</p>${m.summary?`<div class="summary-box">${esc(m.summary)}</div>`:''}${m.status==='open'?`<div class="actions"><button class="btn primary" onclick="resume('${m.id}')">開く</button></div>`:''}</div>`).join(''):'<div class="empty">履歴はまだありません。</div>'}`; }
+function summaryView(){
+ const m=getCurrent(); if(!m) return '<div class="empty">ミーティングが見つかりません。</div>';
+ const draft=m.summary || makeSummary(m);
+ return `<section class="summary-page"><h2 class="page-title">✦ Aliaまとめ</h2><p class="subtitle">集まった意見を、チームの次の行動へ整理します。</p><div class="alia-summary-card"><div class="summary-card-head"><span>Alia</span><b>${esc(m.theme||'今回のテーマ')}</b></div><label class="label">まとめ案</label><textarea id="summaryText" class="textarea summary-textarea">${esc(draft)}</textarea><div class="alia-tip">💡 共通する課題・次回までの行動・担当を確認して保存しよう。</div></div><div class="summary-bottom-actions"><button class="btn back-action" onclick="state.view='room';render()">‹ 入力へ戻る</button><button class="btn secondary" onclick="regenerate()">作り直す</button><button class="btn gold" onclick="finalize()">確定して保存</button></div></section>`;
+}
+function historyView(){
+ const ms=loadMeetings().sort((a,b)=>b.createdAt-a.createdAt);
+ return `<section class="history-page"><h2 class="page-title">ミーティング履歴</h2><p class="subtitle">過去の話し合いと結論を見返せます。</p>${ms.length?`<div class="history-list">${ms.map(m=>`<article class="history-card history-card-modern"><div class="history-head"><span class="pill ${m.status==='closed'?'closed':''}">${m.status==='closed'?'完了':'進行中'}</span><span>${new Date(m.createdAt).toLocaleDateString('ja-JP')}</span></div><h3>${esc(m.group)}ミーティング</h3><p class="history-theme">${esc(m.theme||'テーマ未設定')}</p><div class="history-stats"><span>意見 <b>${m.entries.length}</b>件</span><span>${new Date(m.createdAt).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}</span></div>${m.summary?`<div class="summary-preview">${esc(m.summary).split('\n').join('<br>')}</div>`:''}<div class="actions"><button class="btn primary" onclick="resume('${m.id}')">${m.status==='open'?'続きから':'詳細を見る'}</button></div></article>`).join('')}</div>`:'<div class="meeting-empty dark-empty"><span>▤</span><b>履歴はまだありません</b><small>ミーティングを保存するとここに表示されます。</small></div>'}<div class="history-bottom-actions"><button class="btn back-action" onclick="go('home')">‹ ホームへ戻る</button></div></section>`;
+}
 function growthView(){ const ms=loadMeetings().filter(m=>m.status==='closed'); const entries=ms.reduce((n,m)=>n+m.entries.length,0); return `<h2 class="page-title">チームの成長</h2><p class="subtitle">試作版では活動量を表示します。</p><div class="card-grid"><div class="progress-card"><small>完了したミーティング</small><h2>${ms.length}回</h2></div><div class="progress-card"><small>集まった意見</small><h2>${entries}件</h2></div><div class="progress-card"><small>チームの結論</small><h2>${ms.filter(m=>m.summary).length}件</h2></div></div>`; }
 
 function menuView(){
   const a=loadAccount();
   return `<section class="menu-page">
-    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.25" alt="Alia"></div>
+    <div class="menu-page-head"><div><small>TEAM MENU</small><h2>メニュー</h2><p>${esc(a.teamName)}の管理・設定</p></div><img src="./icons/alia-standalone.png?v=0.27" alt="Alia"></div>
     <div class="menu-list">
       ${menuItem('👥','メンバー管理','メンバー・役割を確認')}
       ${menuItem('🔑','招待コード','コードの確認・コピー','copyCode()')}
@@ -185,7 +192,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.26', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.27', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
