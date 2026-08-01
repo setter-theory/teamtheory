@@ -65,6 +65,111 @@ const ALIA_THEME_DOMAINS = [
   {id:'goal', label:'目標・振り返り', keywords:/目標|大会|振り返り|反省|成長|達成|計画|次回/}
 ];
 
+
+function positionKeyForMeeting(m){
+  if(m?.type!=='position') return '';
+  const group=m?.group||'';
+  if(/セッター/.test(group)) return 'setter';
+  if(/ミドル/.test(group)) return 'middle';
+  if(/アウトサイド|OH|レフト/.test(group)) return 'outside';
+  if(/オポジット|OP|ライト/.test(group)) return 'opposite';
+  if(/リベロ/.test(group)) return 'libero';
+  return '';
+}
+function positionLabelForKey(key){
+  return ({setter:'セッター',middle:'ミドルブロッカー',outside:'アウトサイドヒッター',opposite:'オポジット',libero:'リベロ'})[key]||'';
+}
+function positionPlanOverride(m,joined,theme){
+  const key=positionKeyForMeeting(m);
+  if(!key) return null;
+  const isMiddle=/ミドル|クイック|速攻/.test(`${theme} ${joined}`);
+  const isReception=/レセプション|サーブレシーブ|返球/.test(`${theme} ${joined}`);
+  const isBlock=/ブロック/.test(`${theme} ${joined}`);
+  const isServe=/サーブ/.test(`${theme} ${joined}`);
+  const isAttack=/スパイク|アタック|決定率/.test(`${theme} ${joined}`);
+  const isSet=/トス|配球|セッター/.test(`${theme} ${joined}`);
+  if(key==='setter'){
+    if(isMiddle) return {
+      issue:'良い返球でもミドルを使う条件が曖昧で、配球がサイドへ偏っています。',
+      action:'返球位置と相手ミドルの動きを見て、序盤からミドルを選択肢に入れます。',
+      method:`・Aパス時は各ローテーション最初の3本以内にミドルを1回使う
+・相手ミドルが中央に残るか外へ寄るかをトス前に確認する
+・ローテーション別のミドル配球数と決定率を試合後に確認する`
+    };
+    if(isSet) return {
+      issue:'配球判断とトス精度の基準が揃わず、攻撃の選択肢が狭くなっています。',
+      action:'返球前に第一候補と第二候補を決め、同じ構えから複数方向へ配球します。',
+      method:`・同じ構えからレフト・ライト・ミドルへ各10本上げる
+・返球前に相手ブロックと味方の助走を一度確認する
+・ローテーション別の配球本数と決定率を記録する`
+    };
+  }
+  if(key==='middle'){
+    if(isMiddle || isSet) return {
+      issue:'助走開始とセッターへの合図が揃わず、ミドルを使えるタイミングが減っています。',
+      action:'返球と同時に助走準備へ入り、セッターと攻撃テンポを共有します。',
+      method:`・A・Bクイックを各10本、助走開始の合図を決めて合わせる
+・良い返球時は毎回助走に入り、おとりでも中央を引きつける
+・打てた本数だけでなく助走に入れた回数も記録する`
+    };
+    if(isBlock) return {
+      issue:'相手セッターとアタッカーを見る順番が定まらず、ブロックの移動が遅れています。',
+      action:'返球・セッター・助走の順に視線を移し、基準位置から早く動きます。',
+      method:`・台上練習で返球からトス方向を判断する反復を10本行う
+・隣のブロッカーと止めるコースをサーブ前に共有する
+・タッチ本数と抜かれたコースをローテーション別に記録する`
+    };
+  }
+  if(key==='outside'){
+    if(isMiddle) return {
+      issue:'ミドルが使われない場面で相手ブロックがサイドへ集まり、打てるコースが狭くなっています。',
+      action:'ミドルの助走を生かし、ブロックの寄りを見て打ち方を選びます。',
+      method:`・ミドルが助走に入った状態からサイド攻撃を各コース5本ずつ打つ
+・相手ミドルが残ればストレート、寄ればブロックアウトも選ぶ
+・ミドル使用後のサイド決定率を確認する`
+    };
+    if(isReception) return {
+      issue:'レセプション後の助走準備が遅れ、攻撃参加のタイミングがずれています。',
+      action:'返球後すぐに助走開始位置へ戻り、攻撃までを一連の動作にします。',
+      method:`・レセプションからスパイクまでを5本連続で行う
+・返球後の最初の一歩を決めて助走位置へ戻る
+・Aパス時の攻撃参加率と決定率を確認する`
+    };
+  }
+  if(key==='opposite'){
+    if(isMiddle || isAttack) return {
+      issue:'ミドルとの連動が少なく、ライト攻撃とバックアタックの選択が単調になっています。',
+      action:'ミドルの動きに合わせて、ライト・時間差・バックアタックを使い分けます。',
+      method:`・ミドルとの時間差とライト攻撃を各10本合わせる
+・相手ブロックが中央に残ればライト、外へ寄ればバックアタックを選ぶ
+・ローテーション別の攻撃本数と決定率を確認する`
+    };
+    if(isBlock) return {
+      issue:'相手レフトへのブロック位置が安定せず、ストレートとクロスの役割が曖昧です。',
+      action:'隣のミドルと基準位置を合わせ、止めるコースを明確にします。',
+      method:`・相手助走に合わせて基準位置から移動する練習を10本行う
+・サーブ前にストレートを閉めるかクロスを優先するか共有する
+・タッチと抜かれたコースをセットごとに確認する`
+    };
+  }
+  if(key==='libero'){
+    if(isMiddle || isReception) return {
+      issue:'ミドルを使える返球位置が安定せず、攻撃の選択肢がサイドへ偏っています。',
+      action:'セッターが前後に大きく動かずミドルを選べる返球を増やします。',
+      method:`・ネットから約1m、セッター前を目標に同じ球種を5本連続で返す
+・サーブ前に担当範囲と短い球への対応を確認する
+・Aパス率と、その後にミドルを使えた本数を確認する`
+    };
+    if(isServe) return {
+      issue:'相手サーブの球種と狙いを共有できず、受ける位置の修正が遅れています。',
+      action:'サーバーの特徴を短い言葉で共有し、全員の守備位置を早めに調整します。',
+      method:`・サーバーごとに球種と狙われやすい場所を記録する
+・サーブ前に「短い・深い・間」を一言で共有する
+・失点後に位置を半歩単位で修正する`
+    };
+  }
+  return null;
+}
 function classifyAliaContext(m){
   const theme=(m?.theme||'').trim();
   const voices=(m?.entries||[]).map(e=>e?.text||'').join(' ');
@@ -256,7 +361,7 @@ function welcomeView(){
          <p class="alia-tagline">教わるから、考えるへ。</p>
        </div>
      </div>
-     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.44.1" alt="Alia">
+     <img class="alia-character alia-character-v396" src="./icons/alia-standalone.png?v=0.44.2" alt="Alia">
    </div>
    ${savedTeamsView()}
    <div class="welcome-actions">
@@ -265,7 +370,7 @@ function welcomeView(){
    </div>
    <button class="welcome-utility" onclick="showTopSettingsNotice()"><span class="welcome-utility-icon">⚙</span><span>設定・その他</span><span class="welcome-utility-arrow">›</span></button>
    <div class="alia-support">♥ Aliaがチームの成長をサポートするよ！ ♥</div>
-   <div class="welcome-version">Version 0.44.1</div>
+   <div class="welcome-version">Version 0.44.2</div>
  </main>`;
 }
 function savedTeamsView(){
@@ -285,7 +390,7 @@ function createTeamView(){
      <div class="create-field"><label class="create-label"><span class="create-label-icon">♟</span><span>チーム名</span></label><input id="teamName" class="input create-input" placeholder="例：Alia高校"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon person-icon">●</span><span>あなたの名前</span></label><input id="displayName" class="input create-input" placeholder="例：Alia"></div>
      <div class="create-field"><label class="create-label"><span class="create-label-icon shield-icon">✦</span><span>役割</span></label><select id="role" class="input create-input create-select">${roleOptions()}</select></div>
-     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.44.1" class="create-alia" alt="Alia"></div>
+     <div class="create-alia-zone"><div class="create-alia-bubble">チーム名は<br>後から変更できるよ♪</div><img src="./icons/alia-standalone.png?v=0.44.2" class="create-alia" alt="Alia"></div>
    </section>
    <div class="onboarding-bottom-actions create-bottom-actions"><button class="bottom-action secondary-action" onclick="go('welcome')"><span class="bottom-action-icon home-svg">⌂</span><span>トップ</span></button><button class="bottom-action primary-action" onclick="createTeamAccount()"><span>チームを作成する</span><span class="bottom-action-arrow">›</span></button></div>
  </main>`;
@@ -570,6 +675,19 @@ function buildAdaptiveAdviceSections(m,plan){
  const text=`${theme} ${voices}`;
  const first=(m.entries||[]).map(e=>(e.text||'').trim()).find(Boolean)||theme||'今回のテーマ';
  const compact=value=>String(value||'').replace(/^・/gm,'').replace(/\n+/g,'／');
+ const positionKey=positionKeyForMeeting(m);
+ const positionPlan=positionPlanOverride(m,voices,theme);
+ if(positionKey && positionPlan){
+   const labels={
+     setter:[['🎯','配球・精度'],['👀','判断基準'],['📊','確認']],
+     middle:[['👣','助走・テンポ'],['🤝','連携'],['📊','確認']],
+     outside:[['🏐','攻撃準備'],['👀','打ち分け'],['📊','確認']],
+     opposite:[['🔀','攻撃の選択'],['🤝','連動'],['📊','確認']],
+     libero:[['📍','返球・守備位置'],['🗣','共有'],['📊','確認']]
+   }[positionKey];
+   const methods=String(positionPlan.method||'').split(/\n+/).map(x=>x.replace(/^・/,''));
+   return labels.map((item,i)=>({icon:item[0],label:item[1],text:methods[i]||methods[methods.length-1]||compact(positionPlan.method)}));
+ }
 
  if(['life','time'].includes(category) || /私生活|生活習慣|生活態度|規則正しい|朝|夜更かし|スマホ|整理整頓|身だしなみ/.test(text)){
    return [
@@ -720,6 +838,8 @@ function buildActionPlan(m){
    action='締切から逆算し、練習日でも続けられる短い学習時間を固定します。';
    method='・課題を15〜30分単位に分ける\n・練習日の学習枠を前日に決める\n・週末に予定と実績を見比べて調整する';
  }
+ const positionOverride=positionPlanOverride(m,joined,theme);
+ if(positionOverride){ issue=positionOverride.issue; action=positionOverride.action; method=positionOverride.method; }
  return {issue,action,method};
 }
 function parseActionPlan(summary,m){
@@ -786,7 +906,7 @@ if ('serviceWorker' in navigator) {
     refreshing = true;
     location.reload();
   });
-  navigator.serviceWorker.register('./sw.js?v=0.44.1', { updateViaCache: 'none' })
+  navigator.serviceWorker.register('./sw.js?v=0.44.2', { updateViaCache: 'none' })
     .then(reg => {
       reg.update().catch(()=>{});
       setInterval(() => reg.update().catch(()=>{}), 60 * 1000);
